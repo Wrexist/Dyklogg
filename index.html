@@ -313,8 +313,8 @@ body.editing .edit-hint{display:inline}
       <div class="g2">
         <div>
           <div class="fl"><span class="fll et" contenteditable="false">Dykledare:</span><input type="text" id="b-led"></div>
-          <div class="fl"><span class="fll et" contenteditable="false">Dykare 2:</span><input type="text" id="b-d2"></div>
           <div class="fl"><span class="fll et" contenteditable="false">Dykare 1:</span><input type="text" id="b-d1"></div>
+          <div class="fl"><span class="fll et" contenteditable="false">Dykare 2:</span><input type="text" id="b-d2"></div>
           <div class="fl"><span class="fll et" contenteditable="false">Reservdykare / R&#228;ddningsdykare:</span><input type="text" id="b-reserv"></div>
         </div>
         <div>
@@ -333,28 +333,28 @@ body.editing .edit-hint{display:inline}
       <div class="eqgrid">
         <div class="eqcol">
           <div class="eqt et" contenteditable="false">Dykutrustning (dykrelaterat)</div>
-          <label class="chk"><input type="checkbox"> Dykutrustning komplett</label>
-          <label class="chk"><input type="checkbox"> Dykdr&#228;kt</label>
-          <label class="chk"><input type="checkbox"> Hj&#228;lm / Mask</label>
-          <label class="chk"><input type="checkbox"> Kommunikationssystem</label>
-          <label class="chk"><input type="checkbox"> Gas (Luft / Nitrox / Heliox)</label>
-          <label class="chk"><input type="checkbox"> N&#246;df&#246;rs&#246;rjning / Bailout</label>
           <label class="chk"><input type="checkbox"> Dykbelysning (lampa)</label>
           <label class="chk"><input type="checkbox"> Dykdator / Tidtagarur</label>
+          <label class="chk"><input type="checkbox"> Dykdr&#228;kt</label>
+          <label class="chk"><input type="checkbox"> Dykutrustning komplett</label>
+          <label class="chk"><input type="checkbox"> Gas (Luft / Nitrox / Heliox)</label>
+          <label class="chk"><input type="checkbox"> Hj&#228;lm / Mask</label>
           <label class="chk"><input type="checkbox"> Kamera / Dokumentation</label>
+          <label class="chk"><input type="checkbox"> Kommunikationssystem</label>
+          <label class="chk"><input type="checkbox"> N&#246;df&#246;rs&#246;rjning / Bailout</label>
           <label class="chk" style="align-items:flex-end;margin-top:2px"><input type="checkbox"> &#214;vrigt: <input type="text" style="width:62px;font-size:10px;margin-left:3px"></label>
         </div>
         <div class="eqcol">
           <div class="eqt et" contenteditable="false">Verktyg &amp; Utrustning</div>
-          <label class="chk"><input type="checkbox"> Handverktyg</label>
-          <label class="chk"><input type="checkbox"> Elverktyg</label>
-          <label class="chk"><input type="checkbox"> Svetsutrustning</label>
-          <label class="chk"><input type="checkbox"> Sk&#228;rutrustning</label>
-          <label class="chk"><input type="checkbox"> Borrutrustning</label>
-          <label class="chk"><input type="checkbox"> Hydraulverktyg</label>
-          <label class="chk"><input type="checkbox"> Kommunikationsutrustning</label>
           <label class="chk"><input type="checkbox"> Betongpump</label>
+          <label class="chk"><input type="checkbox"> Borrutrustning</label>
+          <label class="chk"><input type="checkbox"> Elverktyg</label>
+          <label class="chk"><input type="checkbox"> Handverktyg</label>
+          <label class="chk"><input type="checkbox"> Hydraulverktyg</label>
           <label class="chk"><input type="checkbox"> Kamera / Dokumentation</label>
+          <label class="chk"><input type="checkbox"> Kommunikationsutrustning</label>
+          <label class="chk"><input type="checkbox"> Sk&#228;rutrustning</label>
+          <label class="chk"><input type="checkbox"> Svetsutrustning</label>
           <label class="chk" style="align-items:flex-end;margin-top:2px"><input type="checkbox"> &#214;vrigt: <input type="text" style="width:62px;font-size:10px;margin-left:3px"></label>
         </div>
       </div>
@@ -649,6 +649,11 @@ body.editing .edit-hint{display:inline}
 </div>
 
 <script>
+// Bump SCHEMA whenever the template structure changes (labels added/removed/renamed,
+// checkbox order changed, or default arbetstyp list changed). Saved data with an older
+// schema has its position-based keys (_et*, _cb*, _atInstances) discarded on load so the
+// new template renders cleanly — ID-keyed field values are always kept.
+const SCHEMA = 4;
 let editMode = false;
 
 
@@ -664,9 +669,9 @@ function switchView(v) {
 
 // --- Arbetstyp instances for dyklog tab ---
 const atInstances = {
-  main: { typer: ['Besiktning','Betongarbete','Demontage','Inspektion','Montage','M\u00e4tning','Sk\u00e4rning/Brocco','Svetsning','Tv\u00e4tta','Vattenbl\u00e4string'], checked: {} },
-  b1:   { typer: ['Besiktning','Betongarbete','Demontage','Inspektion','Montage','M\u00e4tning','Sk\u00e4rning/Brocco','Svetsning','Tv\u00e4tta','Vattenbl\u00e4string'], checked: {} },
-  b2:   { typer: ['Besiktning','Betongarbete','Demontage','Inspektion','Montage','M\u00e4tning','Sk\u00e4rning/Brocco','Svetsning','Tv\u00e4tta','Vattenbl\u00e4string'], checked: {} }
+  main: { typer: ['Besiktning','Betongarbete','Demontage','Gjutning','Inspektion','Montage','M\u00e4tning','Sk\u00e4rning/Brocco','Svetsning','Tv\u00e4tta','Vattenbl\u00e4string'], checked: {} },
+  b1:   { typer: ['Besiktning','Betongarbete','Demontage','Gjutning','Inspektion','Montage','M\u00e4tning','Sk\u00e4rning/Brocco','Svetsning','Tv\u00e4tta','Vattenbl\u00e4string'], checked: {} },
+  b2:   { typer: ['Besiktning','Betongarbete','Demontage','Gjutning','Inspektion','Montage','M\u00e4tning','Sk\u00e4rning/Brocco','Svetsning','Tv\u00e4tta','Vattenbl\u00e4string'], checked: {} }
 };
 
 function renderGrid(inst) {
@@ -772,10 +777,18 @@ function gatherAll() {
     b2:   { typer: atInstances.b2.typer,   checked: atInstances.b2.checked }
   });
   Object.assign(d, getEditableTexts());
+  d._schema = SCHEMA;
   return d;
 }
 
 function applyAll(d) {
+  // Drop position-based keys from older-schema data so renamed/removed/reordered template
+  // elements aren't filled with stale text. ID-keyed field values below are always applied.
+  if (d._schema !== SCHEMA) {
+    Object.keys(d).forEach(k => {
+      if (/^_(et|cb)\d+$/.test(k) || k === '_atInstances' || k === '_arbetstyper' || k === '_atChecked') delete d[k];
+    });
+  }
   document.querySelectorAll('input[type=text][id], input[type=date][id], input[type=checkbox][id]').forEach(el => {
     if (d[el.id] !== undefined) el.type === 'checkbox' ? el.checked = d[el.id] : el.value = d[el.id];
   });
@@ -837,8 +850,7 @@ function clearAll() {
   if (!confirm('Rensa hela formul\u00e4ret?')) return;
   document.querySelectorAll('input[type=text]').forEach(el => el.value = '');
   document.querySelectorAll('input[type=checkbox]').forEach(el => el.checked = false);
-  atChecked = {};
-  ['main','b1','b2'].forEach(inst=>renderGrid(inst));
+  ['main','b1','b2'].forEach(inst=>{ atInstances[inst].checked = {}; renderGrid(inst); });
   try { localStorage.removeItem('dyklogg_autosave'); } catch(e) {}
   toast('Rensat');
 }
