@@ -653,7 +653,7 @@ body.editing .edit-hint{display:inline}
 // checkbox order changed, or default arbetstyp list changed). Saved data with an older
 // schema has its position-based keys (_et*, _cb*, _atInstances) discarded on load so the
 // new template renders cleanly — ID-keyed field values are always kept.
-const SCHEMA = 2;
+const SCHEMA = 3;
 let editMode = false;
 
 
@@ -669,9 +669,9 @@ function switchView(v) {
 
 // --- Arbetstyp instances for dyklog tab ---
 const atInstances = {
-  main: { typer: ['Besiktning','Betongarbete','Demontage','Inspektion','Montage','M\u00e4tning','Sk\u00e4rning/Brocco','Svetsning','Tv\u00e4tta','Vattenbl\u00e4string'], checked: {} },
-  b1:   { typer: ['Besiktning','Betongarbete','Demontage','Inspektion','Montage','M\u00e4tning','Sk\u00e4rning/Brocco','Svetsning','Tv\u00e4tta','Vattenbl\u00e4string'], checked: {} },
-  b2:   { typer: ['Besiktning','Betongarbete','Demontage','Inspektion','Montage','M\u00e4tning','Sk\u00e4rning/Brocco','Svetsning','Tv\u00e4tta','Vattenbl\u00e4string'], checked: {} }
+  main: { typer: ['Besiktning','Betongarbete','Demontage','Gjutning','Inspektion','Montage','M\u00e4tning','Sk\u00e4rning/Brocco','Svetsning','Tv\u00e4tta','Vattenbl\u00e4string'], checked: {} },
+  b1:   { typer: ['Besiktning','Betongarbete','Demontage','Gjutning','Inspektion','Montage','M\u00e4tning','Sk\u00e4rning/Brocco','Svetsning','Tv\u00e4tta','Vattenbl\u00e4string'], checked: {} },
+  b2:   { typer: ['Besiktning','Betongarbete','Demontage','Gjutning','Inspektion','Montage','M\u00e4tning','Sk\u00e4rning/Brocco','Svetsning','Tv\u00e4tta','Vattenbl\u00e4string'], checked: {} }
 };
 
 function renderGrid(inst) {
