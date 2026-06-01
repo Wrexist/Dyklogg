@@ -30,6 +30,7 @@ input[type=checkbox]{width:12px;height:12px;accent-color:#f90;cursor:pointer;fle
 .sb{flex:1;padding:6px 8px;min-width:0}
 
 .title{font-size:30px;font-weight:900;text-transform:uppercase;letter-spacing:-.5px;line-height:1}
+.logo{height:40px;width:auto;flex-shrink:0;object-fit:contain}
 .sub{color:#f90;font-weight:700;font-size:9px;text-transform:uppercase;letter-spacing:.5px;margin-top:1px}
 
 .meta{width:100%;border-collapse:collapse;border:1.5px solid #999}
@@ -136,9 +137,12 @@ body.editing .edit-hint{display:inline}
 <!-- DYKLOGG -->
 <div class="col cl">
 
-  <div>
-    <div class="title et" contenteditable="false">Dyklogg</div>
-    <div class="sub et" contenteditable="false">Arbetsdyk &#8211; Kommersiell Dykverksamhet</div>
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">
+    <div>
+      <div class="title et" contenteditable="false">Dyklogg</div>
+      <div class="sub et" contenteditable="false">Arbetsdyk &#8211; Kommersiell Dykverksamhet</div>
+    </div>
+    <img src="dawab_yellow_logo.svg" alt="DAWAB" class="logo">
   </div>
 
   <div style="display:flex;justify-content:flex-end;align-items:flex-end;gap:5px;font-weight:700;font-size:11px;margin-bottom:3px">
@@ -152,7 +156,7 @@ body.editing .edit-hint{display:inline}
       <td><span class="lbl et" contenteditable="false">Dyk nr</span><input type="text" id="dyknr"></td>
     </tr>
     <tr>
-      <td colspan="2"><span class="lbl et" contenteditable="false">Arbetsmoment / Plats</span><input type="text" id="arbetsmoment"></td>
+      <td colspan="2"><span class="lbl et" contenteditable="false">Arbetsmoment</span><input type="text" id="arbetsmoment"></td>
     </tr>
   </table>
 
@@ -201,9 +205,6 @@ body.editing .edit-hint{display:inline}
         <div class="ddr"><span class="dl et" contenteditable="false">Maxdjup:</span><input type="text" id="maxdjup"></div>
         <div class="ddr"><span class="dl et" contenteditable="false">Sikt:</span><input type="text" id="sikt"></div>
         <div class="ddr"><span class="dl et" contenteditable="false">Temperatur (&#176;C):</span><input type="text" id="temp"></div>
-        <div class="ddr"><span class="dl et" contenteditable="false">Str&#246;m:</span><input type="text" id="strom"></div>
-        <div class="ddr"><span class="dl et" contenteditable="false">V&#228;der:</span><input type="text" id="vader"></div>
-        <div class="ddr"><span class="dl et" contenteditable="false">Anteckning:</span><input type="text" id="anm"></div>
       </div>
     </div>
   </div>
@@ -251,6 +252,11 @@ body.editing .edit-hint{display:inline}
           <div class="sf"><span class="et" contenteditable="false">Namn:</span><input type="text" id="d2-namn"></div>
           <div class="sf"><span class="et" contenteditable="false">Underskrift:</span><input type="text" id="d2-sign"></div>
         </div>
+        <div class="sbox">
+          <div class="st et" contenteditable="false">Dyksk&#246;tare</div>
+          <div class="sf"><span class="et" contenteditable="false">Namn:</span><input type="text" id="dsk-namn"></div>
+          <div class="sf"><span class="et" contenteditable="false">Underskrift:</span><input type="text" id="dsk-sign"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -260,8 +266,9 @@ body.editing .edit-hint{display:inline}
 <!-- DYKPLAN -->
 <div class="col cr">
 
-  <div style="display:flex;justify-content:space-between;align-items:flex-end">
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
     <div class="title et" contenteditable="false">Dykplan</div>
+    <img src="blackfisk.png" alt="DAWAB" class="logo" style="height:52px">
     <div style="display:flex;align-items:flex-end;gap:5px;font-weight:700;font-size:11px;flex-shrink:0">
       <span class="et" contenteditable="false">Datum:</span>
       <input type="text" id="plan-datum" style="width:110px">
@@ -397,9 +404,12 @@ body.editing .edit-hint{display:inline}
 
 <!-- DYKLOGG B1 -->
 <div class="col cl">
-  <div>
-    <div class="title">Dyklogg</div>
-    <div class="sub">Arbetsdyk &#8211; Kommersiell Dykverksamhet</div>
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">
+    <div>
+      <div class="title">Dyklogg</div>
+      <div class="sub">Arbetsdyk &#8211; Kommersiell Dykverksamhet</div>
+    </div>
+    <img src="dawab_yellow_logo.svg" alt="DAWAB" class="logo">
   </div>
   <div style="display:flex;justify-content:flex-end;align-items:flex-end;gap:5px;font-weight:700;font-size:11px;margin-bottom:3px">
     <span>Datum:</span><input type="text" id="b1-datum" style="width:120px">
@@ -410,7 +420,7 @@ body.editing .edit-hint{display:inline}
       <td><span class="lbl">Dyk nr</span><input type="text" id="b1-dyknr"></td>
     </tr>
     <tr>
-      <td colspan="2"><span class="lbl">Arbetsmoment / Plats</span><input type="text" id="b1-arbetsmoment"></td>
+      <td colspan="2"><span class="lbl">Arbetsmoment</span><input type="text" id="b1-arbetsmoment"></td>
     </tr>
   </table>
   <div class="profrow">
@@ -457,9 +467,6 @@ body.editing .edit-hint{display:inline}
         <div class="ddr"><span class="dl">Maxdjup:</span><input type="text" id="b1-maxdjup"></div>
         <div class="ddr"><span class="dl">Sikt:</span><input type="text" id="b1-sikt"></div>
         <div class="ddr"><span class="dl">Temperatur (&#176;C):</span><input type="text" id="b1-temp"></div>
-        <div class="ddr"><span class="dl">Str&#246;m:</span><input type="text" id="b1-strom"></div>
-        <div class="ddr"><span class="dl">V&#228;der:</span><input type="text" id="b1-vader"></div>
-        <div class="ddr"><span class="dl">Anteckning:</span><input type="text" id="b1-anm"></div>
       </div>
     </div>
   </div>
@@ -500,6 +507,10 @@ body.editing .edit-hint{display:inline}
           <div class="sf"><span>Namn:</span><input type="text" id="b1-d2-namn"></div>
           <div class="sf"><span>Underskrift:</span><input type="text" id="b1-d2-sign"></div>
         </div>
+        <div class="sbox"><div class="st">Dyksk&#246;tare</div>
+          <div class="sf"><span>Namn:</span><input type="text" id="b1-dsk-namn"></div>
+          <div class="sf"><span>Underskrift:</span><input type="text" id="b1-dsk-sign"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -507,9 +518,12 @@ body.editing .edit-hint{display:inline}
 
 <!-- DYKLOGG B2 -->
 <div class="col cl">
-  <div>
-    <div class="title">Dyklogg</div>
-    <div class="sub">Arbetsdyk &#8211; Kommersiell Dykverksamhet</div>
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">
+    <div>
+      <div class="title">Dyklogg</div>
+      <div class="sub">Arbetsdyk &#8211; Kommersiell Dykverksamhet</div>
+    </div>
+    <img src="dawab_yellow_logo.svg" alt="DAWAB" class="logo">
   </div>
   <div style="display:flex;justify-content:flex-end;align-items:flex-end;gap:5px;font-weight:700;font-size:11px;margin-bottom:3px">
     <span>Datum:</span><input type="text" id="b2-datum" style="width:120px">
@@ -520,7 +534,7 @@ body.editing .edit-hint{display:inline}
       <td><span class="lbl">Dyk nr</span><input type="text" id="b2-dyknr"></td>
     </tr>
     <tr>
-      <td colspan="2"><span class="lbl">Arbetsmoment / Plats</span><input type="text" id="b2-arbetsmoment"></td>
+      <td colspan="2"><span class="lbl">Arbetsmoment</span><input type="text" id="b2-arbetsmoment"></td>
     </tr>
   </table>
   <div class="profrow">
@@ -567,9 +581,6 @@ body.editing .edit-hint{display:inline}
         <div class="ddr"><span class="dl">Maxdjup:</span><input type="text" id="b2-maxdjup"></div>
         <div class="ddr"><span class="dl">Sikt:</span><input type="text" id="b2-sikt"></div>
         <div class="ddr"><span class="dl">Temperatur (&#176;C):</span><input type="text" id="b2-temp"></div>
-        <div class="ddr"><span class="dl">Str&#246;m:</span><input type="text" id="b2-strom"></div>
-        <div class="ddr"><span class="dl">V&#228;der:</span><input type="text" id="b2-vader"></div>
-        <div class="ddr"><span class="dl">Anteckning:</span><input type="text" id="b2-anm"></div>
       </div>
     </div>
   </div>
@@ -610,6 +621,10 @@ body.editing .edit-hint{display:inline}
           <div class="sf"><span>Namn:</span><input type="text" id="b2-d2-namn"></div>
           <div class="sf"><span>Underskrift:</span><input type="text" id="b2-d2-sign"></div>
         </div>
+        <div class="sbox"><div class="st">Dyksk&#246;tare</div>
+          <div class="sf"><span>Namn:</span><input type="text" id="b2-dsk-namn"></div>
+          <div class="sf"><span>Underskrift:</span><input type="text" id="b2-dsk-sign"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -649,9 +664,9 @@ function switchView(v) {
 
 // --- Arbetstyp instances for dyklog tab ---
 const atInstances = {
-  main: { typer: ['Inspektion','Svetsning','Montage','Demontage','Sk\u00e4rning/Brocco','M\u00e4tning','Betongarbete','Betongpump','Besiktning','Tv\u00e4tta','Vattenbl\u00e4string'], checked: {} },
-  b1:   { typer: ['Inspektion','Svetsning','Montage','Demontage','Sk\u00e4rning/Brocco','M\u00e4tning','Betongarbete','Betongpump','Besiktning','Tv\u00e4tta','Vattenbl\u00e4string'], checked: {} },
-  b2:   { typer: ['Inspektion','Svetsning','Montage','Demontage','Sk\u00e4rning/Brocco','M\u00e4tning','Betongarbete','Betongpump','Besiktning','Tv\u00e4tta','Vattenbl\u00e4string'], checked: {} }
+  main: { typer: ['Besiktning','Betongarbete','Demontage','Inspektion','Montage','M\u00e4tning','Sk\u00e4rning/Brocco','Svetsning','Tv\u00e4tta','Vattenbl\u00e4string'], checked: {} },
+  b1:   { typer: ['Besiktning','Betongarbete','Demontage','Inspektion','Montage','M\u00e4tning','Sk\u00e4rning/Brocco','Svetsning','Tv\u00e4tta','Vattenbl\u00e4string'], checked: {} },
+  b2:   { typer: ['Besiktning','Betongarbete','Demontage','Inspektion','Montage','M\u00e4tning','Sk\u00e4rning/Brocco','Svetsning','Tv\u00e4tta','Vattenbl\u00e4string'], checked: {} }
 };
 
 function renderGrid(inst) {
