@@ -26,10 +26,10 @@ input[type=checkbox]{width:12px;height:12px;accent-color:#f90;cursor:pointer;fle
 /* Orange vertical tab */
 .tab{background:#f90;flex-shrink:0;width:22px;writing-mode:vertical-rl;transform:rotate(180deg);display:flex;align-items:center;justify-content:center;font-family:'Helvetica Neue',Arial,sans-serif;font-weight:600;font-size:9px;text-transform:uppercase;letter-spacing:1.3px;padding:4px 0;color:#000}
 /* Gruppbeteckning strip at the bottom of the Signering box */
-.grouprow{border-top:1px solid #ddd;padding:6px 12px;display:flex;flex-direction:column;gap:4px}
-.groupline{display:flex;align-items:center;gap:10px}
-.grouplbl{font-weight:700;font-size:8.5px;text-transform:uppercase;letter-spacing:.4px;white-space:nowrap;color:#333;width:92px;flex-shrink:0}
-.groupline .groupletters{flex:1}
+.grouprow{border-top:1px solid #ddd;padding:5px 10px;display:flex;flex-direction:column;gap:3px}
+.groupline{display:flex;align-items:center;gap:8px}
+.grouplbl{font-weight:700;font-size:7.5px;text-transform:uppercase;letter-spacing:.2px;white-space:nowrap;color:#333;width:72px;flex-shrink:0}
+.groupline .groupletters{flex:1;font-size:11px;min-width:0}
 
 .sec{display:flex;border:1px solid #aaa;border-radius:2px;overflow:hidden}
 .sb{flex:1;padding:6px 8px;min-width:0}
@@ -122,7 +122,7 @@ body.editing .edit-hint{display:inline}
   .toolbar{display:none!important}
   .athead button{display:none!important}
   .sec,.profrow,.utrow{break-inside:avoid}
-  .page{margin:0;padding:8mm 9mm;width:100%}
+  .page{margin:0;padding:8mm 9mm;width:100%!important}
   *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
 }
 @page{size:A4 landscape;margin:0}
