@@ -26,9 +26,10 @@ input[type=checkbox]{width:12px;height:12px;accent-color:#f90;cursor:pointer;fle
 /* Orange vertical tab */
 .tab{background:#f90;flex-shrink:0;width:22px;writing-mode:vertical-rl;transform:rotate(180deg);display:flex;align-items:center;justify-content:center;font-family:'Helvetica Neue',Arial,sans-serif;font-weight:600;font-size:9px;text-transform:uppercase;letter-spacing:1.3px;padding:4px 0;color:#000}
 /* Gruppbeteckning strip at the bottom of the Signering box */
-.grouprow{border-top:1px solid #ddd;padding:6px 12px;display:flex;align-items:center;gap:12px}
-.grouplbl{font-weight:700;font-size:8.5px;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;color:#333}
-.grouprow .groupletters{flex:1}
+.grouprow{border-top:1px solid #ddd;padding:6px 12px;display:flex;flex-direction:column;gap:4px}
+.groupline{display:flex;align-items:center;gap:10px}
+.grouplbl{font-weight:700;font-size:8.5px;text-transform:uppercase;letter-spacing:.4px;white-space:nowrap;color:#333;width:92px;flex-shrink:0}
+.groupline .groupletters{flex:1}
 
 .sec{display:flex;border:1px solid #aaa;border-radius:2px;overflow:hidden}
 .sb{flex:1;padding:6px 8px;min-width:0}
@@ -57,9 +58,9 @@ input[type=checkbox]{width:12px;height:12px;accent-color:#f90;cursor:pointer;fle
 .utlines{flex:1;padding:5px 8px;display:flex;flex-direction:column;gap:0}
 .utlines input{border:none;border-bottom:1px solid #ccc;font-size:11px;outline:none;background:transparent;width:100%;padding:4px 0;color:#000}
 .utlines input:focus{border-bottom-color:#f90}
-.atpanel{flex-shrink:0;width:200px;border-left:1px solid #aaa}
+.atpanel{flex-shrink:0;width:200px;border-left:1px solid #aaa;display:flex;flex-direction:column}
 .athead{border-bottom:1px solid #aaa;font-size:10px;font-weight:700;padding:4px 7px}
-.atbody{padding:4px 7px}
+.atbody{padding:4px 7px;flex:1;display:flex;flex-direction:column}
 .atgrid{display:grid;grid-template-columns:1fr 1fr;gap:2px 4px}
 .chk{display:flex;align-items:flex-start;gap:4px;font-size:10px;cursor:pointer;line-height:1.35}
 .chk input[type=checkbox]{margin-top:2px}
@@ -73,7 +74,7 @@ input[type=checkbox]{width:12px;height:12px;accent-color:#f90;cursor:pointer;fle
 .sf{display:flex;align-items:flex-end;gap:4px;font-size:10px;margin-bottom:3px;white-space:nowrap}
 .sf input{flex:1;min-width:0}
 
-.groupletters{display:flex;justify-content:space-between;font-size:14px;font-weight:600;color:#111}
+.groupletters{display:flex;justify-content:space-between;font-size:13px;font-weight:600;color:#111}
 .groupletters span{width:18px;height:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 
 .fl{margin-bottom:4px}
@@ -222,8 +223,8 @@ body.editing .edit-hint{display:inline}
         <div class="ddr"><span class="dl et" contenteditable="false">Sikt:</span><input type="text" id="sikt"></div>
         <div class="ddr"><span class="dl et" contenteditable="false">Temperatur (&#176;C):</span><input type="text" id="temp"></div>
         <div class="ddr"><span class="dl et" contenteditable="false">Deco-stopp:</span><input type="text" id="deco"></div>
-        <div class="ddr"><span class="dl et" contenteditable="false">Tryck f&#246;re:</span><input type="text" id="tryck-fore"></div>
-        <div class="ddr"><span class="dl et" contenteditable="false">Tryck efter:</span><input type="text" id="tryck-efter"></div>
+        <div class="ddr"><span class="dl et" contenteditable="false">Bailout f&#246;re:</span><input type="text" id="tryck-fore"></div>
+        <div class="ddr"><span class="dl et" contenteditable="false">Bailout efter:</span><input type="text" id="tryck-efter"></div>
       </div>
     </div>
   </div>
@@ -243,7 +244,7 @@ body.editing .edit-hint{display:inline}
       </div>
       <div class="atbody">
         <div id="atgrid" class="atgrid"></div>
-        <div style="margin-top:4px;display:flex;align-items:flex-end;gap:4px">
+        <div style="margin-top:auto;padding-top:6px;display:flex;align-items:flex-end;gap:4px">
           <label class="chk" style="white-space:nowrap"><input type="checkbox" id="ovrigt-cb"> &#214;vrigt:</label>
           <input type="text" id="ovrigt" style="font-size:10px;flex:1">
         </div>
@@ -278,8 +279,8 @@ body.editing .edit-hint{display:inline}
         </div>
       </div>
       <div class="grouprow">
-        <span class="grouplbl">Gruppbeteckning</span>
-        <div class="groupletters"><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span><span>G</span><span>H</span><span>I</span><span>J</span><span>K</span><span>L</span><span>M</span><span>N</span><span>O</span><span>P</span><span>Q</span><span>R</span><span>S</span><span>T</span><span>U</span><span>V</span><span>W</span><span>X</span><span>Y</span><span>Z</span></div>
+        <div class="groupline"><span class="grouplbl">Gruppbeteckning</span><div class="groupletters"><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span><span>G</span><span>H</span><span>I</span><span>J</span><span>K</span><span>L</span><span>M</span><span>N</span><span>O</span><span>P</span><span>Q</span><span>R</span><span>S</span><span>T</span><span>U</span><span>V</span><span>W</span><span>X</span><span>Y</span><span>Z</span></div></div>
+        <div class="groupline"><span class="grouplbl">Efter dyk</span><div class="groupletters"><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span><span>G</span><span>H</span><span>I</span><span>J</span><span>K</span><span>L</span><span>M</span><span>N</span><span>O</span><span>P</span><span>Q</span><span>R</span><span>S</span><span>T</span><span>U</span><span>V</span><span>W</span><span>X</span><span>Y</span><span>Z</span></div></div>
       </div>
     </div>
   </div>
@@ -490,8 +491,8 @@ body.editing .edit-hint{display:inline}
         <div class="ddr"><span class="dl">Sikt:</span><input type="text" id="b1-sikt"></div>
         <div class="ddr"><span class="dl">Temperatur (&#176;C):</span><input type="text" id="b1-temp"></div>
         <div class="ddr"><span class="dl">Deco-stopp:</span><input type="text" id="b1-deco"></div>
-        <div class="ddr"><span class="dl">Tryck f&#246;re:</span><input type="text" id="b1-tryck-fore"></div>
-        <div class="ddr"><span class="dl">Tryck efter:</span><input type="text" id="b1-tryck-efter"></div>
+        <div class="ddr"><span class="dl">Bailout f&#246;re:</span><input type="text" id="b1-tryck-fore"></div>
+        <div class="ddr"><span class="dl">Bailout efter:</span><input type="text" id="b1-tryck-efter"></div>
       </div>
     </div>
   </div>
@@ -509,7 +510,7 @@ body.editing .edit-hint{display:inline}
       </div>
       <div class="atbody">
         <div id="atgrid-b1" class="atgrid"></div>
-        <div style="margin-top:4px;display:flex;align-items:flex-end;gap:4px">
+        <div style="margin-top:auto;padding-top:6px;display:flex;align-items:flex-end;gap:4px">
           <label class="chk" style="white-space:nowrap"><input type="checkbox" id="b1-ovrigt-cb"> &#214;vrigt:</label>
           <input type="text" id="b1-ovrigt" style="font-size:10px;flex:1">
         </div>
@@ -538,8 +539,8 @@ body.editing .edit-hint{display:inline}
         </div>
       </div>
       <div class="grouprow">
-        <span class="grouplbl">Gruppbeteckning</span>
-        <div class="groupletters"><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span><span>G</span><span>H</span><span>I</span><span>J</span><span>K</span><span>L</span><span>M</span><span>N</span><span>O</span><span>P</span><span>Q</span><span>R</span><span>S</span><span>T</span><span>U</span><span>V</span><span>W</span><span>X</span><span>Y</span><span>Z</span></div>
+        <div class="groupline"><span class="grouplbl">Gruppbeteckning</span><div class="groupletters"><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span><span>G</span><span>H</span><span>I</span><span>J</span><span>K</span><span>L</span><span>M</span><span>N</span><span>O</span><span>P</span><span>Q</span><span>R</span><span>S</span><span>T</span><span>U</span><span>V</span><span>W</span><span>X</span><span>Y</span><span>Z</span></div></div>
+        <div class="groupline"><span class="grouplbl">Efter dyk</span><div class="groupletters"><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span><span>G</span><span>H</span><span>I</span><span>J</span><span>K</span><span>L</span><span>M</span><span>N</span><span>O</span><span>P</span><span>Q</span><span>R</span><span>S</span><span>T</span><span>U</span><span>V</span><span>W</span><span>X</span><span>Y</span><span>Z</span></div></div>
       </div>
     </div>
   </div>
@@ -610,8 +611,8 @@ body.editing .edit-hint{display:inline}
         <div class="ddr"><span class="dl">Sikt:</span><input type="text" id="b2-sikt"></div>
         <div class="ddr"><span class="dl">Temperatur (&#176;C):</span><input type="text" id="b2-temp"></div>
         <div class="ddr"><span class="dl">Deco-stopp:</span><input type="text" id="b2-deco"></div>
-        <div class="ddr"><span class="dl">Tryck f&#246;re:</span><input type="text" id="b2-tryck-fore"></div>
-        <div class="ddr"><span class="dl">Tryck efter:</span><input type="text" id="b2-tryck-efter"></div>
+        <div class="ddr"><span class="dl">Bailout f&#246;re:</span><input type="text" id="b2-tryck-fore"></div>
+        <div class="ddr"><span class="dl">Bailout efter:</span><input type="text" id="b2-tryck-efter"></div>
       </div>
     </div>
   </div>
@@ -629,7 +630,7 @@ body.editing .edit-hint{display:inline}
       </div>
       <div class="atbody">
         <div id="atgrid-b2" class="atgrid"></div>
-        <div style="margin-top:4px;display:flex;align-items:flex-end;gap:4px">
+        <div style="margin-top:auto;padding-top:6px;display:flex;align-items:flex-end;gap:4px">
           <label class="chk" style="white-space:nowrap"><input type="checkbox" id="b2-ovrigt-cb"> &#214;vrigt:</label>
           <input type="text" id="b2-ovrigt" style="font-size:10px;flex:1">
         </div>
@@ -658,8 +659,8 @@ body.editing .edit-hint{display:inline}
         </div>
       </div>
       <div class="grouprow">
-        <span class="grouplbl">Gruppbeteckning</span>
-        <div class="groupletters"><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span><span>G</span><span>H</span><span>I</span><span>J</span><span>K</span><span>L</span><span>M</span><span>N</span><span>O</span><span>P</span><span>Q</span><span>R</span><span>S</span><span>T</span><span>U</span><span>V</span><span>W</span><span>X</span><span>Y</span><span>Z</span></div>
+        <div class="groupline"><span class="grouplbl">Gruppbeteckning</span><div class="groupletters"><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span><span>G</span><span>H</span><span>I</span><span>J</span><span>K</span><span>L</span><span>M</span><span>N</span><span>O</span><span>P</span><span>Q</span><span>R</span><span>S</span><span>T</span><span>U</span><span>V</span><span>W</span><span>X</span><span>Y</span><span>Z</span></div></div>
+        <div class="groupline"><span class="grouplbl">Efter dyk</span><div class="groupletters"><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span><span>G</span><span>H</span><span>I</span><span>J</span><span>K</span><span>L</span><span>M</span><span>N</span><span>O</span><span>P</span><span>Q</span><span>R</span><span>S</span><span>T</span><span>U</span><span>V</span><span>W</span><span>X</span><span>Y</span><span>Z</span></div></div>
       </div>
     </div>
   </div>
@@ -687,9 +688,9 @@ body.editing .edit-hint{display:inline}
 // Independent layout versions for the three position-based data groups in autosave/JSON.
 // Bump ONLY the group whose layout actually changed, so unrelated saved data survives a
 // template tweak (e.g. moving a label must not wipe checkbox or arbetstyp selections).
-const ETV = 6;  // editable label (.et) order  — bump when .et elements are added/removed/reordered
+const ETV = 7;  // editable label (.et) order  — bump when .et elements are added/removed/reordered
 const CBV = 2;  // non-id checkbox order (utrustning / åtgärder) — bump when those change
-const ATV = 3;  // default arbetstyp list — bump when the default typer change
+const ATV = 4;  // default arbetstyp list — bump when the default typer change
 
 // Map saved data to its group versions. New saves carry _etv/_cbv/_atv directly; older saves
 // only had a single _schema, so derive each group's version from it for backward compatibility.
@@ -732,9 +733,9 @@ function setPaper(v) {
 
 // --- Arbetstyp instances for dyklog tab ---
 const atInstances = {
-  main: { typer: ['Besiktning','Betongarbete','Demontage','Gjutning','Inspektion','Montage','M\u00e4tning','Sk\u00e4rning/Brocco','Svetsning','Tv\u00e4tta','Vattenbl\u00e4string'], checked: {} },
-  b1:   { typer: ['Besiktning','Betongarbete','Demontage','Gjutning','Inspektion','Montage','M\u00e4tning','Sk\u00e4rning/Brocco','Svetsning','Tv\u00e4tta','Vattenbl\u00e4string'], checked: {} },
-  b2:   { typer: ['Besiktning','Betongarbete','Demontage','Gjutning','Inspektion','Montage','M\u00e4tning','Sk\u00e4rning/Brocco','Svetsning','Tv\u00e4tta','Vattenbl\u00e4string'], checked: {} }
+  main: { typer: ['Besiktning','Betongarbete','Demontage','Gjutning','HCL','Inspektion','Montage','M\u00e4tning','Sk\u00e4rning/Brocco','Svetsning','Tv\u00e4tta','Vattenbl\u00e4string'], checked: {} },
+  b1:   { typer: ['Besiktning','Betongarbete','Demontage','Gjutning','HCL','Inspektion','Montage','M\u00e4tning','Sk\u00e4rning/Brocco','Svetsning','Tv\u00e4tta','Vattenbl\u00e4string'], checked: {} },
+  b2:   { typer: ['Besiktning','Betongarbete','Demontage','Gjutning','HCL','Inspektion','Montage','M\u00e4tning','Sk\u00e4rning/Brocco','Svetsning','Tv\u00e4tta','Vattenbl\u00e4string'], checked: {} }
 };
 
 function renderGrid(inst) {
