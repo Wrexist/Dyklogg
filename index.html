@@ -16,7 +16,7 @@ body{font-family:Arial,Helvetica,sans-serif;font-size:11px;background:#d8d8d8;co
 
 .page{width:1160px;margin:14px auto;background:#fff;padding:14px 16px;display:flex;gap:15px}
 .col{display:flex;flex-direction:column;gap:5px}
-.cl{width:506px;flex-shrink:0}
+.cl{flex:1;min-width:0}
 .cr{flex:1;min-width:0}
 
 input[type=text],input[type=date]{border:none;border-bottom:1px solid #888;outline:none;background:transparent;font-family:inherit;font-size:11px;color:#000;width:100%;padding:1px 0}
@@ -115,6 +115,7 @@ body.editing .edit-hint{display:inline}
 @media print{
   body{background:#fff}
   .toolbar{display:none!important}
+  .athead button{display:none!important}
   .page{margin:0;padding:8mm 9mm;width:100%}
   *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
 }
@@ -193,7 +194,6 @@ body.editing .edit-hint{display:inline}
         <polyline points="34,16 60,16 112,176 218,176 258,80 296,80 314,16" fill="none" stroke="#111" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
         <line x1="314" y1="16" x2="322" y2="16" stroke="#111" stroke-width="1.5"/>
         <polygon points="322,13 326,16 322,19" fill="#111"/>
-        <line x1="277" y1="80" x2="262" y2="66" stroke="#777" stroke-width="0.9" stroke-dasharray="2.5,2"/>
         <text x="256" y="75" font-size="8" fill="#333">(3&#8211;5 m)</text>
         <line x1="34" y1="191" x2="322" y2="191" stroke="#111" stroke-width="1.3"/>
         <polygon points="322,188 326,191 322,194" fill="#111"/>
@@ -466,7 +466,6 @@ body.editing .edit-hint{display:inline}
         <polyline points="34,16 60,16 112,176 218,176 258,80 296,80 314,16" fill="none" stroke="#111" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
         <line x1="314" y1="16" x2="322" y2="16" stroke="#111" stroke-width="1.5"/>
         <polygon points="322,13 326,16 322,19" fill="#111"/>
-        <line x1="277" y1="80" x2="262" y2="66" stroke="#777" stroke-width="0.9" stroke-dasharray="2.5,2"/>
         <text x="256" y="75" font-size="8" fill="#333">(3&#8211;5 m)</text>
         <line x1="34" y1="191" x2="322" y2="191" stroke="#111" stroke-width="1.3"/>
         <polygon points="322,188 326,191 322,194" fill="#111"/>
@@ -589,7 +588,6 @@ body.editing .edit-hint{display:inline}
         <polyline points="34,16 60,16 112,176 218,176 258,80 296,80 314,16" fill="none" stroke="#111" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
         <line x1="314" y1="16" x2="322" y2="16" stroke="#111" stroke-width="1.5"/>
         <polygon points="322,13 326,16 322,19" fill="#111"/>
-        <line x1="277" y1="80" x2="262" y2="66" stroke="#777" stroke-width="0.9" stroke-dasharray="2.5,2"/>
         <text x="256" y="75" font-size="8" fill="#333">(3&#8211;5 m)</text>
         <line x1="34" y1="191" x2="322" y2="191" stroke="#111" stroke-width="1.3"/>
         <polygon points="322,188 326,191 322,194" fill="#111"/>
@@ -682,11 +680,26 @@ body.editing .edit-hint{display:inline}
 </div>
 
 <script>
-// Bump SCHEMA whenever the template structure changes (labels added/removed/renamed,
-// checkbox order changed, or default arbetstyp list changed). Saved data with an older
-// schema has its position-based keys (_et*, _cb*, _atInstances) discarded on load so the
-// new template renders cleanly — ID-keyed field values are always kept.
-const SCHEMA = 6;
+// Independent layout versions for the three position-based data groups in autosave/JSON.
+// Bump ONLY the group whose layout actually changed, so unrelated saved data survives a
+// template tweak (e.g. moving a label must not wipe checkbox or arbetstyp selections).
+const ETV = 5;  // editable label (.et) order  — bump when .et elements are added/removed/reordered
+const CBV = 2;  // non-id checkbox order (utrustning / åtgärder) — bump when those change
+const ATV = 3;  // default arbetstyp list — bump when the default typer change
+
+// Map saved data to its group versions. New saves carry _etv/_cbv/_atv directly; older saves
+// only had a single _schema, so derive each group's version from it for backward compatibility.
+function groupVersions(d) {
+  if (d._etv !== undefined || d._cbv !== undefined || d._atv !== undefined)
+    return { et: d._etv, cb: d._cbv, at: d._atv };
+  const s = d._schema;
+  if (s === undefined) return { et: 0, cb: 0, at: 0 };
+  return {
+    et: s >= 6 ? 5 : s >= 5 ? 4 : s >= 4 ? 3 : s >= 2 ? 2 : 1,
+    cb: s >= 2 ? 2 : 1,
+    at: s >= 3 ? 3 : s >= 2 ? 2 : 1
+  };
+}
 let editMode = false;
 
 
@@ -810,18 +823,17 @@ function gatherAll() {
     b2:   { typer: atInstances.b2.typer,   checked: atInstances.b2.checked }
   });
   Object.assign(d, getEditableTexts());
-  d._schema = SCHEMA;
+  d._etv = ETV; d._cbv = CBV; d._atv = ATV;
   return d;
 }
 
 function applyAll(d) {
-  // Drop position-based keys from older-schema data so renamed/removed/reordered template
-  // elements aren't filled with stale text. ID-keyed field values below are always applied.
-  if (d._schema !== SCHEMA) {
-    Object.keys(d).forEach(k => {
-      if (/^_(et|cb)\d+$/.test(k) || k === '_atInstances' || k === '_arbetstyper' || k === '_atChecked') delete d[k];
-    });
-  }
+  // Drop only the position-based groups whose layout changed since this data was saved, so
+  // unrelated saved values (checkboxes, arbetstyp, untouched labels) are preserved.
+  const gv = groupVersions(d);
+  if (gv.et !== ETV) Object.keys(d).forEach(k => { if (/^_et\d+$/.test(k)) delete d[k]; });
+  if (gv.cb !== CBV) Object.keys(d).forEach(k => { if (/^_cb\d+$/.test(k)) delete d[k]; });
+  if (gv.at !== ATV) { delete d._atInstances; delete d._arbetstyper; delete d._atChecked; }
   document.querySelectorAll('input[type=text][id], input[type=date][id], input[type=checkbox][id]').forEach(el => {
     if (d[el.id] !== undefined) el.type === 'checkbox' ? el.checked = d[el.id] : el.value = d[el.id];
   });
