@@ -60,9 +60,10 @@ input[type=checkbox]{width:12px;height:12px;accent-color:#f90;cursor:pointer;fle
 .chk{display:flex;align-items:flex-start;gap:4px;font-size:10px;cursor:pointer;line-height:1.35}
 .chk input[type=checkbox]{margin-top:2px}
 
-.signrow{display:flex}
-.sbox{flex:1;padding:5px 8px}
-.sbox+.sbox{border-left:1px solid #ddd}
+.signrow{display:grid;grid-template-columns:1fr 1fr}
+.sbox{padding:8px 12px}
+.sbox:nth-child(odd){border-right:1px solid #ddd}
+.sbox:nth-child(1),.sbox:nth-child(2){border-bottom:1px solid #ddd}
 .st{font-weight:700;font-size:11px;margin-bottom:4px}
 .st span{font-weight:400}
 .sf{display:flex;align-items:flex-end;gap:4px;font-size:10px;margin-bottom:3px;white-space:nowrap}
