@@ -313,8 +313,8 @@ body.editing .edit-hint{display:inline}
       <div class="g2">
         <div>
           <div class="fl"><span class="fll et" contenteditable="false">Dykledare:</span><input type="text" id="b-led"></div>
-          <div class="fl"><span class="fll et" contenteditable="false">Dykare 2:</span><input type="text" id="b-d2"></div>
           <div class="fl"><span class="fll et" contenteditable="false">Dykare 1:</span><input type="text" id="b-d1"></div>
+          <div class="fl"><span class="fll et" contenteditable="false">Dykare 2:</span><input type="text" id="b-d2"></div>
           <div class="fl"><span class="fll et" contenteditable="false">Reservdykare / R&#228;ddningsdykare:</span><input type="text" id="b-reserv"></div>
         </div>
         <div>
@@ -653,7 +653,7 @@ body.editing .edit-hint{display:inline}
 // checkbox order changed, or default arbetstyp list changed). Saved data with an older
 // schema has its position-based keys (_et*, _cb*, _atInstances) discarded on load so the
 // new template renders cleanly — ID-keyed field values are always kept.
-const SCHEMA = 3;
+const SCHEMA = 4;
 let editMode = false;
 
 
