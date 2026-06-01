@@ -69,9 +69,7 @@ input[type=checkbox]{width:12px;height:12px;accent-color:#f90;cursor:pointer;fle
 .sf{display:flex;align-items:flex-end;gap:4px;font-size:10px;margin-bottom:3px;white-space:nowrap}
 .sf input{flex:1;min-width:0}
 
-.grouprow{border-top:1px solid #ddd;padding:7px 12px}
-.grouplbl{font-weight:700;font-size:9px;text-transform:uppercase;letter-spacing:.5px;color:#333;margin-bottom:5px}
-.groupletters{display:flex;justify-content:space-between;font-size:13px;font-weight:600;color:#111}
+.groupletters{display:flex;justify-content:space-between;font-size:14px;font-weight:600;color:#111}
 .groupletters span{width:18px;height:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 
 .fl{margin-bottom:4px}
@@ -267,10 +265,14 @@ body.editing .edit-hint{display:inline}
           <div class="sf"><span class="et" contenteditable="false">Underskrift:</span><input type="text" id="dsk-sign"></div>
         </div>
       </div>
-      <div class="grouprow">
-        <div class="grouplbl">Gruppbeteckning</div>
-        <div class="groupletters"><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span><span>G</span><span>H</span><span>I</span><span>J</span><span>K</span><span>L</span><span>M</span><span>N</span><span>O</span><span>P</span><span>Q</span><span>R</span><span>S</span><span>T</span><span>U</span><span>V</span><span>W</span><span>X</span><span>Y</span><span>Z</span></div>
-      </div>
+    </div>
+  </div>
+
+  <!-- GRUPPBETECKNING -->
+  <div class="sec">
+    <div class="tab et" contenteditable="false">Gruppbeteckning</div>
+    <div class="sb" style="padding:10px 12px">
+      <div class="groupletters"><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span><span>G</span><span>H</span><span>I</span><span>J</span><span>K</span><span>L</span><span>M</span><span>N</span><span>O</span><span>P</span><span>Q</span><span>R</span><span>S</span><span>T</span><span>U</span><span>V</span><span>W</span><span>X</span><span>Y</span><span>Z</span></div>
     </div>
   </div>
 
@@ -528,10 +530,12 @@ body.editing .edit-hint{display:inline}
           <div class="sf"><span>Underskrift:</span><input type="text" id="b1-dsk-sign"></div>
         </div>
       </div>
-      <div class="grouprow">
-        <div class="grouplbl">Gruppbeteckning</div>
-        <div class="groupletters"><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span><span>G</span><span>H</span><span>I</span><span>J</span><span>K</span><span>L</span><span>M</span><span>N</span><span>O</span><span>P</span><span>Q</span><span>R</span><span>S</span><span>T</span><span>U</span><span>V</span><span>W</span><span>X</span><span>Y</span><span>Z</span></div>
-      </div>
+    </div>
+  </div>
+  <div class="sec">
+    <div class="tab">Gruppbeteckning</div>
+    <div class="sb" style="padding:10px 12px">
+      <div class="groupletters"><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span><span>G</span><span>H</span><span>I</span><span>J</span><span>K</span><span>L</span><span>M</span><span>N</span><span>O</span><span>P</span><span>Q</span><span>R</span><span>S</span><span>T</span><span>U</span><span>V</span><span>W</span><span>X</span><span>Y</span><span>Z</span></div>
     </div>
   </div>
 </div>
@@ -649,10 +653,12 @@ body.editing .edit-hint{display:inline}
           <div class="sf"><span>Underskrift:</span><input type="text" id="b2-dsk-sign"></div>
         </div>
       </div>
-      <div class="grouprow">
-        <div class="grouplbl">Gruppbeteckning</div>
-        <div class="groupletters"><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span><span>G</span><span>H</span><span>I</span><span>J</span><span>K</span><span>L</span><span>M</span><span>N</span><span>O</span><span>P</span><span>Q</span><span>R</span><span>S</span><span>T</span><span>U</span><span>V</span><span>W</span><span>X</span><span>Y</span><span>Z</span></div>
-      </div>
+    </div>
+  </div>
+  <div class="sec">
+    <div class="tab">Gruppbeteckning</div>
+    <div class="sb" style="padding:10px 12px">
+      <div class="groupletters"><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span><span>G</span><span>H</span><span>I</span><span>J</span><span>K</span><span>L</span><span>M</span><span>N</span><span>O</span><span>P</span><span>Q</span><span>R</span><span>S</span><span>T</span><span>U</span><span>V</span><span>W</span><span>X</span><span>Y</span><span>Z</span></div>
     </div>
   </div>
 </div>
@@ -680,7 +686,7 @@ body.editing .edit-hint{display:inline}
 // checkbox order changed, or default arbetstyp list changed). Saved data with an older
 // schema has its position-based keys (_et*, _cb*, _atInstances) discarded on load so the
 // new template renders cleanly — ID-keyed field values are always kept.
-const SCHEMA = 5;
+const SCHEMA = 6;
 let editMode = false;
 
 
