@@ -206,6 +206,9 @@ body.editing .edit-hint{display:inline}
         <div class="ddr"><span class="dl et" contenteditable="false">Maxdjup:</span><input type="text" id="maxdjup"></div>
         <div class="ddr"><span class="dl et" contenteditable="false">Sikt:</span><input type="text" id="sikt"></div>
         <div class="ddr"><span class="dl et" contenteditable="false">Temperatur (&#176;C):</span><input type="text" id="temp"></div>
+        <div class="ddr"><span class="dl et" contenteditable="false">Deco-stopp:</span><input type="text" id="deco"></div>
+        <div class="ddr"><span class="dl et" contenteditable="false">Tryck f&#246;re:</span><input type="text" id="tryck-fore"></div>
+        <div class="ddr"><span class="dl et" contenteditable="false">Tryck efter:</span><input type="text" id="tryck-efter"></div>
       </div>
     </div>
   </div>
@@ -468,6 +471,9 @@ body.editing .edit-hint{display:inline}
         <div class="ddr"><span class="dl">Maxdjup:</span><input type="text" id="b1-maxdjup"></div>
         <div class="ddr"><span class="dl">Sikt:</span><input type="text" id="b1-sikt"></div>
         <div class="ddr"><span class="dl">Temperatur (&#176;C):</span><input type="text" id="b1-temp"></div>
+        <div class="ddr"><span class="dl">Deco-stopp:</span><input type="text" id="b1-deco"></div>
+        <div class="ddr"><span class="dl">Tryck f&#246;re:</span><input type="text" id="b1-tryck-fore"></div>
+        <div class="ddr"><span class="dl">Tryck efter:</span><input type="text" id="b1-tryck-efter"></div>
       </div>
     </div>
   </div>
@@ -582,6 +588,9 @@ body.editing .edit-hint{display:inline}
         <div class="ddr"><span class="dl">Maxdjup:</span><input type="text" id="b2-maxdjup"></div>
         <div class="ddr"><span class="dl">Sikt:</span><input type="text" id="b2-sikt"></div>
         <div class="ddr"><span class="dl">Temperatur (&#176;C):</span><input type="text" id="b2-temp"></div>
+        <div class="ddr"><span class="dl">Deco-stopp:</span><input type="text" id="b2-deco"></div>
+        <div class="ddr"><span class="dl">Tryck f&#246;re:</span><input type="text" id="b2-tryck-fore"></div>
+        <div class="ddr"><span class="dl">Tryck efter:</span><input type="text" id="b2-tryck-efter"></div>
       </div>
     </div>
   </div>
@@ -654,7 +663,7 @@ body.editing .edit-hint{display:inline}
 // checkbox order changed, or default arbetstyp list changed). Saved data with an older
 // schema has its position-based keys (_et*, _cb*, _atInstances) discarded on load so the
 // new template renders cleanly — ID-keyed field values are always kept.
-const SCHEMA = 4;
+const SCHEMA = 5;
 let editMode = false;
 
 
