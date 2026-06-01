@@ -119,8 +119,9 @@ body.editing .edit-hint{display:inline}
   .page{margin:0;padding:8mm 9mm;width:100%}
   *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
 }
-@page{size:A3 landscape;margin:0}
+@page{size:A4 landscape;margin:0}
 </style>
+<style id="page-style"></style>
 </head>
 <body>
 
@@ -130,6 +131,12 @@ body.editing .edit-hint{display:inline}
     <button class="vtab" id="tab-dyklog" onclick="switchView('dyklog')">Dyklog</button>
   </div>
   <button class="btn o" onclick="window.print()">&#128424; Skriv ut / PDF</button>
+  <label style="display:flex;align-items:center;gap:4px;font-size:11px;font-weight:700">Papper:
+    <select id="papersize" onchange="setPaper(this.value)" style="font-size:11px;font-weight:700;padding:4px 6px;border:none;border-radius:2px;cursor:pointer">
+      <option value="A4">A4 &#8211; 2&#215;A5 (st&#229;ende)</option>
+      <option value="A3">A3 (st&#246;rre)</option>
+    </select>
+  </label>
   <button class="btn" id="edit-btn" onclick="toggleEdit()">&#9998; Redigera text</button>
   <span class="edit-hint">Klicka p&#229; valfri text f&#246;r att &#228;ndra den</span>
   <button class="btn g" onclick="saveJSON()">&#128190; Spara</button>
@@ -147,7 +154,7 @@ body.editing .edit-hint{display:inline}
       <div class="title et" contenteditable="false">Dyklogg</div>
       <div class="sub et" contenteditable="false">Arbetsdyk &#8211; Kommersiell Dykverksamhet</div>
     </div>
-    <img src="dawab_yellow_logo.svg" alt="DAWAB" class="logo">
+    <img src="dawab_logo.png" alt="DAWAB" class="logo">
   </div>
 
   <div style="display:flex;justify-content:flex-end;align-items:flex-end;gap:5px;font-weight:700;font-size:11px;margin-bottom:3px">
@@ -424,7 +431,7 @@ body.editing .edit-hint{display:inline}
       <div class="title">Dyklogg</div>
       <div class="sub">Arbetsdyk &#8211; Kommersiell Dykverksamhet</div>
     </div>
-    <img src="dawab_yellow_logo.svg" alt="DAWAB" class="logo">
+    <img src="dawab_logo.png" alt="DAWAB" class="logo">
   </div>
   <div style="display:flex;justify-content:flex-end;align-items:flex-end;gap:5px;font-weight:700;font-size:11px;margin-bottom:3px">
     <span>Datum:</span><input type="text" id="b1-datum" style="width:120px">
@@ -546,7 +553,7 @@ body.editing .edit-hint{display:inline}
       <div class="title">Dyklogg</div>
       <div class="sub">Arbetsdyk &#8211; Kommersiell Dykverksamhet</div>
     </div>
-    <img src="dawab_yellow_logo.svg" alt="DAWAB" class="logo">
+    <img src="dawab_logo.png" alt="DAWAB" class="logo">
   </div>
   <div style="display:flex;justify-content:flex-end;align-items:flex-end;gap:5px;font-weight:700;font-size:11px;margin-bottom:3px">
     <span>Datum:</span><input type="text" id="b2-datum" style="width:120px">
@@ -712,6 +719,19 @@ function switchView(v) {
   document.getElementById('tab-combined').classList.toggle('active', v==='combined');
   document.getElementById('tab-dyklog').classList.toggle('active', v==='dyklog');
 }
+
+// --- Paper size for print (default A4 = two A5 halves side by side) ---
+function setPaper(v) {
+  document.getElementById('page-style').textContent = '@page{size:' + v + ' landscape;margin:0}';
+  try { localStorage.setItem('dyklogg_paper', v); } catch(e) {}
+}
+(function() {
+  let v = 'A4';
+  try { v = localStorage.getItem('dyklogg_paper') || 'A4'; } catch(e) {}
+  const sel = document.getElementById('papersize');
+  if (sel) sel.value = v;
+  setPaper(v);
+})();
 
 // --- Arbetstyp instances for dyklog tab ---
 const atInstances = {
