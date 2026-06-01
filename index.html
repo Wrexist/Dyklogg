@@ -14,7 +14,7 @@ body{font-family:Arial,Helvetica,sans-serif;font-size:11px;background:#d8d8d8;co
 #edit-btn{background:#2a6aad;color:#fff}
 #edit-btn.active{background:#1a8a3a}
 
-.page{width:1160px;margin:14px auto;background:#fff;padding:14px 16px;display:flex;gap:15px}
+.page{width:1160px;margin:14px auto;background:#fff;padding:14px 16px;display:flex;gap:var(--mid,4mm)}
 .col{display:flex;flex-direction:column;gap:5px}
 .cl{flex:1;min-width:0}
 .cr{flex:1;min-width:0}
@@ -142,6 +142,10 @@ body.editing .edit-hint{display:inline}
       <option value="A4">A4 &#8211; 2&#215;A5 (st&#229;ende)</option>
       <option value="A3">A3 (st&#246;rre)</option>
     </select>
+  </label>
+  <label style="display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700" title="&#214;ka mittmarginalen f&#246;r att vika papperet och s&#228;tta i dykbok">Vikmarginal:
+    <input type="range" id="midgap" min="0" max="50" step="1" value="4" oninput="setMid(this.value)" style="cursor:pointer;width:90px">
+    <span id="midval" style="min-width:38px;font-weight:400">4 mm</span>
   </label>
   <button class="btn" id="edit-btn" onclick="toggleEdit()">&#9998; Redigera text</button>
   <span class="edit-hint">Klicka p&#229; valfri text f&#246;r att &#228;ndra den</span>
@@ -741,6 +745,21 @@ function setPaper(v) {
   const sel = document.getElementById('papersize');
   if (sel) sel.value = v;
   setPaper(v);
+})();
+
+// --- Fold margin: dead space in the middle so the sheet can be folded into a dive book ---
+function setMid(v) {
+  document.documentElement.style.setProperty('--mid', v + 'mm');
+  const out = document.getElementById('midval');
+  if (out) out.textContent = v + ' mm';
+  try { localStorage.setItem('dyklogg_mid', v); } catch(e) {}
+}
+(function() {
+  let v = '4';
+  try { v = localStorage.getItem('dyklogg_mid') || '4'; } catch(e) {}
+  const sl = document.getElementById('midgap');
+  if (sl) sl.value = v;
+  setMid(v);
 })();
 
 // --- Arbetstyp instances for dyklog tab ---
