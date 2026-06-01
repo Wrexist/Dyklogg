@@ -60,13 +60,19 @@ input[type=checkbox]{width:12px;height:12px;accent-color:#f90;cursor:pointer;fle
 .chk{display:flex;align-items:flex-start;gap:4px;font-size:10px;cursor:pointer;line-height:1.35}
 .chk input[type=checkbox]{margin-top:2px}
 
-.signrow{display:flex}
-.sbox{flex:1;padding:5px 8px}
-.sbox+.sbox{border-left:1px solid #ddd}
+.signrow{display:grid;grid-template-columns:1fr 1fr}
+.sbox{padding:8px 12px}
+.sbox:nth-child(odd){border-right:1px solid #ddd}
+.sbox:nth-child(1),.sbox:nth-child(2){border-bottom:1px solid #ddd}
 .st{font-weight:700;font-size:11px;margin-bottom:4px}
 .st span{font-weight:400}
 .sf{display:flex;align-items:flex-end;gap:4px;font-size:10px;margin-bottom:3px;white-space:nowrap}
 .sf input{flex:1;min-width:0}
+
+.grouprow{border-top:1px solid #ddd;padding:7px 12px}
+.grouplbl{font-weight:700;font-size:9px;text-transform:uppercase;letter-spacing:.5px;color:#333;margin-bottom:5px}
+.groupletters{display:flex;justify-content:space-between;font-size:13px;font-weight:600;color:#111}
+.groupletters span{width:18px;height:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 
 .fl{margin-bottom:4px}
 .fll{font-size:10px;color:#333;display:block;margin-bottom:1px}
@@ -205,6 +211,9 @@ body.editing .edit-hint{display:inline}
         <div class="ddr"><span class="dl et" contenteditable="false">Maxdjup:</span><input type="text" id="maxdjup"></div>
         <div class="ddr"><span class="dl et" contenteditable="false">Sikt:</span><input type="text" id="sikt"></div>
         <div class="ddr"><span class="dl et" contenteditable="false">Temperatur (&#176;C):</span><input type="text" id="temp"></div>
+        <div class="ddr"><span class="dl et" contenteditable="false">Deco-stopp:</span><input type="text" id="deco"></div>
+        <div class="ddr"><span class="dl et" contenteditable="false">Tryck f&#246;re:</span><input type="text" id="tryck-fore"></div>
+        <div class="ddr"><span class="dl et" contenteditable="false">Tryck efter:</span><input type="text" id="tryck-efter"></div>
       </div>
     </div>
   </div>
@@ -257,6 +266,10 @@ body.editing .edit-hint{display:inline}
           <div class="sf"><span class="et" contenteditable="false">Namn:</span><input type="text" id="dsk-namn"></div>
           <div class="sf"><span class="et" contenteditable="false">Underskrift:</span><input type="text" id="dsk-sign"></div>
         </div>
+      </div>
+      <div class="grouprow">
+        <div class="grouplbl">Gruppbeteckning</div>
+        <div class="groupletters"><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span><span>G</span><span>H</span><span>I</span><span>J</span><span>K</span><span>L</span><span>M</span><span>N</span><span>O</span><span>P</span><span>Q</span><span>R</span><span>S</span><span>T</span><span>U</span><span>V</span><span>W</span><span>X</span><span>Y</span><span>Z</span></div>
       </div>
     </div>
   </div>
@@ -467,6 +480,9 @@ body.editing .edit-hint{display:inline}
         <div class="ddr"><span class="dl">Maxdjup:</span><input type="text" id="b1-maxdjup"></div>
         <div class="ddr"><span class="dl">Sikt:</span><input type="text" id="b1-sikt"></div>
         <div class="ddr"><span class="dl">Temperatur (&#176;C):</span><input type="text" id="b1-temp"></div>
+        <div class="ddr"><span class="dl">Deco-stopp:</span><input type="text" id="b1-deco"></div>
+        <div class="ddr"><span class="dl">Tryck f&#246;re:</span><input type="text" id="b1-tryck-fore"></div>
+        <div class="ddr"><span class="dl">Tryck efter:</span><input type="text" id="b1-tryck-efter"></div>
       </div>
     </div>
   </div>
@@ -511,6 +527,10 @@ body.editing .edit-hint{display:inline}
           <div class="sf"><span>Namn:</span><input type="text" id="b1-dsk-namn"></div>
           <div class="sf"><span>Underskrift:</span><input type="text" id="b1-dsk-sign"></div>
         </div>
+      </div>
+      <div class="grouprow">
+        <div class="grouplbl">Gruppbeteckning</div>
+        <div class="groupletters"><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span><span>G</span><span>H</span><span>I</span><span>J</span><span>K</span><span>L</span><span>M</span><span>N</span><span>O</span><span>P</span><span>Q</span><span>R</span><span>S</span><span>T</span><span>U</span><span>V</span><span>W</span><span>X</span><span>Y</span><span>Z</span></div>
       </div>
     </div>
   </div>
@@ -581,6 +601,9 @@ body.editing .edit-hint{display:inline}
         <div class="ddr"><span class="dl">Maxdjup:</span><input type="text" id="b2-maxdjup"></div>
         <div class="ddr"><span class="dl">Sikt:</span><input type="text" id="b2-sikt"></div>
         <div class="ddr"><span class="dl">Temperatur (&#176;C):</span><input type="text" id="b2-temp"></div>
+        <div class="ddr"><span class="dl">Deco-stopp:</span><input type="text" id="b2-deco"></div>
+        <div class="ddr"><span class="dl">Tryck f&#246;re:</span><input type="text" id="b2-tryck-fore"></div>
+        <div class="ddr"><span class="dl">Tryck efter:</span><input type="text" id="b2-tryck-efter"></div>
       </div>
     </div>
   </div>
@@ -626,6 +649,10 @@ body.editing .edit-hint{display:inline}
           <div class="sf"><span>Underskrift:</span><input type="text" id="b2-dsk-sign"></div>
         </div>
       </div>
+      <div class="grouprow">
+        <div class="grouplbl">Gruppbeteckning</div>
+        <div class="groupletters"><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span><span>G</span><span>H</span><span>I</span><span>J</span><span>K</span><span>L</span><span>M</span><span>N</span><span>O</span><span>P</span><span>Q</span><span>R</span><span>S</span><span>T</span><span>U</span><span>V</span><span>W</span><span>X</span><span>Y</span><span>Z</span></div>
+      </div>
     </div>
   </div>
 </div>
@@ -653,7 +680,7 @@ body.editing .edit-hint{display:inline}
 // checkbox order changed, or default arbetstyp list changed). Saved data with an older
 // schema has its position-based keys (_et*, _cb*, _atInstances) discarded on load so the
 // new template renders cleanly — ID-keyed field values are always kept.
-const SCHEMA = 4;
+const SCHEMA = 5;
 let editMode = false;
 
 
