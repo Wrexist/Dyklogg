@@ -25,6 +25,8 @@ input[type=checkbox]{width:12px;height:12px;accent-color:#f90;cursor:pointer;fle
 
 /* Orange vertical tab */
 .tab{background:#f90;flex-shrink:0;width:22px;writing-mode:vertical-rl;transform:rotate(180deg);display:flex;align-items:center;justify-content:center;font-family:'Helvetica Neue',Arial,sans-serif;font-weight:600;font-size:9px;text-transform:uppercase;letter-spacing:1.3px;padding:4px 0;color:#000}
+/* Compact horizontal tab for the short single-row Gruppbeteckning section */
+.grouptab{width:60px;writing-mode:horizontal-tb;transform:none;line-height:1.2;font-size:8px;letter-spacing:.3px;padding:4px 5px;text-align:center}
 
 .sec{display:flex;border:1px solid #aaa;border-radius:2px;overflow:hidden}
 .sb{flex:1;padding:6px 8px;min-width:0}
@@ -116,6 +118,7 @@ body.editing .edit-hint{display:inline}
   body{background:#fff}
   .toolbar{display:none!important}
   .athead button{display:none!important}
+  .sec,.profrow,.utrow{break-inside:avoid}
   .page{margin:0;padding:8mm 9mm;width:100%}
   *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
 }
@@ -277,8 +280,8 @@ body.editing .edit-hint{display:inline}
 
   <!-- GRUPPBETECKNING -->
   <div class="sec">
-    <div class="tab et" contenteditable="false">Gruppbeteckning</div>
-    <div class="sb" style="padding:10px 12px;display:flex;flex-direction:column;justify-content:center">
+    <div class="tab grouptab et" contenteditable="false">Grupp&shy;beteckning</div>
+    <div class="sb" style="padding:7px 12px;display:flex;align-items:center">
       <div class="groupletters"><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span><span>G</span><span>H</span><span>I</span><span>J</span><span>K</span><span>L</span><span>M</span><span>N</span><span>O</span><span>P</span><span>Q</span><span>R</span><span>S</span><span>T</span><span>U</span><span>V</span><span>W</span><span>X</span><span>Y</span><span>Z</span></div>
     </div>
   </div>
@@ -539,8 +542,8 @@ body.editing .edit-hint{display:inline}
     </div>
   </div>
   <div class="sec">
-    <div class="tab">Gruppbeteckning</div>
-    <div class="sb" style="padding:10px 12px;display:flex;flex-direction:column;justify-content:center">
+    <div class="tab grouptab">Grupp&shy;beteckning</div>
+    <div class="sb" style="padding:7px 12px;display:flex;align-items:center">
       <div class="groupletters"><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span><span>G</span><span>H</span><span>I</span><span>J</span><span>K</span><span>L</span><span>M</span><span>N</span><span>O</span><span>P</span><span>Q</span><span>R</span><span>S</span><span>T</span><span>U</span><span>V</span><span>W</span><span>X</span><span>Y</span><span>Z</span></div>
     </div>
   </div>
@@ -661,8 +664,8 @@ body.editing .edit-hint{display:inline}
     </div>
   </div>
   <div class="sec">
-    <div class="tab">Gruppbeteckning</div>
-    <div class="sb" style="padding:10px 12px;display:flex;flex-direction:column;justify-content:center">
+    <div class="tab grouptab">Grupp&shy;beteckning</div>
+    <div class="sb" style="padding:7px 12px;display:flex;align-items:center">
       <div class="groupletters"><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span><span>G</span><span>H</span><span>I</span><span>J</span><span>K</span><span>L</span><span>M</span><span>N</span><span>O</span><span>P</span><span>Q</span><span>R</span><span>S</span><span>T</span><span>U</span><span>V</span><span>W</span><span>X</span><span>Y</span><span>Z</span></div>
     </div>
   </div>
