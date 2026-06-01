@@ -14,7 +14,7 @@ body{font-family:Arial,Helvetica,sans-serif;font-size:11px;background:#d8d8d8;co
 #edit-btn{background:#2a6aad;color:#fff}
 #edit-btn.active{background:#1a8a3a}
 
-.page{width:1160px;margin:14px auto;background:#fff;padding:14px 16px;display:flex;gap:var(--mid,4mm)}
+.page{width:1160px;margin:14px auto;background:#fff;padding:14px var(--mr,16px) 14px var(--ml,16px);display:flex;gap:var(--mid,4mm)}
 .col{display:flex;flex-direction:column;gap:5px}
 .cl{flex:1;min-width:0}
 .cr{flex:1;min-width:0}
@@ -122,7 +122,7 @@ body.editing .edit-hint{display:inline}
   .toolbar{display:none!important}
   .athead button{display:none!important}
   .sec,.profrow,.utrow{break-inside:avoid}
-  .page{margin:0;padding:8mm 9mm;width:100%!important}
+  .page{margin:0;padding:8mm var(--mr,9mm) 8mm var(--ml,9mm);width:100%!important}
   *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
 }
 @page{size:A4 landscape;margin:0}
@@ -144,8 +144,19 @@ body.editing .edit-hint{display:inline}
     </select>
   </label>
   <label style="display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700" title="&#214;ka mittmarginalen f&#246;r att vika papperet och s&#228;tta i dykbok">Vikmarginal:
-    <input type="range" id="midgap" min="0" max="50" step="1" value="4" oninput="setMid(this.value)" style="cursor:pointer;width:90px">
+    <input type="range" id="midgap" min="0" max="50" step="1" value="4" oninput="setMid(this.value)" style="cursor:pointer;width:80px">
     <span id="midval" style="min-width:38px;font-weight:400">4 mm</span>
+  </label>
+  <label style="display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700" title="Yttre marginal till v&#228;nster">V&#228;nster:
+    <input type="range" id="mleft" min="0" max="30" step="1" value="4" oninput="setMargin('ml',this.value)" style="cursor:pointer;width:70px">
+    <span id="mleftval" style="min-width:38px;font-weight:400">4 mm</span>
+  </label>
+  <label style="display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700" title="Yttre marginal till h&#246;ger">H&#246;ger:
+    <input type="range" id="mright" min="0" max="30" step="1" value="4" oninput="setMargin('mr',this.value)" style="cursor:pointer;width:70px">
+    <span id="mrightval" style="min-width:38px;font-weight:400">4 mm</span>
+  </label>
+  <label style="display:flex;align-items:center;gap:5px;font-size:11px;font-weight:700" title="Samma logg p&#229; b&#229;da halvor &#8211; skriv p&#229; v&#228;nster, kopieras till h&#246;ger (Dyklog-vyn)">
+    <input type="checkbox" id="dupchk" onchange="setDuplicate(this.checked)" style="width:14px;height:14px"> Dubblett
   </label>
   <button class="btn" id="edit-btn" onclick="toggleEdit()">&#9998; Redigera text</button>
   <span class="edit-hint">Klicka p&#229; valfri text f&#246;r att &#228;ndra den</span>
@@ -253,8 +264,8 @@ body.editing .edit-hint{display:inline}
           <input type="text" id="ovrigt" style="font-size:10px;flex:1">
         </div>
         <div style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;gap:0;padding-top:2px">
-          <input type="text" id="ovrigt-l2" style="border:none;border-bottom:1px solid #ccc;font-size:11px;outline:none;background:transparent;width:100%;padding:4px 0;color:#000">
-          <input type="text" id="ovrigt-l3" style="border:none;border-bottom:1px solid #ccc;font-size:11px;outline:none;background:transparent;width:100%;padding:4px 0;color:#000">
+          <input type="text" id="ovrigt-l2" style="border:none;border-bottom:1px solid #888;font-size:11px;outline:none;background:transparent;width:100%;padding:4px 0;color:#000">
+          <input type="text" id="ovrigt-l3" style="border:none;border-bottom:1px solid #888;font-size:11px;outline:none;background:transparent;width:100%;padding:4px 0;color:#000">
         </div>
       </div>
     </div>
@@ -523,8 +534,8 @@ body.editing .edit-hint{display:inline}
           <input type="text" id="b1-ovrigt" style="font-size:10px;flex:1">
         </div>
         <div style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;gap:0;padding-top:2px">
-          <input type="text" id="b1-ovrigt-l2" style="border:none;border-bottom:1px solid #ccc;font-size:11px;outline:none;background:transparent;width:100%;padding:4px 0;color:#000">
-          <input type="text" id="b1-ovrigt-l3" style="border:none;border-bottom:1px solid #ccc;font-size:11px;outline:none;background:transparent;width:100%;padding:4px 0;color:#000">
+          <input type="text" id="b1-ovrigt-l2" style="border:none;border-bottom:1px solid #888;font-size:11px;outline:none;background:transparent;width:100%;padding:4px 0;color:#000">
+          <input type="text" id="b1-ovrigt-l3" style="border:none;border-bottom:1px solid #888;font-size:11px;outline:none;background:transparent;width:100%;padding:4px 0;color:#000">
         </div>
       </div>
     </div>
@@ -647,8 +658,8 @@ body.editing .edit-hint{display:inline}
           <input type="text" id="b2-ovrigt" style="font-size:10px;flex:1">
         </div>
         <div style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;gap:0;padding-top:2px">
-          <input type="text" id="b2-ovrigt-l2" style="border:none;border-bottom:1px solid #ccc;font-size:11px;outline:none;background:transparent;width:100%;padding:4px 0;color:#000">
-          <input type="text" id="b2-ovrigt-l3" style="border:none;border-bottom:1px solid #ccc;font-size:11px;outline:none;background:transparent;width:100%;padding:4px 0;color:#000">
+          <input type="text" id="b2-ovrigt-l2" style="border:none;border-bottom:1px solid #888;font-size:11px;outline:none;background:transparent;width:100%;padding:4px 0;color:#000">
+          <input type="text" id="b2-ovrigt-l3" style="border:none;border-bottom:1px solid #888;font-size:11px;outline:none;background:transparent;width:100%;padding:4px 0;color:#000">
         </div>
       </div>
     </div>
@@ -760,6 +771,54 @@ function setMid(v) {
   const sl = document.getElementById('midgap');
   if (sl) sl.value = v;
   setMid(v);
+})();
+
+// --- Outer left/right margins of the logs/plan (mm) ---
+function setMargin(side, v) {
+  document.documentElement.style.setProperty('--' + side, v + 'mm');
+  const out = document.getElementById((side === 'ml' ? 'mleft' : 'mright') + 'val');
+  if (out) out.textContent = v + ' mm';
+  try { localStorage.setItem('dyklogg_' + side, v); } catch(e) {}
+}
+(function() {
+  [['ml','mleft'],['mr','mright']].forEach(([side,id]) => {
+    let v = '4';
+    try { v = localStorage.getItem('dyklogg_' + side) || '4'; } catch(e) {}
+    const sl = document.getElementById(id);
+    if (sl) sl.value = v;
+    setMargin(side, v);
+  });
+})();
+
+// --- Duplicate mode: mirror the left blade onto the right (Dyklog view) ---
+let dupOn = false;
+function mirrorB1toB2() {
+  document.querySelectorAll('[id^="b1-"]').forEach(el => {
+    const t = document.getElementById('b2-' + el.id.slice(3));
+    if (!t) return;
+    if (el.type === 'checkbox') t.checked = el.checked; else t.value = el.value;
+  });
+  const g1 = document.getElementById('atgrid-b1');
+  const g2 = document.getElementById('atgrid-b2');
+  if (g1 && g2) {
+    const c1 = g1.querySelectorAll('input[type=checkbox]');
+    const c2 = g2.querySelectorAll('input[type=checkbox]');
+    c1.forEach((cb,i) => { if (c2[i]) c2[i].checked = cb.checked; });
+  }
+}
+function setDuplicate(on) {
+  dupOn = !!on;
+  const cb = document.getElementById('dupchk');
+  if (cb) cb.checked = dupOn;
+  try { localStorage.setItem('dyklogg_dup', dupOn ? '1' : '0'); } catch(e) {}
+  if (dupOn) mirrorB1toB2();
+}
+(function() {
+  const dv = document.getElementById('view-dyklog');
+  if (dv) {
+    dv.addEventListener('input',  e => { if (dupOn && e.target.id && e.target.id.indexOf('b1-') === 0) mirrorB1toB2(); });
+    dv.addEventListener('change', e => { if (dupOn) mirrorB1toB2(); });
+  }
 })();
 
 // --- Arbetstyp instances for dyklog tab ---
@@ -956,6 +1015,13 @@ function clearAll() {
     if (saved) applyAll(JSON.parse(saved));
     else ['main','b1','b2'].forEach(inst=>renderGrid(inst));
   } catch(e) { ['main','b1','b2'].forEach(inst=>renderGrid(inst)); }
+})();
+
+// Restore duplicate mode after data + grids are in place
+(function() {
+  let on = '0';
+  try { on = localStorage.getItem('dyklogg_dup') || '0'; } catch(e) {}
+  if (on === '1') setDuplicate(true);
 })();
 </script>
 </body>
