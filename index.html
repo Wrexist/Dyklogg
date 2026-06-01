@@ -223,8 +223,8 @@ body.editing .edit-hint{display:inline}
         <div class="ddr"><span class="dl et" contenteditable="false">Sikt:</span><input type="text" id="sikt"></div>
         <div class="ddr"><span class="dl et" contenteditable="false">Temperatur (&#176;C):</span><input type="text" id="temp"></div>
         <div class="ddr"><span class="dl et" contenteditable="false">Deco-stopp:</span><input type="text" id="deco"></div>
-        <div class="ddr"><span class="dl et" contenteditable="false">Tryck f&#246;re:</span><input type="text" id="tryck-fore"></div>
-        <div class="ddr"><span class="dl et" contenteditable="false">Tryck efter:</span><input type="text" id="tryck-efter"></div>
+        <div class="ddr"><span class="dl et" contenteditable="false">Bailout f&#246;re:</span><input type="text" id="tryck-fore"></div>
+        <div class="ddr"><span class="dl et" contenteditable="false">Bailout efter:</span><input type="text" id="tryck-efter"></div>
       </div>
     </div>
   </div>
@@ -491,8 +491,8 @@ body.editing .edit-hint{display:inline}
         <div class="ddr"><span class="dl">Sikt:</span><input type="text" id="b1-sikt"></div>
         <div class="ddr"><span class="dl">Temperatur (&#176;C):</span><input type="text" id="b1-temp"></div>
         <div class="ddr"><span class="dl">Deco-stopp:</span><input type="text" id="b1-deco"></div>
-        <div class="ddr"><span class="dl">Tryck f&#246;re:</span><input type="text" id="b1-tryck-fore"></div>
-        <div class="ddr"><span class="dl">Tryck efter:</span><input type="text" id="b1-tryck-efter"></div>
+        <div class="ddr"><span class="dl">Bailout f&#246;re:</span><input type="text" id="b1-tryck-fore"></div>
+        <div class="ddr"><span class="dl">Bailout efter:</span><input type="text" id="b1-tryck-efter"></div>
       </div>
     </div>
   </div>
@@ -611,8 +611,8 @@ body.editing .edit-hint{display:inline}
         <div class="ddr"><span class="dl">Sikt:</span><input type="text" id="b2-sikt"></div>
         <div class="ddr"><span class="dl">Temperatur (&#176;C):</span><input type="text" id="b2-temp"></div>
         <div class="ddr"><span class="dl">Deco-stopp:</span><input type="text" id="b2-deco"></div>
-        <div class="ddr"><span class="dl">Tryck f&#246;re:</span><input type="text" id="b2-tryck-fore"></div>
-        <div class="ddr"><span class="dl">Tryck efter:</span><input type="text" id="b2-tryck-efter"></div>
+        <div class="ddr"><span class="dl">Bailout f&#246;re:</span><input type="text" id="b2-tryck-fore"></div>
+        <div class="ddr"><span class="dl">Bailout efter:</span><input type="text" id="b2-tryck-efter"></div>
       </div>
     </div>
   </div>
@@ -688,7 +688,7 @@ body.editing .edit-hint{display:inline}
 // Independent layout versions for the three position-based data groups in autosave/JSON.
 // Bump ONLY the group whose layout actually changed, so unrelated saved data survives a
 // template tweak (e.g. moving a label must not wipe checkbox or arbetstyp selections).
-const ETV = 6;  // editable label (.et) order  — bump when .et elements are added/removed/reordered
+const ETV = 7;  // editable label (.et) order  — bump when .et elements are added/removed/reordered
 const CBV = 2;  // non-id checkbox order (utrustning / åtgärder) — bump when those change
 const ATV = 4;  // default arbetstyp list — bump when the default typer change
 
