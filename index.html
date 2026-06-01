@@ -25,8 +25,10 @@ input[type=checkbox]{width:12px;height:12px;accent-color:#f90;cursor:pointer;fle
 
 /* Orange vertical tab */
 .tab{background:#f90;flex-shrink:0;width:22px;writing-mode:vertical-rl;transform:rotate(180deg);display:flex;align-items:center;justify-content:center;font-family:'Helvetica Neue',Arial,sans-serif;font-weight:600;font-size:9px;text-transform:uppercase;letter-spacing:1.3px;padding:4px 0;color:#000}
-/* Compact horizontal tab for the short single-row Gruppbeteckning section */
-.grouptab{width:60px;writing-mode:horizontal-tb;transform:none;line-height:1.2;font-size:8px;letter-spacing:.3px;padding:4px 5px;text-align:center}
+/* Gruppbeteckning strip at the bottom of the Signering box */
+.grouprow{border-top:1px solid #ddd;padding:6px 12px;display:flex;align-items:center;gap:12px}
+.grouplbl{font-weight:700;font-size:8.5px;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;color:#333}
+.grouprow .groupletters{flex:1}
 
 .sec{display:flex;border:1px solid #aaa;border-radius:2px;overflow:hidden}
 .sb{flex:1;padding:6px 8px;min-width:0}
@@ -275,14 +277,10 @@ body.editing .edit-hint{display:inline}
           <div class="sf"><span class="et" contenteditable="false">Underskrift:</span><input type="text" id="dsk-sign"></div>
         </div>
       </div>
-    </div>
-  </div>
-
-  <!-- GRUPPBETECKNING -->
-  <div class="sec">
-    <div class="tab grouptab et" contenteditable="false">Grupp&shy;beteckning</div>
-    <div class="sb" style="padding:7px 12px;display:flex;align-items:center">
-      <div class="groupletters"><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span><span>G</span><span>H</span><span>I</span><span>J</span><span>K</span><span>L</span><span>M</span><span>N</span><span>O</span><span>P</span><span>Q</span><span>R</span><span>S</span><span>T</span><span>U</span><span>V</span><span>W</span><span>X</span><span>Y</span><span>Z</span></div>
+      <div class="grouprow">
+        <span class="grouplbl">Gruppbeteckning</span>
+        <div class="groupletters"><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span><span>G</span><span>H</span><span>I</span><span>J</span><span>K</span><span>L</span><span>M</span><span>N</span><span>O</span><span>P</span><span>Q</span><span>R</span><span>S</span><span>T</span><span>U</span><span>V</span><span>W</span><span>X</span><span>Y</span><span>Z</span></div>
+      </div>
     </div>
   </div>
 
@@ -539,12 +537,10 @@ body.editing .edit-hint{display:inline}
           <div class="sf"><span>Underskrift:</span><input type="text" id="b1-dsk-sign"></div>
         </div>
       </div>
-    </div>
-  </div>
-  <div class="sec">
-    <div class="tab grouptab">Grupp&shy;beteckning</div>
-    <div class="sb" style="padding:7px 12px;display:flex;align-items:center">
-      <div class="groupletters"><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span><span>G</span><span>H</span><span>I</span><span>J</span><span>K</span><span>L</span><span>M</span><span>N</span><span>O</span><span>P</span><span>Q</span><span>R</span><span>S</span><span>T</span><span>U</span><span>V</span><span>W</span><span>X</span><span>Y</span><span>Z</span></div>
+      <div class="grouprow">
+        <span class="grouplbl">Gruppbeteckning</span>
+        <div class="groupletters"><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span><span>G</span><span>H</span><span>I</span><span>J</span><span>K</span><span>L</span><span>M</span><span>N</span><span>O</span><span>P</span><span>Q</span><span>R</span><span>S</span><span>T</span><span>U</span><span>V</span><span>W</span><span>X</span><span>Y</span><span>Z</span></div>
+      </div>
     </div>
   </div>
 </div>
@@ -661,12 +657,10 @@ body.editing .edit-hint{display:inline}
           <div class="sf"><span>Underskrift:</span><input type="text" id="b2-dsk-sign"></div>
         </div>
       </div>
-    </div>
-  </div>
-  <div class="sec">
-    <div class="tab grouptab">Grupp&shy;beteckning</div>
-    <div class="sb" style="padding:7px 12px;display:flex;align-items:center">
-      <div class="groupletters"><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span><span>G</span><span>H</span><span>I</span><span>J</span><span>K</span><span>L</span><span>M</span><span>N</span><span>O</span><span>P</span><span>Q</span><span>R</span><span>S</span><span>T</span><span>U</span><span>V</span><span>W</span><span>X</span><span>Y</span><span>Z</span></div>
+      <div class="grouprow">
+        <span class="grouplbl">Gruppbeteckning</span>
+        <div class="groupletters"><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span><span>G</span><span>H</span><span>I</span><span>J</span><span>K</span><span>L</span><span>M</span><span>N</span><span>O</span><span>P</span><span>Q</span><span>R</span><span>S</span><span>T</span><span>U</span><span>V</span><span>W</span><span>X</span><span>Y</span><span>Z</span></div>
+      </div>
     </div>
   </div>
 </div>
@@ -693,7 +687,7 @@ body.editing .edit-hint{display:inline}
 // Independent layout versions for the three position-based data groups in autosave/JSON.
 // Bump ONLY the group whose layout actually changed, so unrelated saved data survives a
 // template tweak (e.g. moving a label must not wipe checkbox or arbetstyp selections).
-const ETV = 5;  // editable label (.et) order  — bump when .et elements are added/removed/reordered
+const ETV = 6;  // editable label (.et) order  — bump when .et elements are added/removed/reordered
 const CBV = 2;  // non-id checkbox order (utrustning / åtgärder) — bump when those change
 const ATV = 3;  // default arbetstyp list — bump when the default typer change
 
