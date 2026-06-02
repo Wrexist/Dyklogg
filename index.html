@@ -53,6 +53,7 @@ input[type=checkbox]{width:12px;height:12px;accent-color:#f90;cursor:pointer;fle
 .svgtime{display:flex;align-items:flex-end;gap:3px;height:100%;font:700 8px Arial,sans-serif;color:#000;white-space:nowrap}
 .svgtime.right{justify-content:flex-end}
 .svgtime input{border:none;border-bottom:1px solid #888;background:transparent;font:400 8px Arial,sans-serif;flex:1;min-width:0;outline:none;color:#000;padding:0}
+.svgtime.right input{flex:none;width:62px}
 .svgtime input:focus{border-bottom-color:#f90}
 /* Fillable "Max djup" field embedded in the profile SVG (foreignObject) */
 .svgfield{display:flex;align-items:flex-end;gap:2px;font:700 9px Arial,sans-serif;color:#333;white-space:nowrap}
@@ -260,11 +261,11 @@ body.editing .edit-hint{display:inline}
         <text x="9" y="97" text-anchor="middle" font-size="8" fill="#444" transform="rotate(-90 9 97)">Djup (m)</text>
         <foreignObject x="0" y="1" width="150" height="14"><div xmlns="http://www.w3.org/1999/xhtml" class="svgtime"><span>Starttid:</span><input type="text" id="time-in"/></div></foreignObject>
         <foreignObject x="164" y="1" width="150" height="14"><div xmlns="http://www.w3.org/1999/xhtml" class="svgtime right"><span>Sluttid:</span><input type="text" id="time-out"/></div></foreignObject>
-        <polyline points="34,16 92,138 198,138 250,48 292,48 314,16" fill="none" stroke="#111" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+        <polyline points="34,16 100,160 198,160 250,48 292,48 314,16" fill="none" stroke="#111" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
         <line x1="314" y1="16" x2="322" y2="16" stroke="#111" stroke-width="1.5"/>
         <polygon points="322,13 326,16 322,19" fill="#111"/>
         <text x="252" y="40" font-size="8" fill="#333">(3&#8211;5 m)</text>
-        <foreignObject x="85" y="143" width="120" height="22"><div xmlns="http://www.w3.org/1999/xhtml" class="svgfield"><span>Max djup:</span><input type="text" id="maxdjup"/></div></foreignObject>
+        <foreignObject x="114" y="166" width="120" height="20"><div xmlns="http://www.w3.org/1999/xhtml" class="svgfield"><span>Max djup:</span><input type="text" id="maxdjup"/></div></foreignObject>
         <line x1="34" y1="191" x2="322" y2="191" stroke="#111" stroke-width="1.3"/>
         <polygon points="322,188 326,191 322,194" fill="#111"/>
         <text x="314" y="204" font-size="8.5" fill="#333">Tid</text>
@@ -528,11 +529,11 @@ body.editing .edit-hint{display:inline}
         <text x="9" y="97" text-anchor="middle" font-size="8" fill="#444" transform="rotate(-90 9 97)">Djup (m)</text>
         <foreignObject x="0" y="1" width="150" height="14"><div xmlns="http://www.w3.org/1999/xhtml" class="svgtime"><span>Starttid:</span><input type="text" id="b1-time-in"/></div></foreignObject>
         <foreignObject x="164" y="1" width="150" height="14"><div xmlns="http://www.w3.org/1999/xhtml" class="svgtime right"><span>Sluttid:</span><input type="text" id="b1-time-out"/></div></foreignObject>
-        <polyline points="34,16 92,138 198,138 250,48 292,48 314,16" fill="none" stroke="#111" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+        <polyline points="34,16 100,160 198,160 250,48 292,48 314,16" fill="none" stroke="#111" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
         <line x1="314" y1="16" x2="322" y2="16" stroke="#111" stroke-width="1.5"/>
         <polygon points="322,13 326,16 322,19" fill="#111"/>
         <text x="252" y="40" font-size="8" fill="#333">(3&#8211;5 m)</text>
-        <foreignObject x="85" y="143" width="120" height="22"><div xmlns="http://www.w3.org/1999/xhtml" class="svgfield"><span>Max djup:</span><input type="text" id="b1-maxdjup"/></div></foreignObject>
+        <foreignObject x="114" y="166" width="120" height="20"><div xmlns="http://www.w3.org/1999/xhtml" class="svgfield"><span>Max djup:</span><input type="text" id="b1-maxdjup"/></div></foreignObject>
         <line x1="34" y1="191" x2="322" y2="191" stroke="#111" stroke-width="1.3"/>
         <polygon points="322,188 326,191 322,194" fill="#111"/>
         <text x="314" y="204" font-size="8.5" fill="#333">Tid</text>
@@ -647,11 +648,11 @@ body.editing .edit-hint{display:inline}
         <text x="9" y="97" text-anchor="middle" font-size="8" fill="#444" transform="rotate(-90 9 97)">Djup (m)</text>
         <foreignObject x="0" y="1" width="150" height="14"><div xmlns="http://www.w3.org/1999/xhtml" class="svgtime"><span>Starttid:</span><input type="text" id="b2-time-in"/></div></foreignObject>
         <foreignObject x="164" y="1" width="150" height="14"><div xmlns="http://www.w3.org/1999/xhtml" class="svgtime right"><span>Sluttid:</span><input type="text" id="b2-time-out"/></div></foreignObject>
-        <polyline points="34,16 92,138 198,138 250,48 292,48 314,16" fill="none" stroke="#111" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+        <polyline points="34,16 100,160 198,160 250,48 292,48 314,16" fill="none" stroke="#111" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
         <line x1="314" y1="16" x2="322" y2="16" stroke="#111" stroke-width="1.5"/>
         <polygon points="322,13 326,16 322,19" fill="#111"/>
         <text x="252" y="40" font-size="8" fill="#333">(3&#8211;5 m)</text>
-        <foreignObject x="85" y="143" width="120" height="22"><div xmlns="http://www.w3.org/1999/xhtml" class="svgfield"><span>Max djup:</span><input type="text" id="b2-maxdjup"/></div></foreignObject>
+        <foreignObject x="114" y="166" width="120" height="20"><div xmlns="http://www.w3.org/1999/xhtml" class="svgfield"><span>Max djup:</span><input type="text" id="b2-maxdjup"/></div></foreignObject>
         <line x1="34" y1="191" x2="322" y2="191" stroke="#111" stroke-width="1.3"/>
         <polygon points="322,188 326,191 322,194" fill="#111"/>
         <text x="314" y="204" font-size="8.5" fill="#333">Tid</text>
