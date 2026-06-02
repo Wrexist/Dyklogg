@@ -136,7 +136,18 @@ body.editing .edit-hint{display:inline}
   #view-combined .cr .riskt{line-height:1.2}
   /* Double-sided: the cloned back page starts on a new sheet */
   [data-duplex="1"]{break-before:page;page-break-before:always}
-}
+  /* 'logs-plan' mode: hide the normal active view, print only the built pages */
+  body.print-custom #view-combined,
+  body.print-custom #view-dyklog{display:none!important}
+  /* Full-width Dykplan back page: compact it so it fits one landscape sheet */
+  .dupplan .sb{padding:3px 8px}
+  .dupplan .fl{margin-bottom:1px}
+  .dupplan .fll{font-size:9.5px}
+  .dupplan .chk{line-height:1.1}
+  .dupplan .eqcol{padding:2px 8px}
+  .dupplan .eqt{margin:0 0 1px}
+  .dupplan .riskt{line-height:1.2}
+  .dupplan .logo{height:34px!important}
 @page{size:A4 landscape;margin:0}
 </style>
 <style id="page-style"></style>
@@ -170,8 +181,12 @@ body.editing .edit-hint{display:inline}
   <label style="display:flex;align-items:center;gap:5px;font-size:11px;font-weight:700" title="Samma logg p&#229; b&#229;da halvor &#8211; skriv p&#229; v&#228;nster, kopieras till h&#246;ger (Dyklog-vyn)">
     <input type="checkbox" id="dupchk" onchange="setDuplicate(this.checked)" style="width:14px;height:14px"> Dubblett
   </label>
-  <label style="display:flex;align-items:center;gap:5px;font-size:11px;font-weight:700" title="Skriver ut en kopia till som baksida (sida 2). V&#228;lj 'Skriv ut p&#229; b&#229;da sidor' i skrivardialogen.">
-    <input type="checkbox" id="duplexchk" onchange="setDuplex(this.checked)" style="width:14px;height:14px"> Dubbelsidig
+  <label style="display:flex;align-items:center;gap:4px;font-size:11px;font-weight:700" title="Vad som skrivs ut p&#229; baksidan (sida 2). V&#228;lj 'Skriv ut p&#229; b&#229;da sidor' i skrivardialogen.">Dubbelsidig:
+    <select id="duplexsel" onchange="setPrintMode(this.value)" style="font-size:11px;font-weight:700;padding:4px 6px;border:none;border-radius:2px;cursor:pointer">
+      <option value="off">Av (enkelsidig)</option>
+      <option value="copy">Kopia (samma som fram)</option>
+      <option value="logs-plan">2 Dyklogg + hel Dykplan</option>
+    </select>
   </label>
   <button class="btn" id="edit-btn" onclick="toggleEdit()">&#9998; Redigera text</button>
   <span class="edit-hint">Klicka p&#229; valfri text f&#246;r att &#228;ndra den</span>
@@ -845,43 +860,83 @@ function setDuplicate(on) {
   }
 })();
 
-// --- Double-sided print: clone the active view as a back-side page ---
-let duplexOn = false;
-function setDuplex(on) {
-  duplexOn = !!on;
-  const cb = document.getElementById('duplexchk');
-  if (cb) cb.checked = duplexOn;
-  try { localStorage.setItem('dyklogg_duplex', duplexOn ? '1' : '0'); } catch(e) {}
+// --- Double-sided print modes ---
+//   'off'       : single-sided (active view only)
+//   'copy'      : back side = identical copy of the active view
+//   'logs-plan' : front = 2 Dyklogg (Dyklog-vyn), back = hel Dykplan (liggande, full bredd)
+let printMode = 'off';
+function setPrintMode(v) {
+  printMode = v || 'off';
+  const sel = document.getElementById('duplexsel');
+  if (sel) sel.value = printMode;
+  try { localStorage.setItem('dyklogg_printmode', printMode); } catch(e) {}
 }
-function removeDuplexClone() {
-  document.querySelectorAll('[data-duplex="1"]').forEach(el => el.remove());
-}
-function buildDuplexClone() {
-  removeDuplexClone();
-  if (!duplexOn) return;
-  const active = currentView === 'dyklog'
-    ? document.getElementById('view-dyklog')
-    : document.getElementById('view-combined');
-  if (!active) return;
-  const clone = active.cloneNode(true);
-  clone.setAttribute('data-duplex', '1');
-  clone.style.display = getComputedStyle(active).display; // ensure it shows in print
-  // Carry live field values into the clone (cloneNode doesn't copy live input state)
-  const src = active.querySelectorAll('input, textarea, select');
-  const dst = clone.querySelectorAll('input, textarea, select');
-  src.forEach((s, i) => {
-    const d = dst[i];
-    if (!d) return;
-    if (s.type === 'checkbox' || s.type === 'radio') {
-      if (s.checked) d.setAttribute('checked', 'checked'); else d.removeAttribute('checked');
+function copyFieldValues(src, clone) {
+  const s = src.querySelectorAll('input, textarea, select');
+  const d = clone.querySelectorAll('input, textarea, select');
+  s.forEach((el, i) => {
+    const t = d[i];
+    if (!t) return;
+    if (el.type === 'checkbox' || el.type === 'radio') {
+      if (el.checked) t.setAttribute('checked', 'checked'); else t.removeAttribute('checked');
     } else {
-      d.setAttribute('value', s.value);
+      t.setAttribute('value', el.value);
     }
   });
-  document.body.appendChild(clone);
 }
-window.addEventListener('beforeprint', buildDuplexClone);
-window.addEventListener('afterprint', removeDuplexClone);
+function removePrintExtras() {
+  document.querySelectorAll('[data-duplex="1"]').forEach(el => el.remove());
+  document.body.classList.remove('print-custom');
+}
+function buildPrintExtras() {
+  removePrintExtras();
+  if (printMode === 'off') return;
+
+  if (printMode === 'copy') {
+    const active = currentView === 'dyklog'
+      ? document.getElementById('view-dyklog')
+      : document.getElementById('view-combined');
+    if (!active) return;
+    const clone = active.cloneNode(true);
+    copyFieldValues(active, clone);
+    clone.setAttribute('data-duplex', '1');
+    clone.removeAttribute('id');                      // avoid being hidden by #view-* rules
+    clone.style.display = getComputedStyle(active).display;
+    document.body.appendChild(clone);
+    return;
+  }
+
+  if (printMode === 'logs-plan') {
+    document.body.classList.add('print-custom');       // hide the normal active view in print
+    // Page 1: two Dyklogg (the Dyklog two-blade view)
+    const dv = document.getElementById('view-dyklog');
+    if (dv) {
+      const c1 = dv.cloneNode(true);
+      copyFieldValues(dv, c1);
+      c1.removeAttribute('id');
+      c1.setAttribute('data-duplex', '1');
+      c1.style.display = 'flex';
+      document.body.appendChild(c1);
+    }
+    // Page 2: a whole Dykplan, full landscape width
+    const plan = document.querySelector('#view-combined .cr');
+    if (plan) {
+      const planClone = plan.cloneNode(true);
+      copyFieldValues(plan, planClone);
+      planClone.classList.remove('cr', 'col');         // drop the half-width flex-column behaviour
+      planClone.classList.add('dupplan');              // full-width compaction (see print CSS)
+      planClone.style.cssText = 'display:flex;flex-direction:column;gap:2px;width:100%';
+      const page = document.createElement('div');
+      page.className = 'page';
+      page.setAttribute('data-duplex', '1');
+      page.style.display = 'block';
+      page.appendChild(planClone);
+      document.body.appendChild(page);
+    }
+  }
+}
+window.addEventListener('beforeprint', buildPrintExtras);
+window.addEventListener('afterprint', removePrintExtras);
 
 // --- Arbetstyp instances for dyklog tab ---
 const atInstances = {
@@ -1085,11 +1140,14 @@ function clearAll() {
   try { on = localStorage.getItem('dyklogg_dup') || '0'; } catch(e) {}
   if (on === '1') setDuplicate(true);
 })();
-// Restore double-sided (back-page) print toggle
+// Restore double-sided print mode (with migration from the old boolean toggle)
 (function() {
-  let on = '0';
-  try { on = localStorage.getItem('dyklogg_duplex') || '0'; } catch(e) {}
-  if (on === '1') setDuplex(true);
+  let v = 'off';
+  try {
+    v = localStorage.getItem('dyklogg_printmode')
+        || (localStorage.getItem('dyklogg_duplex') === '1' ? 'copy' : 'off');
+  } catch(e) {}
+  setPrintMode(v);
 })();
 </script>
 </body>
