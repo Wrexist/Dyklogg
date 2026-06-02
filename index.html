@@ -47,7 +47,7 @@ input[type=checkbox]{width:12px;height:12px;accent-color:#f90;cursor:pointer;fle
 .profrow{display:flex;border:1px solid #aaa;border-radius:2px;overflow:hidden}
 .profsvg{flex:1;padding:5px 5px 2px 3px;display:flex;flex-direction:column}
 .profsvg svg{width:100%;display:block}
-.timeio{display:flex;gap:16px;padding:0 5px 4px calc(34/326 * 100%)}
+.timeio{display:flex;justify-content:space-between;padding:0 calc(12/326 * 100%) 4px calc(34/326 * 100%)}
 .timeio label{display:flex;align-items:flex-end;gap:3px;font-size:9.5px;font-weight:700;white-space:nowrap;cursor:text}
 .timeio input{border:none;border-bottom:1px solid #888;font-size:10px;width:55px;background:transparent;outline:none;padding:1px 0;color:#000}
 .timeio input:focus{border-bottom-color:#f90}
@@ -229,8 +229,8 @@ body.editing .edit-hint{display:inline}
     <div class="tab et" contenteditable="false">Dykprofil</div>
     <div class="profsvg">
       <div class="timeio">
-        <label>Tid in:<input type="text" id="time-in"></label>
-        <label>Tid ut:<input type="text" id="time-out"></label>
+        <label>Starttid:<input type="text" id="time-in"></label>
+        <label>Sluttid:<input type="text" id="time-out"></label>
       </div>
       <svg viewBox="0 0 326 210" xmlns="http://www.w3.org/2000/svg">
         <line x1="34" y1="16" x2="314" y2="16" stroke="#ddd" stroke-width="0.7"/>
@@ -245,7 +245,6 @@ body.editing .edit-hint{display:inline}
         <line x1="202" y1="16" x2="202" y2="183" stroke="#eee" stroke-width="0.5"/>
         <line x1="258" y1="16" x2="258" y2="183" stroke="#eee" stroke-width="0.5"/>
         <line x1="314" y1="16" x2="314" y2="183" stroke="#eee" stroke-width="0.5"/>
-        <text x="31" y="19" text-anchor="end" font-size="8.5" fill="#555">0</text>
         <text x="31" y="51" text-anchor="end" font-size="8.5" fill="#555">5</text>
         <text x="29" y="83" text-anchor="end" font-size="8.5" fill="#555">10</text>
         <text x="29" y="115" text-anchor="end" font-size="8.5" fill="#555">15</text>
@@ -501,8 +500,8 @@ body.editing .edit-hint{display:inline}
     <div class="tab">Dykprofil</div>
     <div class="profsvg">
       <div class="timeio">
-        <label>Tid in:<input type="text" id="b1-time-in"></label>
-        <label>Tid ut:<input type="text" id="b1-time-out"></label>
+        <label>Starttid:<input type="text" id="b1-time-in"></label>
+        <label>Sluttid:<input type="text" id="b1-time-out"></label>
       </div>
       <svg viewBox="0 0 326 210" xmlns="http://www.w3.org/2000/svg">
         <line x1="34" y1="16" x2="314" y2="16" stroke="#ddd" stroke-width="0.7"/>
@@ -517,7 +516,6 @@ body.editing .edit-hint{display:inline}
         <line x1="202" y1="16" x2="202" y2="183" stroke="#eee" stroke-width="0.5"/>
         <line x1="258" y1="16" x2="258" y2="183" stroke="#eee" stroke-width="0.5"/>
         <line x1="314" y1="16" x2="314" y2="183" stroke="#eee" stroke-width="0.5"/>
-        <text x="31" y="19" text-anchor="end" font-size="8.5" fill="#555">0</text>
         <text x="31" y="51" text-anchor="end" font-size="8.5" fill="#555">5</text>
         <text x="29" y="83" text-anchor="end" font-size="8.5" fill="#555">10</text>
         <text x="29" y="115" text-anchor="end" font-size="8.5" fill="#555">15</text>
@@ -625,8 +623,8 @@ body.editing .edit-hint{display:inline}
     <div class="tab">Dykprofil</div>
     <div class="profsvg">
       <div class="timeio">
-        <label>Tid in:<input type="text" id="b2-time-in"></label>
-        <label>Tid ut:<input type="text" id="b2-time-out"></label>
+        <label>Starttid:<input type="text" id="b2-time-in"></label>
+        <label>Sluttid:<input type="text" id="b2-time-out"></label>
       </div>
       <svg viewBox="0 0 326 210" xmlns="http://www.w3.org/2000/svg">
         <line x1="34" y1="16" x2="314" y2="16" stroke="#ddd" stroke-width="0.7"/>
@@ -641,7 +639,6 @@ body.editing .edit-hint{display:inline}
         <line x1="202" y1="16" x2="202" y2="183" stroke="#eee" stroke-width="0.5"/>
         <line x1="258" y1="16" x2="258" y2="183" stroke="#eee" stroke-width="0.5"/>
         <line x1="314" y1="16" x2="314" y2="183" stroke="#eee" stroke-width="0.5"/>
-        <text x="31" y="19" text-anchor="end" font-size="8.5" fill="#555">0</text>
         <text x="31" y="51" text-anchor="end" font-size="8.5" fill="#555">5</text>
         <text x="29" y="83" text-anchor="end" font-size="8.5" fill="#555">10</text>
         <text x="29" y="115" text-anchor="end" font-size="8.5" fill="#555">15</text>
