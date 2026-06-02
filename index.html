@@ -134,6 +134,8 @@ body.editing .edit-hint{display:inline}
   #view-combined .cr .eqt{margin:0 0 1px}
   #view-combined .cr .logo{height:34px!important}
   #view-combined .cr .riskt{line-height:1.2}
+  /* Double-sided: the cloned back page starts on a new sheet */
+  [data-duplex="1"]{break-before:page;page-break-before:always}
 }
 @page{size:A4 landscape;margin:0}
 </style>
@@ -168,6 +170,9 @@ body.editing .edit-hint{display:inline}
   <label style="display:flex;align-items:center;gap:5px;font-size:11px;font-weight:700" title="Samma logg p&#229; b&#229;da halvor &#8211; skriv p&#229; v&#228;nster, kopieras till h&#246;ger (Dyklog-vyn)">
     <input type="checkbox" id="dupchk" onchange="setDuplicate(this.checked)" style="width:14px;height:14px"> Dubblett
   </label>
+  <label style="display:flex;align-items:center;gap:5px;font-size:11px;font-weight:700" title="Skriver ut en kopia till som baksida (sida 2). V&#228;lj 'Skriv ut p&#229; b&#229;da sidor' i skrivardialogen.">
+    <input type="checkbox" id="duplexchk" onchange="setDuplex(this.checked)" style="width:14px;height:14px"> Dubbelsidig
+  </label>
   <button class="btn" id="edit-btn" onclick="toggleEdit()">&#9998; Redigera text</button>
   <span class="edit-hint">Klicka p&#229; valfri text f&#246;r att &#228;ndra den</span>
   <button class="btn g" onclick="saveJSON()">&#128190; Spara</button>
@@ -185,7 +190,10 @@ body.editing .edit-hint{display:inline}
       <div class="title et" contenteditable="false">Dyklogg</div>
       <div class="sub et" contenteditable="false">Arbetsdyk &#8211; Kommersiell Dykverksamhet</div>
     </div>
-    <img src="dawab_logo.png" alt="DAWAB" class="logo">
+    <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+      <img src="blackfisk.png" alt="" class="logo" style="height:38px">
+      <img src="dawab_logo.png" alt="DAWAB" class="logo">
+    </div>
   </div>
 
   <div style="display:flex;justify-content:flex-end;align-items:flex-end;gap:5px;font-weight:700;font-size:11px;margin-bottom:3px">
@@ -462,7 +470,10 @@ body.editing .edit-hint{display:inline}
       <div class="title">Dyklogg</div>
       <div class="sub">Arbetsdyk &#8211; Kommersiell Dykverksamhet</div>
     </div>
-    <img src="dawab_logo.png" alt="DAWAB" class="logo">
+    <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+      <img src="blackfisk.png" alt="" class="logo" style="height:38px">
+      <img src="dawab_logo.png" alt="DAWAB" class="logo">
+    </div>
   </div>
   <div style="display:flex;justify-content:flex-end;align-items:flex-end;gap:5px;font-weight:700;font-size:11px;margin-bottom:3px">
     <span>Datum:</span><input type="text" id="b1-datum" style="width:120px">
@@ -586,7 +597,10 @@ body.editing .edit-hint{display:inline}
       <div class="title">Dyklogg</div>
       <div class="sub">Arbetsdyk &#8211; Kommersiell Dykverksamhet</div>
     </div>
-    <img src="dawab_logo.png" alt="DAWAB" class="logo">
+    <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+      <img src="blackfisk.png" alt="" class="logo" style="height:38px">
+      <img src="dawab_logo.png" alt="DAWAB" class="logo">
+    </div>
   </div>
   <div style="display:flex;justify-content:flex-end;align-items:flex-end;gap:5px;font-weight:700;font-size:11px;margin-bottom:3px">
     <span>Datum:</span><input type="text" id="b2-datum" style="width:120px">
@@ -831,6 +845,44 @@ function setDuplicate(on) {
   }
 })();
 
+// --- Double-sided print: clone the active view as a back-side page ---
+let duplexOn = false;
+function setDuplex(on) {
+  duplexOn = !!on;
+  const cb = document.getElementById('duplexchk');
+  if (cb) cb.checked = duplexOn;
+  try { localStorage.setItem('dyklogg_duplex', duplexOn ? '1' : '0'); } catch(e) {}
+}
+function removeDuplexClone() {
+  document.querySelectorAll('[data-duplex="1"]').forEach(el => el.remove());
+}
+function buildDuplexClone() {
+  removeDuplexClone();
+  if (!duplexOn) return;
+  const active = currentView === 'dyklog'
+    ? document.getElementById('view-dyklog')
+    : document.getElementById('view-combined');
+  if (!active) return;
+  const clone = active.cloneNode(true);
+  clone.setAttribute('data-duplex', '1');
+  clone.style.display = getComputedStyle(active).display; // ensure it shows in print
+  // Carry live field values into the clone (cloneNode doesn't copy live input state)
+  const src = active.querySelectorAll('input, textarea, select');
+  const dst = clone.querySelectorAll('input, textarea, select');
+  src.forEach((s, i) => {
+    const d = dst[i];
+    if (!d) return;
+    if (s.type === 'checkbox' || s.type === 'radio') {
+      if (s.checked) d.setAttribute('checked', 'checked'); else d.removeAttribute('checked');
+    } else {
+      d.setAttribute('value', s.value);
+    }
+  });
+  document.body.appendChild(clone);
+}
+window.addEventListener('beforeprint', buildDuplexClone);
+window.addEventListener('afterprint', removeDuplexClone);
+
 // --- Arbetstyp instances for dyklog tab ---
 const atInstances = {
   main: { typer: ['Besiktning','Betongarbete','Demontage','Gjutning','HCL','Inspektion','Montage','M\u00e4tning','Sk\u00e4rning/Brocco','Svetsning','Tv\u00e4tta','Vattenbl\u00e4string'], checked: {} },
@@ -1032,6 +1084,12 @@ function clearAll() {
   let on = '0';
   try { on = localStorage.getItem('dyklogg_dup') || '0'; } catch(e) {}
   if (on === '1') setDuplicate(true);
+})();
+// Restore double-sided (back-page) print toggle
+(function() {
+  let on = '0';
+  try { on = localStorage.getItem('dyklogg_duplex') || '0'; } catch(e) {}
+  if (on === '1') setDuplex(true);
 })();
 </script>
 </body>
