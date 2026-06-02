@@ -14,7 +14,9 @@ body{font-family:Arial,Helvetica,sans-serif;font-size:11px;background:#d8d8d8;co
 #edit-btn{background:#2a6aad;color:#fff}
 #edit-btn.active{background:#1a8a3a}
 
-.page{width:1160px;margin:14px auto;background:#fff;padding:14px var(--mr,16px) 14px var(--ml,16px);display:flex;gap:var(--mid,4mm)}
+.page{width:1160px;margin:14px auto;background:#fff;padding:14px var(--mr,16px) 14px var(--ml,16px);display:flex;gap:var(--mid,4mm);position:relative}
+/* Fold guide: dashed line down the centre of the fold gap (screen only) */
+.foldline{position:absolute;top:8px;bottom:8px;width:0;border-left:1px dashed #c0392b;opacity:.45;pointer-events:none;z-index:6;left:calc(var(--ml,4mm) + (100% - var(--ml,4mm) - var(--mr,4mm)) / 2)}
 .col{display:flex;flex-direction:column;gap:4px}
 .cl{flex:1;min-width:0}
 .cr{flex:1;min-width:0}
@@ -79,7 +81,9 @@ input[type=checkbox]{width:12px;height:12px;accent-color:#f90;cursor:pointer;fle
 .sf input{flex:1;min-width:0}
 
 .groupletters{display:flex;justify-content:space-between;font-size:13px;font-weight:600;color:#111}
-.groupletters span{flex:1;min-width:0;height:16px;display:flex;align-items:center;justify-content:center}
+.groupletters span{flex:1;min-width:0;height:16px;display:flex;align-items:center;justify-content:center;cursor:pointer;border-radius:3px;user-select:none}
+.groupletters span:hover{background:rgba(255,153,0,.25)}
+.groupletters span.gsel{background:#f90;color:#000;font-weight:800}
 
 .fl{margin-bottom:3px}
 .fll{font-size:10px;color:#333;display:block;margin-bottom:1px}
@@ -124,6 +128,7 @@ body.editing .edit-hint{display:inline}
 @media print{
   body{background:#fff}
   .toolbar{display:none!important}
+  .foldline{display:none!important}
   .athead button{display:none!important}
   .sec,.profrow,.utrow{break-inside:avoid}
   .page{margin:0;padding:8mm var(--mr,9mm) 8mm var(--ml,9mm);width:100%!important}
@@ -194,6 +199,7 @@ body.editing .edit-hint{display:inline}
 </div>
 
 <div id="view-combined"><div class="page">
+<div class="foldline"></div>
 
 <!-- DYKLOGG -->
 <div class="col cl">
@@ -263,8 +269,6 @@ body.editing .edit-hint{display:inline}
     <div class="ddpanel">
       <div class="ddhead et" contenteditable="false">Dykdata</div>
       <div class="ddbody">
-        <div class="ddr"><span class="dl et" contenteditable="false">Starttid:</span><input type="text" id="starttid"></div>
-        <div class="ddr"><span class="dl et" contenteditable="false">Sluttid:</span><input type="text" id="sluttid"></div>
         <div class="ddr"><span class="dl et" contenteditable="false">Bottentid:</span><input type="text" id="bottentid"></div>
         <div class="ddr"><span class="dl et" contenteditable="false">Maxdjup:</span><input type="text" id="maxdjup"></div>
         <div class="ddr"><span class="dl et" contenteditable="false">Sikt:</span><input type="text" id="sikt"></div>
@@ -398,7 +402,7 @@ body.editing .edit-hint{display:inline}
 
   <!-- UTRUSTNING -->
   <div class="sec">
-    <div class="tab et" contenteditable="false">Dykytrustning</div>
+    <div class="tab et" contenteditable="false">Dykutrustning</div>
     <div class="sb" style="padding:0">
       <div class="eqgrid">
         <div class="eqcol">
@@ -471,6 +475,7 @@ body.editing .edit-hint{display:inline}
 </div>
 
 <div id="view-dyklog" style="display:none"><div class="page" style="width:1080px">
+<div class="foldline"></div>
 
 <!-- DYKLOGG B1 -->
 <div class="col cl">
@@ -534,8 +539,6 @@ body.editing .edit-hint{display:inline}
     <div class="ddpanel">
       <div class="ddhead">Dykdata</div>
       <div class="ddbody">
-        <div class="ddr"><span class="dl">Starttid:</span><input type="text" id="b1-starttid"></div>
-        <div class="ddr"><span class="dl">Sluttid:</span><input type="text" id="b1-sluttid"></div>
         <div class="ddr"><span class="dl">Bottentid:</span><input type="text" id="b1-bottentid"></div>
         <div class="ddr"><span class="dl">Maxdjup:</span><input type="text" id="b1-maxdjup"></div>
         <div class="ddr"><span class="dl">Sikt:</span><input type="text" id="b1-sikt"></div>
@@ -657,8 +660,6 @@ body.editing .edit-hint{display:inline}
     <div class="ddpanel">
       <div class="ddhead">Dykdata</div>
       <div class="ddbody">
-        <div class="ddr"><span class="dl">Starttid:</span><input type="text" id="b2-starttid"></div>
-        <div class="ddr"><span class="dl">Sluttid:</span><input type="text" id="b2-sluttid"></div>
         <div class="ddr"><span class="dl">Bottentid:</span><input type="text" id="b2-bottentid"></div>
         <div class="ddr"><span class="dl">Maxdjup:</span><input type="text" id="b2-maxdjup"></div>
         <div class="ddr"><span class="dl">Sikt:</span><input type="text" id="b2-sikt"></div>
@@ -740,7 +741,7 @@ body.editing .edit-hint{display:inline}
 // Independent layout versions for the three position-based data groups in autosave/JSON.
 // Bump ONLY the group whose layout actually changed, so unrelated saved data survives a
 // template tweak (e.g. moving a label must not wipe checkbox or arbetstyp selections).
-const ETV = 7;  // editable label (.et) order  — bump when .et elements are added/removed/reordered
+const ETV = 8;  // editable label (.et) order  — bump when .et elements are added/removed/reordered
 const CBV = 2;  // non-id checkbox order (utrustning / åtgärder) — bump when those change
 const ATV = 4;  // default arbetstyp list — bump when the default typer change
 
@@ -829,6 +830,13 @@ function mirrorB1toB2() {
     const c1 = g1.querySelectorAll('input[type=checkbox]');
     const c2 = g2.querySelectorAll('input[type=checkbox]');
     c1.forEach((cb,i) => { if (c2[i]) c2[i].checked = cb.checked; });
+  }
+  // Mirror selected gruppbeteckning letters from the b1 blade onto b2
+  const b1g = document.querySelector('#view-dyklog .col:nth-child(2) .groupletters');
+  const b2g = document.querySelector('#view-dyklog .col:nth-child(3) .groupletters');
+  if (b1g && b2g) {
+    const s1 = b1g.querySelectorAll('span'), s2 = b2g.querySelectorAll('span');
+    s1.forEach((sp,i) => { if (s2[i]) s2[i].classList.toggle('gsel', sp.classList.contains('gsel')); });
   }
 }
 function setDuplicate(on) {
@@ -990,6 +998,17 @@ function addAtItem() {
 document.getElementById('at-overlay').addEventListener('click', function(e){ if(e.target===this) closeAtModal(); });
 
 
+// --- Clickable gruppbeteckning letters (A–Z) ---
+// Spans have no id; their selected state is tracked positionally as _gl<index>.
+function glSpans() { return Array.from(document.querySelectorAll('.groupletters span')); }
+glSpans().forEach(sp => {
+  sp.addEventListener('click', () => {
+    sp.classList.toggle('gsel');
+    if (dupOn) mirrorB1toB2();
+    try { localStorage.setItem('dyklogg_autosave', JSON.stringify(gatherAll())); } catch(e) {}
+  });
+});
+
 // --- Edit mode toggle ---
 function toggleEdit() {
   editMode = !editMode;
@@ -1032,6 +1051,7 @@ function gatherAll() {
     b1:   { typer: atInstances.b1.typer,   checked: atInstances.b1.checked },
     b2:   { typer: atInstances.b2.typer,   checked: atInstances.b2.checked }
   });
+  glSpans().forEach((sp, i) => { d['_gl' + i] = sp.classList.contains('gsel'); });
   Object.assign(d, getEditableTexts());
   d._etv = ETV; d._cbv = CBV; d._atv = ATV;
   return d;
@@ -1058,6 +1078,7 @@ function applyAll(d) {
   if (d._arbetstyper && !d._atInstances) atInstances.main.typer = JSON.parse(d._arbetstyper);
   if (d._atChecked   && !d._atInstances) atInstances.main.checked = JSON.parse(d._atChecked);
   ['main','b1','b2'].forEach(inst => renderGrid(inst));
+  glSpans().forEach((sp, i) => { if (d['_gl' + i] !== undefined) sp.classList.toggle('gsel', !!d['_gl' + i]); });
   setEditableTexts(d);
 }
 
@@ -1077,11 +1098,22 @@ document.addEventListener('change', () => {
   try { localStorage.setItem('dyklogg_autosave', JSON.stringify(gatherAll())); } catch(e) {}
 });
 
+// Build a filename from the dive's date + dive number, e.g. dyklogg_2026-06-02_nr3.json
+function buildFileName() {
+  const val = id => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
+  const datum = val('datum') || val('b1-datum') || val('plan-datum');
+  const dyknr = val('dyknr') || val('b1-dyknr');
+  const clean = s => s.replace(/[^\w\u00e5\u00e4\u00f6\u00c5\u00c4\u00d6-]+/g, '-').replace(/^-+|-+$/g, '');
+  let name = 'dyklogg';
+  if (datum) name += '_' + clean(datum);
+  if (dyknr) name += '_nr' + clean(dyknr);
+  return name + '.json';
+}
 function saveJSON() {
   const d = gatherAll();
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([JSON.stringify(d, null, 2)], { type: 'application/json' }));
-  a.download = 'dyklogg.json';
+  a.download = buildFileName();
   a.click();
   toast('\u2713 Sparad!');
 }
@@ -1106,6 +1138,7 @@ function clearAll() {
   document.querySelectorAll('input[type=text]').forEach(el => el.value = '');
   document.querySelectorAll('input[type=checkbox]').forEach(el => el.checked = false);
   ['main','b1','b2'].forEach(inst=>{ atInstances[inst].checked = {}; renderGrid(inst); });
+  glSpans().forEach(sp => sp.classList.remove('gsel'));
   try { localStorage.removeItem('dyklogg_autosave'); } catch(e) {}
   toast('Rensat');
 }
