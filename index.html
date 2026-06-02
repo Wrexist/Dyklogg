@@ -139,16 +139,10 @@ body.editing .edit-hint{display:inline}
   /* 'logs-plan' mode: hide the normal active view, print only the built pages */
   body.print-custom #view-combined,
   body.print-custom #view-dyklog{display:none!important}
-  /* Full-width Dykplan back page: compact it so it fits one landscape sheet */
-  .dupplan .sb{padding:3px 8px}
-  .dupplan .fl{margin-bottom:1px}
-  .dupplan .fll{font-size:9.5px}
-  .dupplan .chk{line-height:1.1}
-  .dupplan .eqcol{padding:2px 8px}
-  .dupplan .eqt{margin:0 0 1px}
-  .dupplan .riskt{line-height:1.2}
-  .dupplan .logo{height:34px!important}
+  /* Full Dykplan back page printed in portrait (stående) */
+  .ppage{page:pp}
 @page{size:A4 landscape;margin:0}
+@page pp{size:A4 portrait;margin:0}
 </style>
 <style id="page-style"></style>
 </head>
@@ -924,10 +918,9 @@ function buildPrintExtras() {
       const planClone = plan.cloneNode(true);
       copyFieldValues(plan, planClone);
       planClone.classList.remove('cr', 'col');         // drop the half-width flex-column behaviour
-      planClone.classList.add('dupplan');              // full-width compaction (see print CSS)
-      planClone.style.cssText = 'display:flex;flex-direction:column;gap:2px;width:100%';
+      planClone.style.cssText = 'display:flex;flex-direction:column;gap:6px;width:100%';
       const page = document.createElement('div');
-      page.className = 'page';
+      page.className = 'page ppage';                    // ppage => printed in A4 portrait (stående)
       page.setAttribute('data-duplex', '1');
       page.style.display = 'block';
       page.appendChild(planClone);
