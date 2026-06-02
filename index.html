@@ -47,19 +47,19 @@ input[type=checkbox]{width:12px;height:12px;accent-color:#f90;cursor:pointer;fle
 .profrow{display:flex;border:1px solid #aaa;border-radius:2px;overflow:hidden}
 .profsvg{flex:1;padding:5px 5px 2px 3px;display:flex;flex-direction:column}
 .profsvg svg{width:100%;display:block}
-.timeio{display:flex;justify-content:space-between;gap:10px;padding:0 6px 4px}
-.timeio label{display:flex;align-items:flex-end;gap:4px;font-size:9.5px;font-weight:700;white-space:nowrap;cursor:text}
-.timeio input{border:none;border-bottom:1px solid #888;font-size:10px;width:80px;background:transparent;outline:none;padding:1px 0;color:#000}
+.timeio{display:flex;gap:16px;padding:0 5px 4px calc(34/326 * 100%)}
+.timeio label{display:flex;align-items:flex-end;gap:3px;font-size:9.5px;font-weight:700;white-space:nowrap;cursor:text}
+.timeio input{border:none;border-bottom:1px solid #888;font-size:10px;width:55px;background:transparent;outline:none;padding:1px 0;color:#000}
 .timeio input:focus{border-bottom-color:#f90}
 .ddpanel{flex-shrink:0;width:136px;border-left:1.5px solid #aaa;display:flex;flex-direction:column}
 .ddhead{background:#f90;font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:.5px;padding:3px 7px;flex-shrink:0}
-.ddbody{padding:5px 7px;flex:1}
-.ddr{display:flex;align-items:flex-end;gap:3px;margin-bottom:3px}
-.dl{font-size:10px;min-width:83px;white-space:nowrap;flex-shrink:0}
-.ddr input{font-size:10px;width:38px;min-width:0}
+.ddbody{padding:5px 7px;flex:1;display:flex;flex-direction:column;justify-content:space-between}
+.ddr{display:flex;align-items:flex-end;gap:3px}
+.dl{font-size:11px;min-width:88px;white-space:nowrap;flex-shrink:0}
+.ddr input{font-size:11px;width:34px;min-width:0}
 
 .utrow{display:flex;border:1px solid #aaa;border-radius:2px;overflow:hidden}
-.utlines{flex:1;padding:5px 8px;display:flex;flex-direction:column;gap:0}
+.utlines{flex:1;padding:5px 8px;display:flex;flex-direction:column;justify-content:space-between}
 .utlines input{border:none;border-bottom:1px solid #ccc;font-size:11px;outline:none;background:transparent;width:100%;padding:4px 0;color:#000}
 .utlines input:focus{border-bottom-color:#f90}
 .atpanel{flex-shrink:0;width:200px;border-left:1px solid #aaa;display:flex;flex-direction:column}
@@ -229,8 +229,8 @@ body.editing .edit-hint{display:inline}
     <div class="tab et" contenteditable="false">Dykprofil</div>
     <div class="profsvg">
       <div class="timeio">
-        <label>Time in:<input type="text" id="time-in"></label>
-        <label>Time out:<input type="text" id="time-out"></label>
+        <label>Tid in:<input type="text" id="time-in"></label>
+        <label>Tid ut:<input type="text" id="time-out"></label>
       </div>
       <svg viewBox="0 0 326 210" xmlns="http://www.w3.org/2000/svg">
         <line x1="34" y1="16" x2="314" y2="16" stroke="#ddd" stroke-width="0.7"/>
@@ -501,8 +501,8 @@ body.editing .edit-hint{display:inline}
     <div class="tab">Dykprofil</div>
     <div class="profsvg">
       <div class="timeio">
-        <label>Time in:<input type="text" id="b1-time-in"></label>
-        <label>Time out:<input type="text" id="b1-time-out"></label>
+        <label>Tid in:<input type="text" id="b1-time-in"></label>
+        <label>Tid ut:<input type="text" id="b1-time-out"></label>
       </div>
       <svg viewBox="0 0 326 210" xmlns="http://www.w3.org/2000/svg">
         <line x1="34" y1="16" x2="314" y2="16" stroke="#ddd" stroke-width="0.7"/>
@@ -625,8 +625,8 @@ body.editing .edit-hint{display:inline}
     <div class="tab">Dykprofil</div>
     <div class="profsvg">
       <div class="timeio">
-        <label>Time in:<input type="text" id="b2-time-in"></label>
-        <label>Time out:<input type="text" id="b2-time-out"></label>
+        <label>Tid in:<input type="text" id="b2-time-in"></label>
+        <label>Tid ut:<input type="text" id="b2-time-out"></label>
       </div>
       <svg viewBox="0 0 326 210" xmlns="http://www.w3.org/2000/svg">
         <line x1="34" y1="16" x2="314" y2="16" stroke="#ddd" stroke-width="0.7"/>
