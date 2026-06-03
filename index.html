@@ -965,6 +965,7 @@ function renderGrid(inst) {
   obj.typer.forEach((text, i) => {
     const label = document.createElement('label');
     label.className = 'chk';
+    label.setAttribute('data-lid', 'at-' + inst + '-' + i);   // stable lid so it's individually movable
     const cb = document.createElement('input'); cb.type = 'checkbox';
     if (obj.checked[i]) cb.checked = true;
     cb.addEventListener('change', () => { obj.checked[i] = cb.checked; });
@@ -972,6 +973,8 @@ function renderGrid(inst) {
     label.appendChild(document.createTextNode('\u00a0' + text));
     grid.appendChild(label);
   });
+  // Re-apply any saved move/scale transforms to the freshly built labels
+  if (typeof applyTf === 'function') grid.querySelectorAll('[data-lid]').forEach(el => { if (layoutTf[lid(el)]) applyTf(el); });
 }
 
 let activeModalInst = 'main';
@@ -1106,8 +1109,9 @@ function saveLayoutSoon() {
 
 // --- Hover highlight ---
 let hovEl = null;
+let dragging = false;
 function onHover(e) {
-  if (!moveMode) return;
+  if (!moveMode || dragging) return;
   const el = pickTarget(e.target);
   if (el === hovEl) return;
   if (hovEl) hovEl.classList.remove('lhover');
@@ -1133,12 +1137,15 @@ function startMove(e) {
   if (!selEl) return;
   const t = layoutTf[lid(selEl)];
   const sx = e.clientX, sy = e.clientY, ox = t.x, oy = t.y;
+  dragging = true;
+  if (hovEl) { hovEl.classList.remove('lhover'); hovEl = null; }
   const move = ev => {
     t.x = ox + (ev.clientX - sx);
     t.y = oy + (ev.clientY - sy);
     applyTf(selEl); positionBox();
   };
   const up = () => {
+    dragging = false;
     document.removeEventListener('pointermove', move);
     document.removeEventListener('pointerup', up);
     saveLayoutSoon();
@@ -1160,12 +1167,14 @@ lhandle.addEventListener('pointerdown', function (e) {
   const r = selEl.getBoundingClientRect();
   const baseW = r.width / t.s;                             // unscaled width
   const sx = e.clientX, os = t.s;
+  dragging = true;
   const move = ev => {
     const ns = Math.max(0.3, Math.min(6, os + (ev.clientX - sx) / Math.max(40, baseW)));
     t.s = Math.round(ns * 100) / 100;
     applyTf(selEl); positionBox();
   };
   const up = () => {
+    dragging = false;
     document.removeEventListener('pointermove', move);
     document.removeEventListener('pointerup', up);
     saveLayoutSoon();
