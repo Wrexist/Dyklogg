@@ -214,7 +214,7 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
   <button class="btn" id="edit-btn" onclick="toggleEdit()">&#9998; Redigera text</button>
   <button class="btn" id="move-btn" onclick="toggleMove()">&#10021; Flytta / Skala</button>
   <span class="edit-hint">Klicka p&#229; valfri text f&#246;r att &#228;ndra den</span>
-  <span class="move-hint">Klicka p&#229; n&#229;got f&#246;r att flytta &#8211; dra h&#246;rnet f&#246;r att skala &#8211; piltangenter nudgar &#8211; dubbelklick &#229;terst&#228;ller</span>
+  <span class="move-hint">Klicka p&#229; n&#229;got f&#246;r att flytta &#8211; dra h&#246;rnet f&#246;r att skala &#8211; piltangenter nudgar &#8211; dubbelklick &#229;terst&#228;ller &#8211; <b>allt sparas automatiskt</b></span>
   <button class="btn g" onclick="saveJSON()">&#128190; Spara</button>
   <button class="btn g" onclick="loadJSON()">&#128194; Ladda</button>
   <button class="btn g" onclick="clearAll()">&#128465; Rensa</button>
@@ -1103,8 +1103,12 @@ function positionBox() {
   lbox.style.height = r.height + 'px';
 }
 
+let _layoutSavedTimer = null;
 function saveLayoutSoon() {
   try { localStorage.setItem('dyklogg_autosave', JSON.stringify(gatherAll())); } catch (e) {}
+  // Debounced confirmation so rapid drags don't spam the toast
+  clearTimeout(_layoutSavedTimer);
+  _layoutSavedTimer = setTimeout(() => toast('✓ Position sparad'), 500);
 }
 
 // --- Hover highlight ---
