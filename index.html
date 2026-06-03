@@ -49,10 +49,12 @@ input[type=checkbox]{width:12px;height:12px;accent-color:#f90;cursor:pointer;fle
 .profrow{display:flex;border:1px solid #aaa;border-radius:2px;overflow:hidden}
 .profsvg{flex:1;padding:5px 5px 2px 3px;display:flex;flex-direction:column}
 .profsvg svg{width:100%;display:block}
-.timeio{display:flex;justify-content:space-between;padding:0 calc(20/326 * 100%) 4px calc(56/326 * 100%)}
-.timeio label{display:flex;align-items:flex-end;gap:3px;font-size:9.5px;font-weight:700;white-space:nowrap;cursor:text}
-.timeio input{border:none;border-bottom:1px solid #888;font-size:10px;width:55px;background:transparent;outline:none;padding:1px 0;color:#000}
-.timeio input:focus{border-bottom-color:#f90}
+/* Starttid / Sluttid fields embedded in the top band of the profile SVG */
+.svgtime{display:flex;align-items:flex-end;gap:3px;height:100%;font:700 8px Arial,sans-serif;color:#000;white-space:nowrap}
+.svgtime.right{justify-content:flex-end}
+.svgtime input{border:none;border-bottom:1px solid #888;background:transparent;font:400 8px Arial,sans-serif;flex:1;min-width:0;outline:none;color:#000;padding:0}
+.svgtime.right input{flex:none;width:62px}
+.svgtime input:focus{border-bottom-color:#f90}
 /* Fillable "Max djup" field embedded in the profile SVG (foreignObject) */
 .svgfield{display:flex;align-items:flex-end;gap:2px;font:700 9px Arial,sans-serif;color:#333;white-space:nowrap}
 .svgfield input{border:none;border-bottom:1px solid #888;background:transparent;font:400 9px Arial,sans-serif;width:48px;outline:none;color:#000;padding:0}
@@ -129,7 +131,21 @@ body.editing .et:focus{outline:2px solid #2a6aad;background:rgba(42,106,173,.12)
 .edit-hint{display:none;font-size:11px;color:#2a6aad;margin-left:8px;font-style:italic}
 body.editing .edit-hint{display:inline}
 
+/* MOVE / SCALE MODE */
+#move-btn.active{background:#1a8a3a;color:#fff}
+.move-hint{display:none;font-size:11px;color:#1a8a3a;margin-left:8px;font-style:italic}
+body.moving .move-hint{display:inline}
+body.moving{cursor:default}
+body.moving #view-combined,body.moving #view-dyklog{user-select:none}
+.lhover{outline:1.5px dashed #1a8a3a!important;outline-offset:1px;cursor:move}
+.lbox{position:absolute;border:2px solid #1a8a3a;box-sizing:border-box;z-index:80;cursor:move;display:none;touch-action:none}
+.lbox .lhandle{position:absolute;right:-7px;bottom:-7px;width:14px;height:14px;background:#1a8a3a;border:2px solid #fff;border-radius:3px;cursor:nwse-resize;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.lbox .ltools{position:absolute;left:0;top:-23px;display:flex;gap:3px;white-space:nowrap}
+.lbox .ltools button{background:#1a8a3a;color:#fff;border:none;border-radius:3px;font-size:11px;font-weight:700;padding:2px 7px;cursor:pointer;line-height:1.4;box-shadow:0 1px 3px rgba(0,0,0,.25)}
+.lbox .ltools button:hover{background:#157a32}
+
 @media print{
+  .lbox,.lhover{display:none!important;outline:none!important}
   body{background:#fff}
   .toolbar{display:none!important}
   .foldline{display:none!important}
@@ -196,7 +212,9 @@ body.editing .edit-hint{display:inline}
     </select>
   </label>
   <button class="btn" id="edit-btn" onclick="toggleEdit()">&#9998; Redigera text</button>
+  <button class="btn" id="move-btn" onclick="toggleMove()">&#10021; Flytta / Skala</button>
   <span class="edit-hint">Klicka p&#229; valfri text f&#246;r att &#228;ndra den</span>
+  <span class="move-hint">Klicka p&#229; n&#229;got f&#246;r att flytta &#8211; dra h&#246;rnet f&#246;r att skala &#8211; piltangenter nudgar &#8211; dubbelklick &#229;terst&#228;ller &#8211; <b>allt sparas automatiskt</b></span>
   <button class="btn g" onclick="saveJSON()">&#128190; Spara</button>
   <button class="btn g" onclick="loadJSON()">&#128194; Ladda</button>
   <button class="btn g" onclick="clearAll()">&#128465; Rensa</button>
@@ -238,10 +256,6 @@ body.editing .edit-hint{display:inline}
   <div class="profrow">
     <div class="tab et" contenteditable="false">Dykprofil</div>
     <div class="profsvg">
-      <div class="timeio">
-        <label>Starttid:<input type="text" id="time-in"></label>
-        <label>Sluttid:<input type="text" id="time-out"></label>
-      </div>
       <svg viewBox="0 0 326 210" xmlns="http://www.w3.org/2000/svg">
         <line x1="34" y1="16" x2="314" y2="16" stroke="#ddd" stroke-width="0.7"/>
         <line x1="34" y1="48" x2="314" y2="48" stroke="#ddd" stroke-width="0.7"/>
@@ -261,11 +275,13 @@ body.editing .edit-hint{display:inline}
         <text x="29" y="147" text-anchor="end" font-size="8.5" fill="#555">20</text>
         <text x="29" y="179" text-anchor="end" font-size="8.5" fill="#555">25</text>
         <text x="9" y="97" text-anchor="middle" font-size="8" fill="#444" transform="rotate(-90 9 97)">Djup (m)</text>
-        <polyline points="34,16 60,16 108,140 200,140 248,48 292,48 314,16" fill="none" stroke="#111" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+        <foreignObject x="0" y="1" width="150" height="14"><div xmlns="http://www.w3.org/1999/xhtml" class="svgtime"><span>Starttid:</span><input type="text" id="time-in"/></div></foreignObject>
+        <foreignObject x="164" y="1" width="150" height="14"><div xmlns="http://www.w3.org/1999/xhtml" class="svgtime right"><span>Sluttid:</span><input type="text" id="time-out"/></div></foreignObject>
+        <polyline points="34,16 100,160 198,160 250,48 292,48 314,16" fill="none" stroke="#111" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
         <line x1="314" y1="16" x2="322" y2="16" stroke="#111" stroke-width="1.5"/>
         <polygon points="322,13 326,16 322,19" fill="#111"/>
         <text x="252" y="40" font-size="8" fill="#333">(3&#8211;5 m)</text>
-        <foreignObject x="92" y="145" width="124" height="24"><div xmlns="http://www.w3.org/1999/xhtml" class="svgfield"><span>Max djup:</span><input type="text" id="maxdjup"/></div></foreignObject>
+        <foreignObject x="114" y="166" width="120" height="20"><div xmlns="http://www.w3.org/1999/xhtml" class="svgfield"><span>Max djup:</span><input type="text" id="maxdjup"/></div></foreignObject>
         <line x1="34" y1="191" x2="322" y2="191" stroke="#111" stroke-width="1.3"/>
         <polygon points="322,188 326,191 322,194" fill="#111"/>
         <text x="314" y="204" font-size="8.5" fill="#333">Tid</text>
@@ -508,10 +524,6 @@ body.editing .edit-hint{display:inline}
   <div class="profrow">
     <div class="tab">Dykprofil</div>
     <div class="profsvg">
-      <div class="timeio">
-        <label>Starttid:<input type="text" id="b1-time-in"></label>
-        <label>Sluttid:<input type="text" id="b1-time-out"></label>
-      </div>
       <svg viewBox="0 0 326 210" xmlns="http://www.w3.org/2000/svg">
         <line x1="34" y1="16" x2="314" y2="16" stroke="#ddd" stroke-width="0.7"/>
         <line x1="34" y1="48" x2="314" y2="48" stroke="#ddd" stroke-width="0.7"/>
@@ -531,11 +543,13 @@ body.editing .edit-hint{display:inline}
         <text x="29" y="147" text-anchor="end" font-size="8.5" fill="#555">20</text>
         <text x="29" y="179" text-anchor="end" font-size="8.5" fill="#555">25</text>
         <text x="9" y="97" text-anchor="middle" font-size="8" fill="#444" transform="rotate(-90 9 97)">Djup (m)</text>
-        <polyline points="34,16 60,16 108,140 200,140 248,48 292,48 314,16" fill="none" stroke="#111" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+        <foreignObject x="0" y="1" width="150" height="14"><div xmlns="http://www.w3.org/1999/xhtml" class="svgtime"><span>Starttid:</span><input type="text" id="b1-time-in"/></div></foreignObject>
+        <foreignObject x="164" y="1" width="150" height="14"><div xmlns="http://www.w3.org/1999/xhtml" class="svgtime right"><span>Sluttid:</span><input type="text" id="b1-time-out"/></div></foreignObject>
+        <polyline points="34,16 100,160 198,160 250,48 292,48 314,16" fill="none" stroke="#111" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
         <line x1="314" y1="16" x2="322" y2="16" stroke="#111" stroke-width="1.5"/>
         <polygon points="322,13 326,16 322,19" fill="#111"/>
         <text x="252" y="40" font-size="8" fill="#333">(3&#8211;5 m)</text>
-        <foreignObject x="92" y="145" width="124" height="24"><div xmlns="http://www.w3.org/1999/xhtml" class="svgfield"><span>Max djup:</span><input type="text" id="b1-maxdjup"/></div></foreignObject>
+        <foreignObject x="114" y="166" width="120" height="20"><div xmlns="http://www.w3.org/1999/xhtml" class="svgfield"><span>Max djup:</span><input type="text" id="b1-maxdjup"/></div></foreignObject>
         <line x1="34" y1="191" x2="322" y2="191" stroke="#111" stroke-width="1.3"/>
         <polygon points="322,188 326,191 322,194" fill="#111"/>
         <text x="314" y="204" font-size="8.5" fill="#333">Tid</text>
@@ -629,10 +643,6 @@ body.editing .edit-hint{display:inline}
   <div class="profrow">
     <div class="tab">Dykprofil</div>
     <div class="profsvg">
-      <div class="timeio">
-        <label>Starttid:<input type="text" id="b2-time-in"></label>
-        <label>Sluttid:<input type="text" id="b2-time-out"></label>
-      </div>
       <svg viewBox="0 0 326 210" xmlns="http://www.w3.org/2000/svg">
         <line x1="34" y1="16" x2="314" y2="16" stroke="#ddd" stroke-width="0.7"/>
         <line x1="34" y1="48" x2="314" y2="48" stroke="#ddd" stroke-width="0.7"/>
@@ -652,11 +662,13 @@ body.editing .edit-hint{display:inline}
         <text x="29" y="147" text-anchor="end" font-size="8.5" fill="#555">20</text>
         <text x="29" y="179" text-anchor="end" font-size="8.5" fill="#555">25</text>
         <text x="9" y="97" text-anchor="middle" font-size="8" fill="#444" transform="rotate(-90 9 97)">Djup (m)</text>
-        <polyline points="34,16 60,16 108,140 200,140 248,48 292,48 314,16" fill="none" stroke="#111" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+        <foreignObject x="0" y="1" width="150" height="14"><div xmlns="http://www.w3.org/1999/xhtml" class="svgtime"><span>Starttid:</span><input type="text" id="b2-time-in"/></div></foreignObject>
+        <foreignObject x="164" y="1" width="150" height="14"><div xmlns="http://www.w3.org/1999/xhtml" class="svgtime right"><span>Sluttid:</span><input type="text" id="b2-time-out"/></div></foreignObject>
+        <polyline points="34,16 100,160 198,160 250,48 292,48 314,16" fill="none" stroke="#111" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
         <line x1="314" y1="16" x2="322" y2="16" stroke="#111" stroke-width="1.5"/>
         <polygon points="322,13 326,16 322,19" fill="#111"/>
         <text x="252" y="40" font-size="8" fill="#333">(3&#8211;5 m)</text>
-        <foreignObject x="92" y="145" width="124" height="24"><div xmlns="http://www.w3.org/1999/xhtml" class="svgfield"><span>Max djup:</span><input type="text" id="b2-maxdjup"/></div></foreignObject>
+        <foreignObject x="114" y="166" width="120" height="20"><div xmlns="http://www.w3.org/1999/xhtml" class="svgfield"><span>Max djup:</span><input type="text" id="b2-maxdjup"/></div></foreignObject>
         <line x1="34" y1="191" x2="322" y2="191" stroke="#111" stroke-width="1.3"/>
         <polygon points="322,188 326,191 322,194" fill="#111"/>
         <text x="314" y="204" font-size="8.5" fill="#333">Tid</text>
@@ -748,6 +760,7 @@ body.editing .edit-hint{display:inline}
 const ETV = 9;  // editable label (.et) order  — bump when .et elements are added/removed/reordered
 const CBV = 2;  // non-id checkbox order (utrustning / åtgärder) — bump when those change
 const ATV = 4;  // default arbetstyp list — bump when the default typer change
+const LTV = 1;  // layout-transform (move/scale) element order — bump when the DOM structure changes
 
 // Map saved data to its group versions. New saves carry _etv/_cbv/_atv directly; older saves
 // only had a single _schema, so derive each group's version from it for backward compatibility.
@@ -952,6 +965,7 @@ function renderGrid(inst) {
   obj.typer.forEach((text, i) => {
     const label = document.createElement('label');
     label.className = 'chk';
+    label.setAttribute('data-lid', 'at-' + inst + '-' + i);   // stable lid so it's individually movable
     const cb = document.createElement('input'); cb.type = 'checkbox';
     if (obj.checked[i]) cb.checked = true;
     cb.addEventListener('change', () => { obj.checked[i] = cb.checked; });
@@ -959,6 +973,8 @@ function renderGrid(inst) {
     label.appendChild(document.createTextNode('\u00a0' + text));
     grid.appendChild(label);
   });
+  // Re-apply any saved move/scale transforms to the freshly built labels
+  if (typeof applyTf === 'function') grid.querySelectorAll('[data-lid]').forEach(el => { if (layoutTf[lid(el)]) applyTf(el); });
 }
 
 let activeModalInst = 'main';
@@ -1023,6 +1039,213 @@ function toggleEdit() {
   document.body.classList.toggle('editing', editMode);
 }
 
+// =====================================================================
+//  MOVE / SCALE MODE  — drag to move and scale any text / block / box
+// =====================================================================
+// Each movable element gets a stable position-based data-lid (assigned in
+// document order across both views). Transforms are stored by lid as
+// {x,y,s} and persisted with the rest of the form (version-gated by LTV).
+let moveMode = false;
+let selEl = null;
+let layoutTf = {};                 // lid -> {x, y, s}
+const lbox = document.createElement('div');
+lbox.className = 'lbox';
+lbox.innerHTML = '<div class="ltools">'
+  + '<button type="button" data-act="parent" title="Välj förälder">⤢ Förälder</button>'
+  + '<button type="button" data-act="reset" title="Återställ detta element">⟲ Återställ</button>'
+  + '</div><div class="lhandle"></div>';
+const lhandle = lbox.querySelector('.lhandle');
+document.body.appendChild(lbox);
+
+function lid(el) { return el && el.getAttribute && el.getAttribute('data-lid'); }
+
+// Assign stable layout ids to every element inside the two page views.
+(function assignLids() {
+  let i = 0;
+  document.querySelectorAll('#view-combined *, #view-dyklog *').forEach(el => el.setAttribute('data-lid', 'L' + (i++)));
+})();
+
+function applyTf(el) {
+  const t = layoutTf[lid(el)];
+  if (!t) { el.style.transform = ''; return; }
+  el.style.transformOrigin = 'top left';
+  el.style.transform = 'translate(' + t.x + 'px,' + t.y + 'px) scale(' + t.s + ')';
+}
+function applyAllTf() {
+  document.querySelectorAll('[data-lid]').forEach(el => { if (layoutTf[lid(el)]) applyTf(el); });
+}
+
+// Pick the most sensible element to select for a given event target.
+const SVG_SHAPES = new Set(['svg','line','polyline','polygon','rect','circle','ellipse','path','text','g','tspan']);
+function pickTarget(t) {
+  if (!t || t === document.body) return null;
+  if (lbox.contains(t)) return null;                       // ignore the overlay itself
+  if (t.closest('.toolbar')) return null;
+  // Raw SVG shapes aren't individually movable — grab the whole profile box instead
+  if (t.namespaceURI === 'http://www.w3.org/2000/svg' && SVG_SHAPES.has(t.tagName.toLowerCase())) {
+    return t.closest('.profsvg') || t.closest('svg');
+  }
+  return t.closest('[data-lid]');
+}
+
+function selectEl(el) {
+  selEl = el || null;
+  if (selEl && !layoutTf[lid(selEl)]) layoutTf[lid(selEl)] = { x: 0, y: 0, s: 1 };
+  positionBox();
+}
+function positionBox() {
+  if (!selEl || !moveMode) { lbox.style.display = 'none'; return; }
+  const r = selEl.getBoundingClientRect();
+  lbox.style.display = 'block';
+  lbox.style.left = (r.left + window.scrollX) + 'px';
+  lbox.style.top = (r.top + window.scrollY) + 'px';
+  lbox.style.width = r.width + 'px';
+  lbox.style.height = r.height + 'px';
+}
+
+let _layoutSavedTimer = null;
+function saveLayoutSoon() {
+  try { localStorage.setItem('dyklogg_autosave', JSON.stringify(gatherAll())); } catch (e) {}
+  // Debounced confirmation so rapid drags don't spam the toast
+  clearTimeout(_layoutSavedTimer);
+  _layoutSavedTimer = setTimeout(() => toast('✓ Position sparad'), 500);
+}
+
+// --- Hover highlight ---
+let hovEl = null;
+let dragging = false;
+function onHover(e) {
+  if (!moveMode || dragging) return;
+  const el = pickTarget(e.target);
+  if (el === hovEl) return;
+  if (hovEl) hovEl.classList.remove('lhover');
+  hovEl = (el && el !== selEl) ? el : null;
+  if (hovEl) hovEl.classList.add('lhover');
+}
+document.addEventListener('mousemove', onHover);
+
+// --- Click to select (capture so it beats input focus / link clicks) ---
+document.addEventListener('pointerdown', function (e) {
+  if (!moveMode) return;
+  if (lbox.contains(e.target)) return;                     // handled by box/handle listeners
+  const el = pickTarget(e.target);
+  if (!el) { selectEl(null); return; }
+  e.preventDefault(); e.stopPropagation();
+  if (hovEl) { hovEl.classList.remove('lhover'); hovEl = null; }
+  selectEl(el);
+  startMove(e);                                            // begin dragging immediately
+}, true);
+
+// --- Drag to move ---
+function startMove(e) {
+  if (!selEl) return;
+  const t = layoutTf[lid(selEl)];
+  const sx = e.clientX, sy = e.clientY, ox = t.x, oy = t.y;
+  dragging = true;
+  if (hovEl) { hovEl.classList.remove('lhover'); hovEl = null; }
+  const move = ev => {
+    t.x = ox + (ev.clientX - sx);
+    t.y = oy + (ev.clientY - sy);
+    applyTf(selEl); positionBox();
+  };
+  const up = () => {
+    dragging = false;
+    document.removeEventListener('pointermove', move);
+    document.removeEventListener('pointerup', up);
+    saveLayoutSoon();
+  };
+  document.addEventListener('pointermove', move);
+  document.addEventListener('pointerup', up);
+}
+lbox.addEventListener('pointerdown', function (e) {
+  if (e.target === lhandle || e.target.closest('.ltools')) return;
+  e.preventDefault();
+  startMove(e);
+});
+
+// --- Drag the corner handle to scale ---
+lhandle.addEventListener('pointerdown', function (e) {
+  if (!selEl) return;
+  e.preventDefault(); e.stopPropagation();
+  const t = layoutTf[lid(selEl)];
+  const r = selEl.getBoundingClientRect();
+  const baseW = r.width / t.s;                             // unscaled width
+  const sx = e.clientX, os = t.s;
+  dragging = true;
+  const move = ev => {
+    const ns = Math.max(0.3, Math.min(6, os + (ev.clientX - sx) / Math.max(40, baseW)));
+    t.s = Math.round(ns * 100) / 100;
+    applyTf(selEl); positionBox();
+  };
+  const up = () => {
+    dragging = false;
+    document.removeEventListener('pointermove', move);
+    document.removeEventListener('pointerup', up);
+    saveLayoutSoon();
+  };
+  document.addEventListener('pointermove', move);
+  document.addEventListener('pointerup', up);
+});
+
+// --- Toolbar buttons on the selection box ---
+lbox.querySelector('.ltools').addEventListener('pointerdown', e => e.stopPropagation());
+lbox.querySelector('.ltools').addEventListener('click', function (e) {
+  const act = e.target.getAttribute('data-act');
+  if (!act || !selEl) return;
+  if (act === 'parent') {
+    const p = selEl.parentElement && selEl.parentElement.closest('[data-lid]');
+    if (p) selectEl(p);
+  } else if (act === 'reset') {
+    resetEl(selEl); saveLayoutSoon();
+  }
+});
+
+// --- Double-click resets the element under the cursor ---
+document.addEventListener('dblclick', function (e) {
+  if (!moveMode) return;
+  const el = pickTarget(e.target) || selEl;
+  if (el) { e.preventDefault(); resetEl(el); selectEl(el); saveLayoutSoon(); }
+});
+function resetEl(el) {
+  delete layoutTf[lid(el)];
+  el.style.transform = '';
+  positionBox();
+}
+
+// --- Keyboard: nudge + scale + deselect ---
+document.addEventListener('keydown', function (e) {
+  if (!moveMode || !selEl) return;
+  const t = layoutTf[lid(selEl)];
+  const step = e.shiftKey ? 10 : 1;
+  let used = true;
+  switch (e.key) {
+    case 'ArrowLeft':  t.x -= step; break;
+    case 'ArrowRight': t.x += step; break;
+    case 'ArrowUp':    t.y -= step; break;
+    case 'ArrowDown':  t.y += step; break;
+    case '+': case '=': t.s = Math.min(6, Math.round((t.s + 0.05) * 100) / 100); break;
+    case '-': case '_': t.s = Math.max(0.3, Math.round((t.s - 0.05) * 100) / 100); break;
+    case 'Escape': selectEl(null); used = true; break;
+    default: used = false;
+  }
+  if (used) { e.preventDefault(); if (e.key !== 'Escape') { applyTf(selEl); positionBox(); } saveLayoutSoon(); }
+});
+
+window.addEventListener('scroll', positionBox, true);
+window.addEventListener('resize', positionBox);
+
+function toggleMove() {
+  moveMode = !moveMode;
+  const btn = document.getElementById('move-btn');
+  btn.textContent = moveMode ? '✅ Klar med flytt' : '✩ Flytta / Skala';
+  btn.classList.toggle('active', moveMode);
+  document.body.classList.toggle('moving', moveMode);
+  if (!moveMode) {
+    if (hovEl) { hovEl.classList.remove('lhover'); hovEl = null; }
+    selectEl(null);
+  }
+}
+
 // --- Editable label text helpers ---
 function getEditableTexts() {
   const d = {};
@@ -1057,7 +1280,8 @@ function gatherAll() {
   });
   glSpans().forEach((sp, i) => { d['_gl' + i] = sp.classList.contains('gsel'); });
   Object.assign(d, getEditableTexts());
-  d._etv = ETV; d._cbv = CBV; d._atv = ATV;
+  d._layout = JSON.stringify(layoutTf);
+  d._etv = ETV; d._cbv = CBV; d._atv = ATV; d._ltv = LTV;
   return d;
 }
 
@@ -1084,6 +1308,11 @@ function applyAll(d) {
   ['main','b1','b2'].forEach(inst => renderGrid(inst));
   glSpans().forEach((sp, i) => { if (d['_gl' + i] !== undefined) sp.classList.toggle('gsel', !!d['_gl' + i]); });
   setEditableTexts(d);
+  // Restore move/scale transforms only if the DOM structure matches (LTV)
+  document.querySelectorAll('[data-lid]').forEach(el => { el.style.transform = ''; });
+  layoutTf = (d._layout && d._ltv === LTV) ? (function () { try { return JSON.parse(d._layout); } catch (e) { return {}; } })() : {};
+  applyAllTf();
+  if (typeof positionBox === 'function') positionBox();
 }
 
 function toast(msg) {
@@ -1143,6 +1372,9 @@ function clearAll() {
   document.querySelectorAll('input[type=checkbox]').forEach(el => el.checked = false);
   ['main','b1','b2'].forEach(inst=>{ atInstances[inst].checked = {}; renderGrid(inst); });
   glSpans().forEach(sp => sp.classList.remove('gsel'));
+  layoutTf = {};
+  document.querySelectorAll('[data-lid]').forEach(el => { el.style.transform = ''; });
+  selectEl(null);
   try { localStorage.removeItem('dyklogg_autosave'); } catch(e) {}
   toast('Rensat');
 }
