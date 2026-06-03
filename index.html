@@ -50,13 +50,14 @@ input[type=checkbox]{width:12px;height:12px;accent-color:#f90;cursor:pointer;fle
 .profsvg{flex:1;padding:5px 5px 2px 3px;display:flex;flex-direction:column}
 .profsvg svg{width:100%;display:block}
 /* Starttid / Sluttid fields embedded in the top band of the profile SVG */
-.svgtime{display:flex;align-items:flex-end;gap:3px;height:100%;font:700 8px Arial,sans-serif;color:#000;white-space:nowrap}
+.profsvg svg foreignObject{overflow:visible}
+.svgtime{display:flex;align-items:flex-end;gap:3px;height:100%;font:700 8px Arial,sans-serif;color:#000;white-space:nowrap;overflow:visible}
 .svgtime.right{justify-content:flex-end}
 .svgtime input{border:none;border-bottom:1px solid #888;background:transparent;font:400 8px Arial,sans-serif;flex:1;min-width:0;outline:none;color:#000;padding:0}
 .svgtime.right input{flex:none;width:62px}
 .svgtime input:focus{border-bottom-color:#f90}
 /* Fillable "Max djup" field embedded in the profile SVG (foreignObject) */
-.svgfield{display:flex;align-items:flex-end;gap:2px;font:700 9px Arial,sans-serif;color:#333;white-space:nowrap}
+.svgfield{display:flex;align-items:flex-end;gap:2px;font:700 9px Arial,sans-serif;color:#333;white-space:nowrap;overflow:visible}
 .svgfield input{border:none;border-bottom:1px solid #888;background:transparent;font:400 9px Arial,sans-serif;width:48px;outline:none;color:#000;padding:0}
 .svgfield input:focus{border-bottom-color:#f90}
 .ddpanel{flex-shrink:0;width:136px;border-left:1.5px solid #aaa;display:flex;flex-direction:column}
@@ -275,13 +276,14 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
         <text x="29" y="147" text-anchor="end" font-size="8.5" fill="#555">20</text>
         <text x="29" y="179" text-anchor="end" font-size="8.5" fill="#555">25</text>
         <text x="9" y="97" text-anchor="middle" font-size="8" fill="#444" transform="rotate(-90 9 97)">Djup (m)</text>
-        <foreignObject x="0" y="1" width="150" height="14"><div xmlns="http://www.w3.org/1999/xhtml" class="svgtime"><span>Starttid:</span><input type="text" id="time-in"/></div></foreignObject>
-        <foreignObject x="164" y="1" width="150" height="14"><div xmlns="http://www.w3.org/1999/xhtml" class="svgtime right"><span>Sluttid:</span><input type="text" id="time-out"/></div></foreignObject>
+        <foreignObject x="0" y="1" width="150" height="14" overflow="visible"><div xmlns="http://www.w3.org/1999/xhtml" class="svgtime"><span>Starttid:</span><input type="text" id="time-in"/></div></foreignObject>
+        <foreignObject x="164" y="1" width="150" height="14" overflow="visible"><div xmlns="http://www.w3.org/1999/xhtml" class="svgtime right"><span>Sluttid:</span><input type="text" id="time-out"/></div></foreignObject>
         <polyline points="34,16 100,160 198,160 250,48 292,48 314,16" fill="none" stroke="#111" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
         <line x1="314" y1="16" x2="322" y2="16" stroke="#111" stroke-width="1.5"/>
         <polygon points="322,13 326,16 322,19" fill="#111"/>
         <text x="252" y="40" font-size="8" fill="#333">(3&#8211;5 m)</text>
-        <foreignObject x="114" y="166" width="120" height="20"><div xmlns="http://www.w3.org/1999/xhtml" class="svgfield"><span>Max djup:</span><input type="text" id="maxdjup"/></div></foreignObject>
+        <foreignObject x="70" y="166" width="110" height="20" overflow="visible"><div xmlns="http://www.w3.org/1999/xhtml" class="svgfield"><span>Max djup:</span><input type="text" id="maxdjup"/></div></foreignObject>
+        <foreignObject x="190" y="166" width="132" height="20" overflow="visible"><div xmlns="http://www.w3.org/1999/xhtml" class="svgfield"><span>Bottentid:</span><input type="text" id="bottentid"/></div></foreignObject>
         <line x1="34" y1="191" x2="322" y2="191" stroke="#111" stroke-width="1.3"/>
         <polygon points="322,188 326,191 322,194" fill="#111"/>
         <text x="314" y="204" font-size="8.5" fill="#333">Tid</text>
@@ -290,7 +292,6 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
     <div class="ddpanel">
       <div class="ddhead et" contenteditable="false">Dykdata</div>
       <div class="ddbody">
-        <div class="ddr"><span class="dl et" contenteditable="false">Bottentid:</span><input type="text" id="bottentid"></div>
         <div class="ddr"><span class="dl et" contenteditable="false">Sikt:</span><input type="text" id="sikt"></div>
         <div class="ddr"><span class="dl et" contenteditable="false">Temperatur (&#176;C):</span><input type="text" id="temp"></div>
         <div class="ddr"><span class="dl et" contenteditable="false">Deco-stopp:</span><input type="text" id="deco"></div>
@@ -390,8 +391,12 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
   <!-- DYKARBETE -->
   <div class="sec">
     <div class="tab et" contenteditable="false">Dykarbete</div>
-    <div class="sb">
-      <div class="fl"><span class="fll et" contenteditable="false">Typ av dykarbete / omfattning (beskriv kort):</span><input type="text" id="dykarbete-typ"></div>
+    <div class="sb" style="display:flex;flex-direction:column;justify-content:space-between">
+      <div class="fl">
+        <span class="fll et" contenteditable="false">Typ av dykarbete / omfattning (beskriv kort):</span>
+        <input type="text" id="dykarbete-typ" style="margin-top:2px">
+        <input type="text" id="dykarbete-typ2" style="margin-top:4px">
+      </div>
       <div style="margin-top:4px">
         <span class="fll et" contenteditable="false">Arbetsmetoder / moment:</span>
         <input type="text" id="dykarbete-met" style="margin-top:2px">
@@ -403,15 +408,15 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
   <!-- BESATTNING -->
   <div class="sec">
     <div class="tab et" contenteditable="false">Bes&#228;ttning &amp; Certifikat</div>
-    <div class="sb">
-      <div class="g2">
-        <div>
+    <div class="sb" style="display:flex;flex-direction:column">
+      <div class="g2" style="flex:1">
+        <div style="display:flex;flex-direction:column;justify-content:space-between">
           <div class="fl"><span class="fll et" contenteditable="false">Dykledare:</span><input type="text" id="b-led"></div>
           <div class="fl"><span class="fll et" contenteditable="false">Dykare 1:</span><input type="text" id="b-d1"></div>
           <div class="fl"><span class="fll et" contenteditable="false">Dykare 2:</span><input type="text" id="b-d2"></div>
           <div class="fl"><span class="fll et" contenteditable="false">Reservdykare / R&#228;ddningsdykare:</span><input type="text" id="b-reserv"></div>
         </div>
-        <div>
+        <div style="display:flex;flex-direction:column;justify-content:space-between">
           <div class="fl"><span class="fll et" contenteditable="false">Dyksk&#246;tare:</span><input type="text" id="b-dskotar"></div>
           <div class="fl"><span class="fll et" contenteditable="false">Platschef:</span><input type="text" id="b-pchef"></div>
           <div class="fl"><span class="fll et" contenteditable="false">Certifikat / Beh&#246;righet:</span><input type="text" id="b-cert"></div>
@@ -458,14 +463,14 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
   <!-- ATGARDER -->
   <div class="sec">
     <div class="tab et" contenteditable="false">&#197;tg&#228;rder Vid Olycka</div>
-    <div class="sb">
-      <div class="emg">
-        <div>
+    <div class="sb" style="display:flex;flex-direction:column">
+      <div class="emg" style="flex:1">
+        <div style="display:flex;flex-direction:column;justify-content:space-between">
           <div class="fl"><span class="fll et" contenteditable="false">Larmnummer:</span><input type="text" id="larmnr"></div>
           <div class="fl"><span class="fll et" contenteditable="false">N&#228;rmaste tryckkammare:</span><input type="text" id="tryck"></div>
           <div class="fl"><span class="fll et" contenteditable="false">Avst&#229;nd &amp; Tid till tryckkammare:</span><input type="text" id="avstand"></div>
         </div>
-        <div>
+        <div style="display:flex;flex-direction:column;justify-content:space-between">
           <label class="chk" style="margin-bottom:4px"><input type="checkbox"> Plats f&#246;r r&#228;ddningstj&#228;nst</label>
           <label class="chk" style="margin-bottom:4px;align-items:flex-end"><input type="checkbox"> Upptagningsplats f&#246;r n&#246;dst. dykare: <input type="text" style="width:34px;font-size:10px;margin-left:2px"></label>
           <div style="font-size:10px;line-height:1.3;margin:1px 0"><b>R&#228;ddningsdykare ska:</b> vara klar att vara i vattnet inom 5 min vid behov.</div>
@@ -543,13 +548,14 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
         <text x="29" y="147" text-anchor="end" font-size="8.5" fill="#555">20</text>
         <text x="29" y="179" text-anchor="end" font-size="8.5" fill="#555">25</text>
         <text x="9" y="97" text-anchor="middle" font-size="8" fill="#444" transform="rotate(-90 9 97)">Djup (m)</text>
-        <foreignObject x="0" y="1" width="150" height="14"><div xmlns="http://www.w3.org/1999/xhtml" class="svgtime"><span>Starttid:</span><input type="text" id="b1-time-in"/></div></foreignObject>
-        <foreignObject x="164" y="1" width="150" height="14"><div xmlns="http://www.w3.org/1999/xhtml" class="svgtime right"><span>Sluttid:</span><input type="text" id="b1-time-out"/></div></foreignObject>
+        <foreignObject x="0" y="1" width="150" height="14" overflow="visible"><div xmlns="http://www.w3.org/1999/xhtml" class="svgtime"><span>Starttid:</span><input type="text" id="b1-time-in"/></div></foreignObject>
+        <foreignObject x="164" y="1" width="150" height="14" overflow="visible"><div xmlns="http://www.w3.org/1999/xhtml" class="svgtime right"><span>Sluttid:</span><input type="text" id="b1-time-out"/></div></foreignObject>
         <polyline points="34,16 100,160 198,160 250,48 292,48 314,16" fill="none" stroke="#111" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
         <line x1="314" y1="16" x2="322" y2="16" stroke="#111" stroke-width="1.5"/>
         <polygon points="322,13 326,16 322,19" fill="#111"/>
         <text x="252" y="40" font-size="8" fill="#333">(3&#8211;5 m)</text>
-        <foreignObject x="114" y="166" width="120" height="20"><div xmlns="http://www.w3.org/1999/xhtml" class="svgfield"><span>Max djup:</span><input type="text" id="b1-maxdjup"/></div></foreignObject>
+        <foreignObject x="70" y="166" width="110" height="20" overflow="visible"><div xmlns="http://www.w3.org/1999/xhtml" class="svgfield"><span>Max djup:</span><input type="text" id="b1-maxdjup"/></div></foreignObject>
+        <foreignObject x="190" y="166" width="132" height="20" overflow="visible"><div xmlns="http://www.w3.org/1999/xhtml" class="svgfield"><span>Bottentid:</span><input type="text" id="b1-bottentid"/></div></foreignObject>
         <line x1="34" y1="191" x2="322" y2="191" stroke="#111" stroke-width="1.3"/>
         <polygon points="322,188 326,191 322,194" fill="#111"/>
         <text x="314" y="204" font-size="8.5" fill="#333">Tid</text>
@@ -558,7 +564,6 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
     <div class="ddpanel">
       <div class="ddhead">Dykdata</div>
       <div class="ddbody">
-        <div class="ddr"><span class="dl">Bottentid:</span><input type="text" id="b1-bottentid"></div>
         <div class="ddr"><span class="dl">Sikt:</span><input type="text" id="b1-sikt"></div>
         <div class="ddr"><span class="dl">Temperatur (&#176;C):</span><input type="text" id="b1-temp"></div>
         <div class="ddr"><span class="dl">Deco-stopp:</span><input type="text" id="b1-deco"></div>
@@ -662,13 +667,14 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
         <text x="29" y="147" text-anchor="end" font-size="8.5" fill="#555">20</text>
         <text x="29" y="179" text-anchor="end" font-size="8.5" fill="#555">25</text>
         <text x="9" y="97" text-anchor="middle" font-size="8" fill="#444" transform="rotate(-90 9 97)">Djup (m)</text>
-        <foreignObject x="0" y="1" width="150" height="14"><div xmlns="http://www.w3.org/1999/xhtml" class="svgtime"><span>Starttid:</span><input type="text" id="b2-time-in"/></div></foreignObject>
-        <foreignObject x="164" y="1" width="150" height="14"><div xmlns="http://www.w3.org/1999/xhtml" class="svgtime right"><span>Sluttid:</span><input type="text" id="b2-time-out"/></div></foreignObject>
+        <foreignObject x="0" y="1" width="150" height="14" overflow="visible"><div xmlns="http://www.w3.org/1999/xhtml" class="svgtime"><span>Starttid:</span><input type="text" id="b2-time-in"/></div></foreignObject>
+        <foreignObject x="164" y="1" width="150" height="14" overflow="visible"><div xmlns="http://www.w3.org/1999/xhtml" class="svgtime right"><span>Sluttid:</span><input type="text" id="b2-time-out"/></div></foreignObject>
         <polyline points="34,16 100,160 198,160 250,48 292,48 314,16" fill="none" stroke="#111" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
         <line x1="314" y1="16" x2="322" y2="16" stroke="#111" stroke-width="1.5"/>
         <polygon points="322,13 326,16 322,19" fill="#111"/>
         <text x="252" y="40" font-size="8" fill="#333">(3&#8211;5 m)</text>
-        <foreignObject x="114" y="166" width="120" height="20"><div xmlns="http://www.w3.org/1999/xhtml" class="svgfield"><span>Max djup:</span><input type="text" id="b2-maxdjup"/></div></foreignObject>
+        <foreignObject x="70" y="166" width="110" height="20" overflow="visible"><div xmlns="http://www.w3.org/1999/xhtml" class="svgfield"><span>Max djup:</span><input type="text" id="b2-maxdjup"/></div></foreignObject>
+        <foreignObject x="190" y="166" width="132" height="20" overflow="visible"><div xmlns="http://www.w3.org/1999/xhtml" class="svgfield"><span>Bottentid:</span><input type="text" id="b2-bottentid"/></div></foreignObject>
         <line x1="34" y1="191" x2="322" y2="191" stroke="#111" stroke-width="1.3"/>
         <polygon points="322,188 326,191 322,194" fill="#111"/>
         <text x="314" y="204" font-size="8.5" fill="#333">Tid</text>
@@ -677,7 +683,6 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
     <div class="ddpanel">
       <div class="ddhead">Dykdata</div>
       <div class="ddbody">
-        <div class="ddr"><span class="dl">Bottentid:</span><input type="text" id="b2-bottentid"></div>
         <div class="ddr"><span class="dl">Sikt:</span><input type="text" id="b2-sikt"></div>
         <div class="ddr"><span class="dl">Temperatur (&#176;C):</span><input type="text" id="b2-temp"></div>
         <div class="ddr"><span class="dl">Deco-stopp:</span><input type="text" id="b2-deco"></div>
@@ -757,10 +762,10 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
 // Independent layout versions for the three position-based data groups in autosave/JSON.
 // Bump ONLY the group whose layout actually changed, so unrelated saved data survives a
 // template tweak (e.g. moving a label must not wipe checkbox or arbetstyp selections).
-const ETV = 9;  // editable label (.et) order  — bump when .et elements are added/removed/reordered
+const ETV = 10; // editable label (.et) order  — bump when .et elements are added/removed/reordered
 const CBV = 2;  // non-id checkbox order (utrustning / åtgärder) — bump when those change
 const ATV = 4;  // default arbetstyp list — bump when the default typer change
-const LTV = 1;  // layout-transform (move/scale) element order — bump when the DOM structure changes
+const LTV = 2;  // layout-transform (move/scale) element order — bump when the DOM structure changes
 
 // Map saved data to its group versions. New saves carry _etv/_cbv/_atv directly; older saves
 // only had a single _schema, so derive each group's version from it for backward compatibility.
