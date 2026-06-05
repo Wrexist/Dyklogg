@@ -335,7 +335,12 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
         <input type="color" id="accent-input" value="#ff9900" oninput="setAccent(this.value)" style="width:100%;height:30px;border:1px solid #d5d5dd;border-radius:7px;cursor:pointer;background:#fff;padding:2px">
       </div>
       <div class="menu-divider"></div>
-      <button class="btn" style="justify-content:center" onclick="resetBranding()">&#8634; &#197;terst&#228;ll till standard</button>
+      <h4>Egna f&#228;lt</h4>
+      <div id="cf-manage" class="tpl-list"><div class="tpl-empty">Inga egna f&#228;lt &#228;nnu</div></div>
+      <button class="btn" style="justify-content:center" onclick="addCustomField()">&#10133; L&#228;gg till eget f&#228;lt</button>
+      <p class="menu-note">Egna f&#228;lt visas i en &#8220;Egna f&#228;lt&#8221;-ruta i dykloggen och skrivs ut. F&#228;lten g&#228;ller alla dyk; v&#228;rdena sparas per dyk.</p>
+      <div class="menu-divider"></div>
+      <button class="btn" style="justify-content:center" onclick="resetBranding()">&#8634; &#197;terst&#228;ll logga &amp; f&#228;rg</button>
     </div>
   </div>
 
@@ -494,6 +499,12 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
 
       </div>
     </div>
+  </div>
+
+  <!-- EGNA FÄLT (custom fields) -->
+  <div class="sec" id="cf-section" style="display:none">
+    <div class="tab">Egna f&#228;lt</div>
+    <div class="sb" id="cf-host"></div>
   </div>
 
 </div>
@@ -1016,6 +1027,64 @@ function resetBranding() {
   } catch (e) {}
   renderTemplateList();
 })();
+
+// ====================== Egna fält (custom fields) ======================
+// Definitions ({key,label}) are app-level (shared across all dives); the
+// values live per-dive as inputs with id "cf-<key>" (picked up by gatherAll).
+function getCustomFields() { try { return JSON.parse(localStorage.getItem('dyklogg_customfields') || '[]'); } catch (e) { return []; } }
+function setCustomFields(a) { try { localStorage.setItem('dyklogg_customfields', JSON.stringify(a)); } catch (e) {} }
+function renderCustomFields() {
+  const fields = getCustomFields();
+  const host = document.getElementById('cf-host');
+  const section = document.getElementById('cf-section');
+  if (host) {
+    // preserve current values before rebuild
+    const cur = {};
+    host.querySelectorAll('input[id^="cf-"]').forEach(i => cur[i.id] = i.value);
+    host.innerHTML = '';
+    fields.forEach(f => {
+      const row = document.createElement('div'); row.className = 'fl';
+      const lab = document.createElement('span'); lab.className = 'fll'; lab.textContent = f.label;
+      const inp = document.createElement('input'); inp.type = 'text'; inp.id = 'cf-' + f.key;
+      if (cur[inp.id] !== undefined) inp.value = cur[inp.id];
+      row.appendChild(lab); row.appendChild(inp); host.appendChild(row);
+    });
+    if (section) section.style.display = fields.length ? '' : 'none';
+  }
+  // management list in the Anpassa menu
+  const mng = document.getElementById('cf-manage');
+  if (mng) {
+    if (!fields.length) { mng.innerHTML = '<div class="tpl-empty">Inga egna fält ännu</div>'; }
+    else {
+      mng.innerHTML = '';
+      fields.forEach(f => {
+        const row = document.createElement('div'); row.className = 'tpl-item';
+        const name = document.createElement('span'); name.className = 'tpl-name'; name.style.cursor = 'default'; name.textContent = f.label;
+        const del = document.createElement('button'); del.className = 'tpl-del'; del.textContent = '×'; del.title = 'Ta bort fältet';
+        del.onclick = () => removeCustomField(f.key);
+        row.appendChild(name); row.appendChild(del); mng.appendChild(row);
+      });
+    }
+  }
+}
+function addCustomField() {
+  const label = prompt('Namn på det egna fältet (t.ex. "Gasblandning", "Tanktryck"):');
+  if (!label || !label.trim()) return;
+  const fields = getCustomFields();
+  fields.push({ key: 'f' + Date.now(), label: label.trim() });
+  setCustomFields(fields); renderCustomFields();
+  try { localStorage.setItem('dyklogg_autosave', JSON.stringify(gatherAll())); } catch (e) {}
+  toast('✓ Eget fält tillagt');
+}
+function removeCustomField(key) {
+  const f = getCustomFields().find(x => x.key === key);
+  if (!confirm('Ta bort fältet "' + (f ? f.label : '') + '"? Värdet i nuvarande dyk försvinner.')) return;
+  setCustomFields(getCustomFields().filter(x => x.key !== key));
+  renderCustomFields();
+  try { localStorage.setItem('dyklogg_autosave', JSON.stringify(gatherAll())); } catch (e) {}
+  toast('Fält borttaget');
+}
+renderCustomFields();   // build the fields before autosave restore fills their values
 
 // ====================== Dyk-arkiv (dive archive) ======================
 // Multiple dives stored locally; each entry keeps list-metadata + the full
