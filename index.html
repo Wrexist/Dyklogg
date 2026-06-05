@@ -52,6 +52,13 @@ body{font-family:Arial,Helvetica,sans-serif;font-size:11px;background:#d8d8d8;co
 .tpl-item .tpl-name:hover{background:#ffe9c7}
 .tpl-item .tpl-del{background:#f4f4f7;border:none;border-radius:7px;width:30px;height:32px;font-size:14px;color:#c0392b;cursor:pointer;flex-shrink:0}
 .tpl-item .tpl-del:hover{background:#fde2dd}
+.dive-stats{font-size:10px;font-weight:600;color:var(--accent);text-transform:none;letter-spacing:0;float:right}
+.dive-item{display:flex;align-items:center;gap:6px}
+.dive-item .dive-load{flex:1;min-width:0;text-align:left;background:#f4f4f7;border:none;border-radius:7px;padding:7px 10px;cursor:pointer}
+.dive-item .dive-load:hover{background:#ececf2}
+.dive-item.current .dive-load{box-shadow:inset 0 0 0 2px var(--accent);background:#fff}
+.dive-title{font-size:12.5px;font-weight:700;color:#33333a;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dive-meta{font-size:10.5px;color:#9a9aa5;display:block;margin-top:1px}
 
 .page{width:1160px;margin:14px auto;background:#fff;padding:14px var(--mr,16px) 14px var(--ml,16px);display:flex;gap:var(--mid,4mm);position:relative}
 /* Fold guide: dashed line down the centre of the fold gap (screen only) */
@@ -220,6 +227,20 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
   <div class="seg" role="tablist">
     <button class="active" id="tab-combined" onclick="switchView('combined')">Logg + Plan</button>
     <button id="tab-dyklog" onclick="switchView('dyklog')">2&#215; Dyklogg</button>
+  </div>
+
+  <div class="tb-sep"></div>
+
+  <div class="menu" id="menu-archive">
+    <button class="btn" onclick="toggleMenu('menu-archive')">&#128218; Arkiv <span class="chev">&#9660;</span></button>
+    <div class="menu-panel" style="min-width:288px">
+      <h4>Dyk-arkiv <span id="dive-stats" class="dive-stats"></span></h4>
+      <div id="dive-list" class="tpl-list"><div class="tpl-empty">Inga sparade dyk &#228;nnu</div></div>
+      <div class="menu-divider"></div>
+      <button class="btn primary" style="justify-content:center" onclick="archiveSave()">&#128190; Spara dyk i arkiv</button>
+      <button class="btn" style="justify-content:center" onclick="newDive()">&#10133; Nytt dyk</button>
+      <p class="menu-note">Dyken sparas lokalt i webbl&#228;saren. Anv&#228;nd Spara (JSON) f&#246;r s&#228;kerhetskopia eller &#246;verf&#246;ring mellan enheter.</p>
+    </div>
   </div>
 
   <div class="tb-sep"></div>
@@ -968,6 +989,84 @@ function resetBranding() {
   renderTemplateList();
 })();
 
+// ====================== Dyk-arkiv (dive archive) ======================
+// Multiple dives stored locally; each entry keeps list-metadata + the full
+// gatherAll() blob. currentDiveId marks which archived dive the working draft
+// corresponds to (so re-saving updates it instead of creating a duplicate).
+function getDives() { try { return JSON.parse(localStorage.getItem('dyklogg_dives') || '{}'); } catch (e) { return {}; } }
+function setDives(o) { try { localStorage.setItem('dyklogg_dives', JSON.stringify(o)); return true; } catch (e) { alert('Kunde inte spara – webbläsarens lagring kan vara full.'); return false; } }
+let currentDiveId = null;
+try { currentDiveId = localStorage.getItem('dyklogg_current') || null; } catch (e) {}
+
+function diveMeta() {
+  const v = id => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
+  return { datum: v('datum') || v('b1-datum') || v('plan-datum'), dyknr: v('dyknr') || v('b1-dyknr'), plats: v('arbetsplats') || v('b1-arbetsplats') };
+}
+function diveTitle(d) {
+  const p = [];
+  if (d.dyknr) p.push('Dyk ' + d.dyknr);
+  if (d.plats) p.push(d.plats);
+  return p.join(' · ') || 'Namnlöst dyk';
+}
+function fmtWhen(ts) {
+  if (!ts) return '';
+  const d = new Date(ts);
+  return d.toLocaleDateString('sv-SE') + ' ' + d.toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit' });
+}
+function archiveSave() {
+  const dives = getDives();
+  const id = currentDiveId || ('d' + Date.now());
+  const m = diveMeta();
+  dives[id] = { id: id, datum: m.datum, dyknr: m.dyknr, plats: m.plats, savedAt: Date.now(), data: gatherAll() };
+  if (!setDives(dives)) return;
+  currentDiveId = id; try { localStorage.setItem('dyklogg_current', id); } catch (e) {}
+  renderDiveList(); toast('✓ Dyk sparat i arkivet');
+}
+function newDive() {
+  if (!confirm('Starta ett nytt, tomt dyk?\nOsparade ändringar i det nuvarande går förlorade om du inte sparat det i arkivet.')) return;
+  document.querySelectorAll('input[type=text]').forEach(el => el.value = '');
+  document.querySelectorAll('input[type=checkbox]').forEach(el => el.checked = false);
+  ['main','b1','b2'].forEach(inst => { atInstances[inst].checked = {}; renderGrid(inst); });
+  glSpans().forEach(sp => sp.classList.remove('gsel'));
+  layoutTf = {}; document.querySelectorAll('[data-lid]').forEach(el => { el.style.transform = ''; });
+  selectEl(null);
+  currentDiveId = null; try { localStorage.removeItem('dyklogg_current'); localStorage.setItem('dyklogg_autosave', JSON.stringify(gatherAll())); } catch (e) {}
+  renderDiveList(); closeMenus(); toast('Nytt dyk påbörjat');
+}
+function loadDive(id) {
+  const d = getDives()[id]; if (!d) return;
+  applyAll(JSON.parse(JSON.stringify(d.data)));
+  currentDiveId = id;
+  try { localStorage.setItem('dyklogg_current', id); localStorage.setItem('dyklogg_autosave', JSON.stringify(gatherAll())); } catch (e) {}
+  renderDiveList(); closeMenus(); toast('✓ Dyk laddat');
+}
+function deleteDive(id) {
+  const dives = getDives(); if (!dives[id]) return;
+  if (!confirm('Ta bort detta dyk ur arkivet? Detta går inte att ångra.')) return;
+  delete dives[id]; setDives(dives);
+  if (currentDiveId === id) { currentDiveId = null; try { localStorage.removeItem('dyklogg_current'); } catch (e) {} }
+  renderDiveList(); toast('Dyk borttaget');
+}
+function renderDiveList() {
+  const list = document.getElementById('dive-list'); if (!list) return;
+  const arr = Object.values(getDives()).sort((a, b) => (b.savedAt || 0) - (a.savedAt || 0));
+  const stats = document.getElementById('dive-stats');
+  if (stats) stats.textContent = arr.length ? (arr.length + (arr.length === 1 ? ' dyk' : ' dyk')) : '';
+  if (!arr.length) { list.innerHTML = '<div class="tpl-empty">Inga sparade dyk ännu</div>'; return; }
+  list.innerHTML = '';
+  arr.forEach(d => {
+    const row = document.createElement('div'); row.className = 'dive-item' + (d.id === currentDiveId ? ' current' : '');
+    const b = document.createElement('button'); b.className = 'dive-load'; b.onclick = () => loadDive(d.id);
+    const t = document.createElement('span'); t.className = 'dive-title'; t.textContent = diveTitle(d);
+    const meta = document.createElement('span'); meta.className = 'dive-meta';
+    meta.textContent = [d.datum, 'sparad ' + fmtWhen(d.savedAt)].filter(Boolean).join(' · ');
+    b.appendChild(t); b.appendChild(meta);
+    const del = document.createElement('button'); del.className = 'tpl-del'; del.textContent = '×'; del.title = 'Ta bort dyk';
+    del.onclick = e => { e.stopPropagation(); deleteDive(d.id); };
+    row.appendChild(b); row.appendChild(del); list.appendChild(row);
+  });
+}
+
 // ====================== CSV-export ======================
 function fieldLabel(inp) {
   const row = inp.closest('.ddr,.fl,.sf,.svgfield,.svgtime,td,label');
@@ -1595,7 +1694,9 @@ function clearAll() {
   layoutTf = {};
   document.querySelectorAll('[data-lid]').forEach(el => { el.style.transform = ''; });
   selectEl(null);
-  try { localStorage.removeItem('dyklogg_autosave'); } catch(e) {}
+  currentDiveId = null;
+  try { localStorage.removeItem('dyklogg_autosave'); localStorage.removeItem('dyklogg_current'); } catch(e) {}
+  if (typeof renderDiveList === 'function') renderDiveList();
   toast('Rensat');
 }
 
@@ -1623,6 +1724,8 @@ function clearAll() {
   } catch(e) {}
   setPrintMode(v);
 })();
+// Render the dive archive list once everything is initialised
+renderDiveList();
 </script>
 </body>
 </html>
