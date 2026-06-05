@@ -243,6 +243,22 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
     </div>
   </div>
 
+  <div class="menu" id="menu-project">
+    <button class="btn" onclick="toggleMenu('menu-project')">&#128193; Projekt <span class="chev">&#9660;</span></button>
+    <div class="menu-panel" style="min-width:300px">
+      <h4>Projekt &amp; kund</h4>
+      <div class="mrow">
+        <span class="ml">Aktivt projekt</span>
+        <select id="project-select" onchange="setActiveProject(this.value)"><option value="">&#8212; Inget projekt &#8212;</option></select>
+      </div>
+      <button class="btn" style="justify-content:center" onclick="applyProjectInfo()">&#11015; Anv&#228;nd projektets uppgifter i formul&#228;ret</button>
+      <div class="menu-divider"></div>
+      <div id="project-list" class="tpl-list"><div class="tpl-empty">Inga projekt &#228;nnu</div></div>
+      <button class="btn primary" style="justify-content:center" onclick="newProject()">&#10133; Nytt projekt</button>
+      <p class="menu-note">Ett projekt &#229;teranv&#228;nder kund-, plats- och projektnummer. Nya dyk taggas med aktivt projekt &#8211; klicka &#8220;Rapport&#8221; f&#246;r en utskrivbar sammanst&#228;llning av projektets dyk.</p>
+    </div>
+  </div>
+
   <div class="tb-sep"></div>
 
   <button class="btn primary" onclick="window.print()">&#128424; Skriv ut</button>
@@ -327,7 +343,19 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
 
   <button class="btn" onclick="saveJSON()">&#128190; Spara</button>
   <button class="btn" onclick="loadJSON()">&#128194; Ladda</button>
-  <button class="btn" onclick="exportCSV()" title="Exportera ifyllda f&#228;lt som CSV (Excel)">&#128202; CSV</button>
+
+  <div class="menu" id="menu-export">
+    <button class="btn" onclick="toggleMenu('menu-export')">&#128228; Export <span class="chev">&#9660;</span></button>
+    <div class="menu-panel" style="left:auto;right:0;min-width:264px">
+      <h4>Export &amp; delning</h4>
+      <button class="btn" style="justify-content:flex-start" onclick="exportCSV()">&#128202; CSV (Excel)</button>
+      <button class="btn" style="justify-content:flex-start" onclick="exportUDDF()">&#127760; UDDF (dykprogram)</button>
+      <button class="btn" style="justify-content:flex-start" onclick="emailLog()">&#9993;&#65039; Mejla sammanfattning</button>
+      <div class="menu-divider"></div>
+      <p class="menu-note">PDF: klicka <b>Skriv ut</b> och v&#228;lj &#8220;Spara som PDF&#8221; (ger b&#228;st kvalitet). Mejl &#246;ppnar ett utkast med en textsammanfattning.</p>
+    </div>
+  </div>
+
   <button class="btn danger" onclick="clearAll()">&#128465; Rensa</button>
 </div>
 <div class="tb-hint edit-hint">&#9998; Klicka p&#229; valfri text f&#246;r att &#228;ndra den</div>
@@ -1017,10 +1045,11 @@ function archiveSave() {
   const dives = getDives();
   const id = currentDiveId || ('d' + Date.now());
   const m = diveMeta();
-  dives[id] = { id: id, datum: m.datum, dyknr: m.dyknr, plats: m.plats, savedAt: Date.now(), data: gatherAll() };
+  const prev = dives[id] || {};
+  dives[id] = { id: id, datum: m.datum, dyknr: m.dyknr, plats: m.plats, projectId: activeProjectId || prev.projectId || null, savedAt: Date.now(), data: gatherAll() };
   if (!setDives(dives)) return;
   currentDiveId = id; try { localStorage.setItem('dyklogg_current', id); } catch (e) {}
-  renderDiveList(); toast('✓ Dyk sparat i arkivet');
+  renderDiveList(); renderProjectList(); toast('✓ Dyk sparat i arkivet');
 }
 function newDive() {
   if (!confirm('Starta ett nytt, tomt dyk?\nOsparade ändringar i det nuvarande går förlorade om du inte sparat det i arkivet.')) return;
@@ -1037,6 +1066,7 @@ function loadDive(id) {
   const d = getDives()[id]; if (!d) return;
   applyAll(JSON.parse(JSON.stringify(d.data)));
   currentDiveId = id;
+  if (d.projectId !== undefined) setActiveProject(d.projectId || '');
   try { localStorage.setItem('dyklogg_current', id); localStorage.setItem('dyklogg_autosave', JSON.stringify(gatherAll())); } catch (e) {}
   renderDiveList(); closeMenus(); toast('✓ Dyk laddat');
 }
@@ -1059,12 +1089,166 @@ function renderDiveList() {
     const b = document.createElement('button'); b.className = 'dive-load'; b.onclick = () => loadDive(d.id);
     const t = document.createElement('span'); t.className = 'dive-title'; t.textContent = diveTitle(d);
     const meta = document.createElement('span'); meta.className = 'dive-meta';
-    meta.textContent = [d.datum, 'sparad ' + fmtWhen(d.savedAt)].filter(Boolean).join(' · ');
+    const proj = d.projectId ? (getProjects()[d.projectId] || {}).name : '';
+    meta.textContent = [d.datum, proj, 'sparad ' + fmtWhen(d.savedAt)].filter(Boolean).join(' · ');
     b.appendChild(t); b.appendChild(meta);
     const del = document.createElement('button'); del.className = 'tpl-del'; del.textContent = '×'; del.title = 'Ta bort dyk';
     del.onclick = e => { e.stopPropagation(); deleteDive(d.id); };
     row.appendChild(b); row.appendChild(del); list.appendChild(row);
   });
+}
+
+// ====================== Projekt / kund ======================
+function getProjects() { try { return JSON.parse(localStorage.getItem('dyklogg_projects') || '{}'); } catch (e) { return {}; } }
+function setProjects(o) { try { localStorage.setItem('dyklogg_projects', JSON.stringify(o)); return true; } catch (e) { alert('Kunde inte spara projektet.'); return false; } }
+let activeProjectId = null;
+try { activeProjectId = localStorage.getItem('dyklogg_activeproject') || null; } catch (e) {}
+
+function newProject() {
+  const name = prompt('Projektnamn:'); if (!name || !name.trim()) return;
+  const kund = prompt('Uppdragsgivare / kund (valfritt):') || '';
+  const plats = prompt('Plats / position (valfritt):') || '';
+  const projektnr = prompt('Projektnummer (valfritt):') || '';
+  const projects = getProjects();
+  const id = 'p' + Date.now();
+  projects[id] = { id: id, name: name.trim(), kund: kund.trim(), plats: plats.trim(), projektnr: projektnr.trim(), createdAt: Date.now() };
+  if (!setProjects(projects)) return;
+  setActiveProject(id);
+  renderProjectList();
+  toast('✓ Projekt skapat');
+}
+function setActiveProject(id) {
+  activeProjectId = id || null;
+  try { if (activeProjectId) localStorage.setItem('dyklogg_activeproject', activeProjectId); else localStorage.removeItem('dyklogg_activeproject'); } catch (e) {}
+  const sel = document.getElementById('project-select'); if (sel) sel.value = activeProjectId || '';
+  renderDiveList();
+}
+function applyProjectInfo() {
+  const p = getProjects()[activeProjectId];
+  if (!p) { toast('Välj ett aktivt projekt först'); return; }
+  const set = (id, val) => { const el = document.getElementById(id); if (el && val) el.value = val; };
+  set('arbetsplats', p.name); set('b1-arbetsplats', p.name); set('b2-arbetsplats', p.name);
+  set('uppdragsgivare', p.kund);
+  set('plats', p.plats);
+  set('projektnummer', p.projektnr);
+  set('upprattat', p.kund ? '' : '');
+  try { localStorage.setItem('dyklogg_autosave', JSON.stringify(gatherAll())); } catch (e) {}
+  closeMenus(); toast('✓ Projektuppgifter ifyllda');
+}
+function deleteProject(id) {
+  const projects = getProjects(); if (!projects[id]) return;
+  if (!confirm('Ta bort projektet "' + projects[id].name + '"?\nDyken ligger kvar i arkivet men avtaggas projektet.')) return;
+  delete projects[id]; setProjects(projects);
+  const dives = getDives(); let changed = false;
+  Object.values(dives).forEach(d => { if (d.projectId === id) { d.projectId = null; changed = true; } });
+  if (changed) setDives(dives);
+  if (activeProjectId === id) setActiveProject('');
+  renderProjectList(); renderDiveList(); toast('Projekt borttaget');
+}
+function projectDiveCount(id) { return Object.values(getDives()).filter(d => d.projectId === id).length; }
+function updateProjectSelect() {
+  const sel = document.getElementById('project-select'); if (!sel) return;
+  const projects = getProjects();
+  sel.innerHTML = '<option value="">— Inget projekt —</option>';
+  Object.values(projects).sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0)).forEach(p => {
+    const o = document.createElement('option'); o.value = p.id; o.textContent = p.name; sel.appendChild(o);
+  });
+  sel.value = activeProjectId || '';
+}
+function renderProjectList() {
+  updateProjectSelect();
+  const list = document.getElementById('project-list'); if (!list) return;
+  const arr = Object.values(getProjects()).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+  if (!arr.length) { list.innerHTML = '<div class="tpl-empty">Inga projekt ännu</div>'; return; }
+  list.innerHTML = '';
+  arr.forEach(p => {
+    const row = document.createElement('div'); row.className = 'dive-item' + (p.id === activeProjectId ? ' current' : '');
+    const b = document.createElement('button'); b.className = 'dive-load'; b.onclick = () => setActiveProject(p.id);
+    const t = document.createElement('span'); t.className = 'dive-title'; t.textContent = p.name;
+    const meta = document.createElement('span'); meta.className = 'dive-meta';
+    meta.textContent = [p.kund, p.projektnr, projectDiveCount(p.id) + ' dyk'].filter(Boolean).join(' · ');
+    b.appendChild(t); b.appendChild(meta);
+    const rep = document.createElement('button'); rep.className = 'tpl-del'; rep.textContent = '📄'; rep.title = 'Projektrapport';
+    rep.style.color = '#33333a'; rep.onclick = e => { e.stopPropagation(); projectReport(p.id); };
+    const del = document.createElement('button'); del.className = 'tpl-del'; del.textContent = '×'; del.title = 'Ta bort projekt';
+    del.onclick = e => { e.stopPropagation(); deleteProject(p.id); };
+    row.appendChild(b); row.appendChild(rep); row.appendChild(del); list.appendChild(row);
+  });
+}
+function projectReport(id) {
+  const p = getProjects()[id]; if (!p) return;
+  const dives = Object.values(getDives()).filter(d => d.projectId === id)
+    .sort((a, b) => (a.datum || '').localeCompare(b.datum || '') || (a.savedAt || 0) - (b.savedAt || 0));
+  const g = (d, k) => (d.data && d.data[k]) ? String(d.data[k]) : '';
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const rows = dives.map(d => '<tr><td>' + esc(d.dyknr || g(d, 'dyknr')) + '</td><td>' + esc(d.datum || g(d, 'datum')) +
+    '</td><td>' + esc(g(d, 'maxdjup')) + '</td><td>' + esc(g(d, 'bottentid')) + '</td><td>' + esc(g(d, 'time-in')) +
+    '–' + esc(g(d, 'time-out')) + '</td><td>' + esc(g(d, 'led-namn')) + '</td><td>' + esc(g(d, 'arbetsmoment')) + '</td></tr>').join('');
+  const html = '<!DOCTYPE html><html lang="sv"><head><meta charset="UTF-8"><title>Projektrapport – ' + esc(p.name) + '</title>' +
+    '<style>body{font-family:Arial,sans-serif;color:#111;margin:28px;font-size:12px}h1{font-size:22px;margin:0 0 2px}' +
+    '.sub{color:#c87a00;font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:14px}' +
+    '.meta{margin:0 0 16px;font-size:12px}.meta b{display:inline-block;min-width:120px;color:#555}' +
+    'table{width:100%;border-collapse:collapse}th,td{border:1px solid #bbb;padding:6px 8px;text-align:left;vertical-align:top}' +
+    'th{background:#f90;font-size:10px;text-transform:uppercase;letter-spacing:.4px}tr:nth-child(even) td{background:#faf7f2}' +
+    '.foot{margin-top:14px;color:#888;font-size:10px}@media print{.noprint{display:none}}' +
+    'button{background:#f90;border:none;padding:8px 16px;font-weight:700;border-radius:6px;cursor:pointer;margin-bottom:14px}</style></head><body>' +
+    '<button class="noprint" onclick="window.print()">🖨 Skriv ut rapport</button>' +
+    '<h1>' + esc(p.name) + '</h1><div class="sub">Projektrapport – Dyklogg</div>' +
+    '<div class="meta">' +
+    (p.kund ? '<div><b>Uppdragsgivare:</b> ' + esc(p.kund) + '</div>' : '') +
+    (p.projektnr ? '<div><b>Projektnummer:</b> ' + esc(p.projektnr) + '</div>' : '') +
+    (p.plats ? '<div><b>Plats:</b> ' + esc(p.plats) + '</div>' : '') +
+    '<div><b>Antal dyk:</b> ' + dives.length + '</div></div>' +
+    '<table><thead><tr><th>Dyk nr</th><th>Datum</th><th>Max djup</th><th>Bottentid</th><th>Tid</th><th>Dykledare</th><th>Arbetsmoment</th></tr></thead><tbody>' +
+    (rows || '<tr><td colspan="7" style="text-align:center;color:#888">Inga dyk i projektet ännu</td></tr>') +
+    '</tbody></table><div class="foot">Genererad ' + new Date().toLocaleString('sv-SE') + '</div></body></html>';
+  const w = window.open('', '_blank');
+  if (!w) { alert('Tillåt popup-fönster för att visa rapporten.'); return; }
+  w.document.write(html); w.document.close();
+}
+
+// ====================== UDDF-export ======================
+function exportUDDF() {
+  closeMenus();
+  const v = id => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const datum = v('datum') || v('b1-datum');
+  const dt = /^\d{4}-\d{2}-\d{2}$/.test(datum) ? datum + 'T' + (v('time-in') || '00:00') + ':00' : new Date().toISOString();
+  const depth = (parseFloat((v('maxdjup') || '0').replace(',', '.')) || 0).toString();
+  const tempC = parseFloat((v('temp') || '').replace(',', '.'));
+  const tempK = isNaN(tempC) ? '' : (tempC + 273.15).toFixed(2);
+  const uddf = '<?xml version="1.0" encoding="UTF-8"?>\n' +
+    '<uddf version="3.2.0">\n  <generator><name>Dyklogg</name><type>logbook</type></generator>\n' +
+    '  <profiledata>\n    <repetitiongroup>\n      <dive>\n' +
+    '        <informationbeforedive>\n          <datetime>' + esc(dt) + '</datetime>\n' +
+    (v('arbetsplats') ? '          <divenumber>' + esc(v('dyknr')) + '</divenumber>\n' : '') +
+    '        </informationbeforedive>\n' +
+    '        <informationafterdive>\n          <greatestdepth>' + esc(depth) + '</greatestdepth>\n' +
+    (v('bottentid') ? '          <diveduration>' + esc(v('bottentid')) + '</diveduration>\n' : '') +
+    (tempK ? '          <lowesttemperature>' + tempK + '</lowesttemperature>\n' : '') +
+    (v('sikt') ? '          <visibility>' + esc(v('sikt')) + '</visibility>\n' : '') +
+    '        </informationafterdive>\n      </dive>\n    </repetitiongroup>\n  </profiledata>\n</uddf>\n';
+  download(buildFileName().replace(/\.json$/, '') + '.uddf', uddf, 'application/xml');
+  toast('✓ UDDF exporterad');
+}
+
+// ====================== Mejla sammanfattning ======================
+function emailLog() {
+  closeMenus();
+  const v = id => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
+  const L = [];
+  const add = (label, val) => { if (val) L.push(label + ': ' + val); };
+  add('Datum', v('datum') || v('b1-datum'));
+  add('Dyk nr', v('dyknr'));
+  add('Arbetsplats', v('arbetsplats'));
+  add('Arbetsmoment', v('arbetsmoment'));
+  add('Starttid', v('time-in')); add('Sluttid', v('time-out'));
+  add('Max djup', v('maxdjup')); add('Bottentid', v('bottentid'));
+  add('Sikt', v('sikt')); add('Temperatur', v('temp'));
+  add('Dykledare', v('led-namn'));
+  const subject = 'Dyklogg' + (v('dyknr') ? ' – dyk ' + v('dyknr') : '') + (v('datum') ? ' (' + v('datum') + ')' : '');
+  const body = L.join('\n') + '\n\n(Skapad i Dyklogg. Bifoga ev. PDF/JSON manuellt.)';
+  window.location.href = 'mailto:?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
 }
 
 // ====================== CSV-export ======================
@@ -1724,7 +1908,8 @@ function clearAll() {
   } catch(e) {}
   setPrintMode(v);
 })();
-// Render the dive archive list once everything is initialised
+// Render the dive archive + project lists once everything is initialised
+renderProjectList();
 renderDiveList();
 </script>
 </body>
