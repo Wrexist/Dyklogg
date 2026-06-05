@@ -5,6 +5,7 @@
 <title>Dyklogg & Dykplan</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
+:root{--accent:#f90}
 body{font-family:Arial,Helvetica,sans-serif;font-size:11px;background:#d8d8d8;color:#000}
 
 .toolbar{position:sticky;top:0;z-index:99;background:linear-gradient(180deg,#202026,#141418);color:#fff;padding:8px 16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;box-shadow:0 2px 10px rgba(0,0,0,.28);font-size:12px}
@@ -16,12 +17,12 @@ body{font-family:Arial,Helvetica,sans-serif;font-size:11px;background:#d8d8d8;co
 .seg{display:flex;background:#2c2c33;border-radius:8px;padding:3px}
 .seg button{border:none;background:transparent;color:#b9b9c2;font-size:12px;font-weight:700;padding:6px 13px;border-radius:6px;cursor:pointer;transition:background .15s,color .15s;white-space:nowrap}
 .seg button:hover{color:#fff}
-.seg button.active{background:#f90;color:#1a1a1a;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.seg button.active{background:var(--accent);color:#1a1a1a;box-shadow:0 1px 3px rgba(0,0,0,.3)}
 /* Buttons */
 .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 13px;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;background:#2c2c33;color:#ececf0;transition:background .15s,transform .05s;white-space:nowrap;line-height:1}
 .btn:hover{background:#3a3a43}
 .btn:active{transform:translateY(1px)}
-.btn.primary{background:#f90;color:#1a1a1a}
+.btn.primary{background:var(--accent);color:#1a1a1a}
 .btn.primary:hover{background:#ffab2e}
 .btn.active{background:#1a8a3a;color:#fff}
 .btn.danger:hover{background:#c0392b;color:#fff}
@@ -35,14 +36,22 @@ body{font-family:Arial,Helvetica,sans-serif;font-size:11px;background:#d8d8d8;co
 .menu-panel h4{font-size:10.5px;text-transform:uppercase;letter-spacing:.7px;color:#9a9aa5;font-weight:800;margin:0 0 -3px}
 .mrow{display:flex;flex-direction:column;gap:6px}
 .mrow .ml{font-size:12.5px;font-weight:700;color:#33333a;display:flex;justify-content:space-between;align-items:baseline}
-.mrow .val{font-weight:600;color:#f90;font-size:11.5px}
-.mrow input[type=range]{width:100%;accent-color:#f90;cursor:pointer;margin:0}
+.mrow .val{font-weight:600;color:var(--accent);font-size:11.5px}
+.mrow input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;margin:0}
 .mrow select{font-size:12.5px;font-weight:600;padding:8px 9px;border:1px solid #d5d5dd;border-radius:7px;cursor:pointer;background:#fafafa;color:#26262b;width:100%}
-.mrow select:focus{outline:none;border-color:#f90}
+.mrow select:focus{outline:none;border-color:var(--accent)}
 .mchk{display:flex;align-items:flex-start;gap:9px;font-size:12.5px;font-weight:700;color:#33333a;cursor:pointer;line-height:1.3}
-.mchk input{width:15px;height:15px;margin-top:1px;accent-color:#f90;cursor:pointer;flex-shrink:0}
+.mchk input{width:15px;height:15px;margin-top:1px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
 .mchk small{display:block;font-weight:400;color:#8a8a93;font-size:11px;margin-top:1px}
 .menu-divider{height:1px;background:#ededf1;margin:1px 0}
+.menu-note{font-size:10.5px;color:#9a9aa5;line-height:1.4;margin:0}
+.tpl-list{display:flex;flex-direction:column;gap:5px;max-height:240px;overflow-y:auto}
+.tpl-empty{font-size:12px;color:#9a9aa5;font-style:italic;padding:2px 0}
+.tpl-item{display:flex;align-items:center;gap:6px}
+.tpl-item .tpl-name{flex:1;text-align:left;background:#f4f4f7;border:none;border-radius:7px;padding:8px 10px;font-size:12.5px;font-weight:700;color:#33333a;cursor:pointer}
+.tpl-item .tpl-name:hover{background:#ffe9c7}
+.tpl-item .tpl-del{background:#f4f4f7;border:none;border-radius:7px;width:30px;height:32px;font-size:14px;color:#c0392b;cursor:pointer;flex-shrink:0}
+.tpl-item .tpl-del:hover{background:#fde2dd}
 
 .page{width:1160px;margin:14px auto;background:#fff;padding:14px var(--mr,16px) 14px var(--ml,16px);display:flex;gap:var(--mid,4mm);position:relative}
 /* Fold guide: dashed line down the centre of the fold gap (screen only) */
@@ -52,11 +61,11 @@ body{font-family:Arial,Helvetica,sans-serif;font-size:11px;background:#d8d8d8;co
 .cr{flex:1;min-width:0}
 
 input[type=text],input[type=date]{border:none;border-bottom:1px solid #888;outline:none;background:transparent;font-family:inherit;font-size:11px;color:#000;width:100%;padding:1px 0}
-input[type=text]:focus,input[type=date]:focus{border-bottom-color:#f90;background:rgba(255,153,0,.04)}
-input[type=checkbox]{width:12px;height:12px;accent-color:#f90;cursor:pointer;flex-shrink:0}
+input[type=text]:focus,input[type=date]:focus{border-bottom-color:var(--accent);background:rgba(255,153,0,.04)}
+input[type=checkbox]{width:12px;height:12px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
 
 /* Orange vertical tab */
-.tab{background:#f90;flex-shrink:0;width:22px;writing-mode:vertical-rl;transform:rotate(180deg);display:flex;align-items:center;justify-content:center;font-family:'Helvetica Neue',Arial,sans-serif;font-weight:600;font-size:9px;text-transform:uppercase;letter-spacing:1.3px;padding:4px 0;color:#000}
+.tab{background:var(--accent);flex-shrink:0;width:22px;writing-mode:vertical-rl;transform:rotate(180deg);display:flex;align-items:center;justify-content:center;font-family:'Helvetica Neue',Arial,sans-serif;font-weight:600;font-size:9px;text-transform:uppercase;letter-spacing:1.3px;padding:4px 0;color:#000}
 /* Gruppbeteckning strip at the bottom of the Signering box */
 .grouprow{border-top:1px solid #ddd;padding:5px 10px;display:flex;flex-direction:column;gap:3px}
 .groupline{display:flex;align-items:center;gap:8px}
@@ -68,7 +77,7 @@ input[type=checkbox]{width:12px;height:12px;accent-color:#f90;cursor:pointer;fle
 
 .title{font-size:30px;font-weight:900;text-transform:uppercase;letter-spacing:-.5px;line-height:1}
 .logo{height:40px;width:auto;flex-shrink:0;object-fit:contain}
-.sub{color:#f90;font-weight:700;font-size:9px;text-transform:uppercase;letter-spacing:.5px;margin-top:1px}
+.sub{color:var(--accent);font-weight:700;font-size:9px;text-transform:uppercase;letter-spacing:.5px;margin-top:1px}
 
 .meta{width:100%;border-collapse:collapse;border:1.5px solid #999}
 .meta td{border:1px solid #999;padding:3px 6px;vertical-align:top}
@@ -85,13 +94,13 @@ input[type=checkbox]{width:12px;height:12px;accent-color:#f90;cursor:pointer;fle
 .svgtime.right{justify-content:flex-end}
 .svgtime input{border:none;border-bottom:1px solid #888;background:transparent;font:400 8px Arial,sans-serif;flex:1;min-width:0;outline:none;color:#000;padding:0}
 .svgtime.right input{flex:none;width:62px}
-.svgtime input:focus{border-bottom-color:#f90}
+.svgtime input:focus{border-bottom-color:var(--accent)}
 /* Fillable "Max djup" field embedded in the profile SVG (foreignObject) */
 .svgfield{display:flex;align-items:flex-end;gap:2px;font:700 9px Arial,sans-serif;color:#333;white-space:nowrap;overflow:visible}
 .svgfield input{border:none;border-bottom:1px solid #888;background:transparent;font:400 9px Arial,sans-serif;width:48px;outline:none;color:#000;padding:0}
-.svgfield input:focus{border-bottom-color:#f90}
+.svgfield input:focus{border-bottom-color:var(--accent)}
 .ddpanel{flex-shrink:0;width:136px;border-left:1.5px solid #aaa;display:flex;flex-direction:column}
-.ddhead{background:#f90;font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:.5px;padding:3px 7px;flex-shrink:0}
+.ddhead{background:var(--accent);font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:.5px;padding:3px 7px;flex-shrink:0}
 .ddbody{padding:5px 7px;flex:1;display:flex;flex-direction:column;justify-content:space-between}
 .ddr{display:flex;align-items:flex-end;gap:3px}
 .dl{font-size:11px;min-width:88px;white-space:nowrap;flex-shrink:0}
@@ -100,7 +109,7 @@ input[type=checkbox]{width:12px;height:12px;accent-color:#f90;cursor:pointer;fle
 .utrow{display:flex;border:1px solid #aaa;border-radius:2px;overflow:hidden}
 .utlines{flex:1;padding:5px 8px;display:flex;flex-direction:column;justify-content:space-between}
 .utlines input{border:none;border-bottom:1px solid #ccc;font-size:11px;outline:none;background:transparent;width:100%;padding:4px 0;color:#000}
-.utlines input:focus{border-bottom-color:#f90}
+.utlines input:focus{border-bottom-color:var(--accent)}
 .atpanel{flex-shrink:0;width:200px;border-left:1px solid #aaa;display:flex;flex-direction:column}
 .athead{border-bottom:1px solid #aaa;font-size:10px;font-weight:700;padding:4px 7px}
 .atbody{padding:4px 7px;flex:1;display:flex;flex-direction:column}
@@ -120,7 +129,7 @@ input[type=checkbox]{width:12px;height:12px;accent-color:#f90;cursor:pointer;fle
 .groupletters{display:flex;justify-content:space-between;font-size:13px;font-weight:600;color:#111}
 .groupletters span{flex:1;min-width:0;height:16px;display:flex;align-items:center;justify-content:center;cursor:pointer;border-radius:3px;user-select:none}
 .groupletters span:hover{background:rgba(255,153,0,.25)}
-.groupletters span.gsel{background:#f90;color:#000;font-weight:800}
+.groupletters span.gsel{background:var(--accent);color:#000;font-weight:800}
 
 .fl{margin-bottom:3px}
 .fll{font-size:10px;color:#333;display:block;margin-bottom:1px}
@@ -137,7 +146,7 @@ input[type=checkbox]{width:12px;height:12px;accent-color:#f90;cursor:pointer;fle
 .riskt p{margin-bottom:1px}
 .rlines{margin-top:4px;display:flex;flex-direction:column;gap:3px}
 .rlines input{border:none;border-bottom:1px solid #bbb;outline:none;background:transparent;width:100%;font-size:11px;padding:2px 0;color:#000}
-.rlines input:focus{border-bottom-color:#f90}
+.rlines input:focus{border-bottom-color:var(--accent)}
 
 
 #view-combined{display:flex}
@@ -265,10 +274,39 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
   <button class="btn" id="edit-btn" onclick="toggleEdit()">&#9998; Redigera text</button>
   <button class="btn" id="move-btn" onclick="toggleMove()">&#10021; Flytta / Skala</button>
 
+  <div class="menu" id="menu-templates">
+    <button class="btn" onclick="toggleMenu('menu-templates')">&#128209; Mallar <span class="chev">&#9660;</span></button>
+    <div class="menu-panel">
+      <h4>Mallar</h4>
+      <div id="tpl-list" class="tpl-list"><div class="tpl-empty">Inga sparade mallar &#228;nnu</div></div>
+      <div class="menu-divider"></div>
+      <button class="btn primary" style="justify-content:center" onclick="saveTemplate()">&#128190; Spara nuvarande som mall</button>
+      <p class="menu-note">En mall f&#246;rifyller hela formul&#228;ret &#8211; bra f&#246;r &#229;terkommande team, utrustning och larminfo, eller f&#246;r att duplicera g&#229;rdagens plan.</p>
+    </div>
+  </div>
+
+  <div class="menu" id="menu-brand">
+    <button class="btn" onclick="toggleMenu('menu-brand')">&#127912; Anpassa <span class="chev">&#9660;</span></button>
+    <div class="menu-panel">
+      <h4>F&#246;retagsanpassning</h4>
+      <div class="mrow">
+        <span class="ml">Egen logga</span>
+        <input type="file" id="logo-input" accept="image/*" onchange="onLogoPicked(event)" style="font-size:11.5px">
+      </div>
+      <div class="mrow">
+        <span class="ml">Temaf&#228;rg <span class="val" id="accentval">#ff9900</span></span>
+        <input type="color" id="accent-input" value="#ff9900" oninput="setAccent(this.value)" style="width:100%;height:30px;border:1px solid #d5d5dd;border-radius:7px;cursor:pointer;background:#fff;padding:2px">
+      </div>
+      <div class="menu-divider"></div>
+      <button class="btn" style="justify-content:center" onclick="resetBranding()">&#8634; &#197;terst&#228;ll till standard</button>
+    </div>
+  </div>
+
   <div class="tb-spacer"></div>
 
   <button class="btn" onclick="saveJSON()">&#128190; Spara</button>
   <button class="btn" onclick="loadJSON()">&#128194; Ladda</button>
+  <button class="btn" onclick="exportCSV()" title="Exportera ifyllda f&#228;lt som CSV (Excel)">&#128202; CSV</button>
   <button class="btn danger" onclick="clearAll()">&#128465; Rensa</button>
 </div>
 <div class="tb-hint edit-hint">&#9998; Klicka p&#229; valfri text f&#246;r att &#228;ndra den</div>
@@ -799,7 +837,7 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
 <!-- Arbetstyp modal -->
 <div id="at-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:center;justify-content:center">
   <div style="background:#fff;border-radius:4px;width:300px;max-height:75vh;display:flex;flex-direction:column;box-shadow:0 6px 28px rgba(0,0,0,.35)">
-    <div style="background:#f90;padding:9px 14px;border-radius:4px 4px 0 0;display:flex;justify-content:space-between;align-items:center;flex-shrink:0">
+    <div style="background:var(--accent);padding:9px 14px;border-radius:4px 4px 0 0;display:flex;justify-content:space-between;align-items:center;flex-shrink:0">
       <span style="font-weight:700;font-size:13px">Redigera arbetstyper</span>
       <button onclick="closeAtModal()" style="background:none;border:none;font-size:20px;cursor:pointer;line-height:1;font-weight:700;padding:0">&times;</button>
     </div>
@@ -849,6 +887,116 @@ function toggleMenu(id) {
 // Close any open menu when clicking outside of it
 document.addEventListener('pointerdown', e => { if (!e.target.closest('.menu')) closeMenus(); }, true);
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMenus(); });
+
+// --- Generic file download helper ---
+function download(name, content, type) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([content], { type: type || 'text/plain' }));
+  a.download = name;
+  a.click();
+}
+
+// ====================== Mallar (templates) ======================
+function getTemplates() { try { return JSON.parse(localStorage.getItem('dyklogg_templates') || '{}'); } catch (e) { return {}; } }
+function setTemplates(o) { try { localStorage.setItem('dyklogg_templates', JSON.stringify(o)); } catch (e) {} }
+function renderTemplateList() {
+  const list = document.getElementById('tpl-list'); if (!list) return;
+  const t = getTemplates(); const names = Object.keys(t);
+  if (!names.length) { list.innerHTML = '<div class="tpl-empty">Inga sparade mallar ännu</div>'; return; }
+  list.innerHTML = '';
+  names.forEach(n => {
+    const row = document.createElement('div'); row.className = 'tpl-item';
+    const b = document.createElement('button'); b.className = 'tpl-name'; b.textContent = n;
+    b.title = 'Använd mallen "' + n + '"'; b.onclick = () => applyTemplate(n);
+    const d = document.createElement('button'); d.className = 'tpl-del'; d.textContent = '×';
+    d.title = 'Ta bort mallen'; d.onclick = e => { e.stopPropagation(); deleteTemplate(n); };
+    row.appendChild(b); row.appendChild(d); list.appendChild(row);
+  });
+}
+function saveTemplate() {
+  const name = prompt('Namn på mallen (t.ex. "Standardteam" eller projektnamn):');
+  if (!name || !name.trim()) return;
+  const t = getTemplates(); t[name.trim()] = gatherAll(); setTemplates(t);
+  renderTemplateList(); toast('✓ Mall sparad');
+}
+function applyTemplate(n) {
+  const t = getTemplates(); if (!t[n]) return;
+  applyAll(JSON.parse(JSON.stringify(t[n])));
+  try { localStorage.setItem('dyklogg_autosave', JSON.stringify(gatherAll())); } catch (e) {}
+  closeMenus(); toast('✓ Mall "' + n + '" använd');
+}
+function deleteTemplate(n) {
+  if (!confirm('Ta bort mallen "' + n + '"?')) return;
+  const t = getTemplates(); delete t[n]; setTemplates(t); renderTemplateList(); toast('Mall borttagen');
+}
+
+// ====================== Företagsanpassning (branding) ======================
+function setAccent(color) {
+  document.documentElement.style.setProperty('--accent', color);
+  const v = document.getElementById('accentval'); if (v) v.textContent = color;
+  const inp = document.getElementById('accent-input'); if (inp && inp.value !== color) inp.value = color;
+  try { localStorage.setItem('dyklogg_accent', color); } catch (e) {}
+}
+function applyLogo(url) { document.querySelectorAll('img.company-logo').forEach(img => { img.src = url; }); }
+function onLogoPicked(e) {
+  const f = e.target.files && e.target.files[0]; if (!f) return;
+  const fr = new FileReader();
+  fr.onload = ev => {
+    const url = ev.target.result;
+    try { localStorage.setItem('dyklogg_logo', url); applyLogo(url); toast('✓ Logga uppdaterad'); }
+    catch (err) { alert('Bilden är för stor att spara. Välj en mindre fil.'); }
+  };
+  fr.readAsDataURL(f);
+}
+function resetBranding() {
+  setAccent('#ff9900');
+  try { localStorage.removeItem('dyklogg_accent'); } catch (e) {}
+  document.querySelectorAll('img.company-logo').forEach(img => { if (img.dataset.orig) img.src = img.dataset.orig; });
+  try { localStorage.removeItem('dyklogg_logo'); } catch (e) {}
+  const fi = document.getElementById('logo-input'); if (fi) fi.value = '';
+  toast('Återställt till standard');
+}
+(function initBranding() {
+  document.querySelectorAll('img[src*="dawab_logo"]').forEach(img => {
+    img.classList.add('company-logo');
+    if (!img.dataset.orig) img.dataset.orig = img.getAttribute('src');
+  });
+  try {
+    const c = localStorage.getItem('dyklogg_accent'); if (c) setAccent(c);
+    const l = localStorage.getItem('dyklogg_logo'); if (l) applyLogo(l);
+  } catch (e) {}
+  renderTemplateList();
+})();
+
+// ====================== CSV-export ======================
+function fieldLabel(inp) {
+  const row = inp.closest('.ddr,.fl,.sf,.svgfield,.svgtime,td,label');
+  if (row) {
+    const lab = row.querySelector('.dl,.fll,.lbl,span,label');
+    if (lab && lab !== inp) { const t = lab.textContent.replace(/\s+/g, ' ').trim(); if (t) return t.replace(/:\s*$/, ''); }
+    if (row.tagName === 'LABEL') { const t = row.textContent.replace(/\s+/g, ' ').trim(); if (t) return t; }
+  }
+  return inp.id || '';
+}
+function exportCSV() {
+  closeMenus();
+  const rows = [['Fält', 'Värde']];
+  const root = document.getElementById('view-combined');
+  root.querySelectorAll('input[type=text], input[type=date]').forEach(inp => {
+    const v = (inp.value || '').trim(); if (!v) return;
+    rows.push([fieldLabel(inp), v]);
+  });
+  root.querySelectorAll('input[type=checkbox]').forEach(cb => {
+    if (!cb.checked) return;
+    const lab = cb.closest('label'); const t = lab ? lab.textContent.replace(/\s+/g, ' ').trim() : '';
+    if (t) rows.push([t, 'Ja']);
+  });
+  const gl = [...document.querySelectorAll('#view-combined .groupletters span.gsel')].map(s => s.textContent).join(' ');
+  if (gl) rows.push(['Gruppbeteckning', gl]);
+  const csv = '﻿' + rows.map(r => r.map(c => '"' + String(c).replace(/"/g, '""') + '"').join(';')).join('\r\n');
+  download(buildFileName().replace(/\.json$/, '') + '.csv', csv, 'text/csv;charset=utf-8');
+  toast('✓ CSV exporterad');
+}
 
 // --- View switching ---
 let currentView = 'combined';
@@ -1073,7 +1221,7 @@ function renderAtModalListFor(inst) {
     const row = document.createElement('div'); row.style.cssText = 'display:flex;align-items:center;gap:8px';
     const inp = document.createElement('input'); inp.type='text'; inp.value=text;
     inp.style.cssText = 'flex:1;border:1px solid #ccc;border-radius:2px;padding:5px 7px;font-size:12px;outline:none;font-family:inherit';
-    inp.addEventListener('focus', () => inp.style.borderColor='#f90');
+    inp.addEventListener('focus', () => inp.style.borderColor='var(--accent)');
     inp.addEventListener('blur', () => { inp.style.borderColor='#ccc'; obj.typer[i]=inp.value.trim()||text; });
     const del = document.createElement('button'); del.textContent='\u00d7';
     del.style.cssText='background:#d33;color:#fff;border:none;border-radius:2px;width:26px;height:26px;font-size:16px;font-weight:700;cursor:pointer;flex-shrink:0;line-height:1';
