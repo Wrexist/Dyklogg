@@ -5,6 +5,7 @@
 <title>Dyklogg & Dykplan</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
+:root{--accent:#f90}
 body{font-family:Arial,Helvetica,sans-serif;font-size:11px;background:#d8d8d8;color:#000}
 
 .toolbar{position:sticky;top:0;z-index:99;background:linear-gradient(180deg,#202026,#141418);color:#fff;padding:8px 16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;box-shadow:0 2px 10px rgba(0,0,0,.28);font-size:12px}
@@ -16,12 +17,12 @@ body{font-family:Arial,Helvetica,sans-serif;font-size:11px;background:#d8d8d8;co
 .seg{display:flex;background:#2c2c33;border-radius:8px;padding:3px}
 .seg button{border:none;background:transparent;color:#b9b9c2;font-size:12px;font-weight:700;padding:6px 13px;border-radius:6px;cursor:pointer;transition:background .15s,color .15s;white-space:nowrap}
 .seg button:hover{color:#fff}
-.seg button.active{background:#f90;color:#1a1a1a;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.seg button.active{background:var(--accent);color:#1a1a1a;box-shadow:0 1px 3px rgba(0,0,0,.3)}
 /* Buttons */
 .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 13px;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;background:#2c2c33;color:#ececf0;transition:background .15s,transform .05s;white-space:nowrap;line-height:1}
 .btn:hover{background:#3a3a43}
 .btn:active{transform:translateY(1px)}
-.btn.primary{background:#f90;color:#1a1a1a}
+.btn.primary{background:var(--accent);color:#1a1a1a}
 .btn.primary:hover{background:#ffab2e}
 .btn.active{background:#1a8a3a;color:#fff}
 .btn.danger:hover{background:#c0392b;color:#fff}
@@ -35,14 +36,29 @@ body{font-family:Arial,Helvetica,sans-serif;font-size:11px;background:#d8d8d8;co
 .menu-panel h4{font-size:10.5px;text-transform:uppercase;letter-spacing:.7px;color:#9a9aa5;font-weight:800;margin:0 0 -3px}
 .mrow{display:flex;flex-direction:column;gap:6px}
 .mrow .ml{font-size:12.5px;font-weight:700;color:#33333a;display:flex;justify-content:space-between;align-items:baseline}
-.mrow .val{font-weight:600;color:#f90;font-size:11.5px}
-.mrow input[type=range]{width:100%;accent-color:#f90;cursor:pointer;margin:0}
+.mrow .val{font-weight:600;color:var(--accent);font-size:11.5px}
+.mrow input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;margin:0}
 .mrow select{font-size:12.5px;font-weight:600;padding:8px 9px;border:1px solid #d5d5dd;border-radius:7px;cursor:pointer;background:#fafafa;color:#26262b;width:100%}
-.mrow select:focus{outline:none;border-color:#f90}
+.mrow select:focus{outline:none;border-color:var(--accent)}
 .mchk{display:flex;align-items:flex-start;gap:9px;font-size:12.5px;font-weight:700;color:#33333a;cursor:pointer;line-height:1.3}
-.mchk input{width:15px;height:15px;margin-top:1px;accent-color:#f90;cursor:pointer;flex-shrink:0}
+.mchk input{width:15px;height:15px;margin-top:1px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
 .mchk small{display:block;font-weight:400;color:#8a8a93;font-size:11px;margin-top:1px}
 .menu-divider{height:1px;background:#ededf1;margin:1px 0}
+.menu-note{font-size:10.5px;color:#9a9aa5;line-height:1.4;margin:0}
+.tpl-list{display:flex;flex-direction:column;gap:5px;max-height:240px;overflow-y:auto}
+.tpl-empty{font-size:12px;color:#9a9aa5;font-style:italic;padding:2px 0}
+.tpl-item{display:flex;align-items:center;gap:6px}
+.tpl-item .tpl-name{flex:1;text-align:left;background:#f4f4f7;border:none;border-radius:7px;padding:8px 10px;font-size:12.5px;font-weight:700;color:#33333a;cursor:pointer}
+.tpl-item .tpl-name:hover{background:#ffe9c7}
+.tpl-item .tpl-del{background:#f4f4f7;border:none;border-radius:7px;width:30px;height:32px;font-size:14px;color:#c0392b;cursor:pointer;flex-shrink:0}
+.tpl-item .tpl-del:hover{background:#fde2dd}
+.dive-stats{font-size:10px;font-weight:600;color:var(--accent);text-transform:none;letter-spacing:0;float:right}
+.dive-item{display:flex;align-items:center;gap:6px}
+.dive-item .dive-load{flex:1;min-width:0;text-align:left;background:#f4f4f7;border:none;border-radius:7px;padding:7px 10px;cursor:pointer}
+.dive-item .dive-load:hover{background:#ececf2}
+.dive-item.current .dive-load{box-shadow:inset 0 0 0 2px var(--accent);background:#fff}
+.dive-title{font-size:12.5px;font-weight:700;color:#33333a;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dive-meta{font-size:10.5px;color:#9a9aa5;display:block;margin-top:1px}
 
 .page{width:1160px;margin:14px auto;background:#fff;padding:14px var(--mr,16px) 14px var(--ml,16px);display:flex;gap:var(--mid,4mm);position:relative}
 /* Fold guide: dashed line down the centre of the fold gap (screen only) */
@@ -52,11 +68,11 @@ body{font-family:Arial,Helvetica,sans-serif;font-size:11px;background:#d8d8d8;co
 .cr{flex:1;min-width:0}
 
 input[type=text],input[type=date]{border:none;border-bottom:1px solid #888;outline:none;background:transparent;font-family:inherit;font-size:11px;color:#000;width:100%;padding:1px 0}
-input[type=text]:focus,input[type=date]:focus{border-bottom-color:#f90;background:rgba(255,153,0,.04)}
-input[type=checkbox]{width:12px;height:12px;accent-color:#f90;cursor:pointer;flex-shrink:0}
+input[type=text]:focus,input[type=date]:focus{border-bottom-color:var(--accent);background:rgba(255,153,0,.04)}
+input[type=checkbox]{width:12px;height:12px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
 
 /* Orange vertical tab */
-.tab{background:#f90;flex-shrink:0;width:22px;writing-mode:vertical-rl;transform:rotate(180deg);display:flex;align-items:center;justify-content:center;font-family:'Helvetica Neue',Arial,sans-serif;font-weight:600;font-size:9px;text-transform:uppercase;letter-spacing:1.3px;padding:4px 0;color:#000}
+.tab{background:var(--accent);flex-shrink:0;width:22px;writing-mode:vertical-rl;transform:rotate(180deg);display:flex;align-items:center;justify-content:center;font-family:'Helvetica Neue',Arial,sans-serif;font-weight:600;font-size:9px;text-transform:uppercase;letter-spacing:1.3px;padding:4px 0;color:#000}
 /* Gruppbeteckning strip at the bottom of the Signering box */
 .grouprow{border-top:1px solid #ddd;padding:5px 10px;display:flex;flex-direction:column;gap:3px}
 .groupline{display:flex;align-items:center;gap:8px}
@@ -68,7 +84,7 @@ input[type=checkbox]{width:12px;height:12px;accent-color:#f90;cursor:pointer;fle
 
 .title{font-size:30px;font-weight:900;text-transform:uppercase;letter-spacing:-.5px;line-height:1}
 .logo{height:40px;width:auto;flex-shrink:0;object-fit:contain}
-.sub{color:#f90;font-weight:700;font-size:9px;text-transform:uppercase;letter-spacing:.5px;margin-top:1px}
+.sub{color:var(--accent);font-weight:700;font-size:9px;text-transform:uppercase;letter-spacing:.5px;margin-top:1px}
 
 .meta{width:100%;border-collapse:collapse;border:1.5px solid #999}
 .meta td{border:1px solid #999;padding:3px 6px;vertical-align:top}
@@ -85,13 +101,13 @@ input[type=checkbox]{width:12px;height:12px;accent-color:#f90;cursor:pointer;fle
 .svgtime.right{justify-content:flex-end}
 .svgtime input{border:none;border-bottom:1px solid #888;background:transparent;font:400 8px Arial,sans-serif;flex:1;min-width:0;outline:none;color:#000;padding:0}
 .svgtime.right input{flex:none;width:62px}
-.svgtime input:focus{border-bottom-color:#f90}
+.svgtime input:focus{border-bottom-color:var(--accent)}
 /* Fillable "Max djup" field embedded in the profile SVG (foreignObject) */
 .svgfield{display:flex;align-items:flex-end;gap:2px;font:700 9px Arial,sans-serif;color:#333;white-space:nowrap;overflow:visible}
 .svgfield input{border:none;border-bottom:1px solid #888;background:transparent;font:400 9px Arial,sans-serif;width:48px;outline:none;color:#000;padding:0}
-.svgfield input:focus{border-bottom-color:#f90}
+.svgfield input:focus{border-bottom-color:var(--accent)}
 .ddpanel{flex-shrink:0;width:136px;border-left:1.5px solid #aaa;display:flex;flex-direction:column}
-.ddhead{background:#f90;font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:.5px;padding:3px 7px;flex-shrink:0}
+.ddhead{background:var(--accent);font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:.5px;padding:3px 7px;flex-shrink:0}
 .ddbody{padding:5px 7px;flex:1;display:flex;flex-direction:column;justify-content:space-between}
 .ddr{display:flex;align-items:flex-end;gap:3px}
 .dl{font-size:11px;min-width:88px;white-space:nowrap;flex-shrink:0}
@@ -100,7 +116,7 @@ input[type=checkbox]{width:12px;height:12px;accent-color:#f90;cursor:pointer;fle
 .utrow{display:flex;border:1px solid #aaa;border-radius:2px;overflow:hidden}
 .utlines{flex:1;padding:5px 8px;display:flex;flex-direction:column;justify-content:space-between}
 .utlines input{border:none;border-bottom:1px solid #ccc;font-size:11px;outline:none;background:transparent;width:100%;padding:4px 0;color:#000}
-.utlines input:focus{border-bottom-color:#f90}
+.utlines input:focus{border-bottom-color:var(--accent)}
 .atpanel{flex-shrink:0;width:200px;border-left:1px solid #aaa;display:flex;flex-direction:column}
 .athead{border-bottom:1px solid #aaa;font-size:10px;font-weight:700;padding:4px 7px}
 .atbody{padding:4px 7px;flex:1;display:flex;flex-direction:column}
@@ -120,7 +136,7 @@ input[type=checkbox]{width:12px;height:12px;accent-color:#f90;cursor:pointer;fle
 .groupletters{display:flex;justify-content:space-between;font-size:13px;font-weight:600;color:#111}
 .groupletters span{flex:1;min-width:0;height:16px;display:flex;align-items:center;justify-content:center;cursor:pointer;border-radius:3px;user-select:none}
 .groupletters span:hover{background:rgba(255,153,0,.25)}
-.groupletters span.gsel{background:#f90;color:#000;font-weight:800}
+.groupletters span.gsel{background:var(--accent);color:#000;font-weight:800}
 
 .fl{margin-bottom:3px}
 .fll{font-size:10px;color:#333;display:block;margin-bottom:1px}
@@ -137,7 +153,7 @@ input[type=checkbox]{width:12px;height:12px;accent-color:#f90;cursor:pointer;fle
 .riskt p{margin-bottom:1px}
 .rlines{margin-top:4px;display:flex;flex-direction:column;gap:3px}
 .rlines input{border:none;border-bottom:1px solid #bbb;outline:none;background:transparent;width:100%;font-size:11px;padding:2px 0;color:#000}
-.rlines input:focus{border-bottom-color:#f90}
+.rlines input:focus{border-bottom-color:var(--accent)}
 
 
 #view-combined{display:flex}
@@ -215,6 +231,36 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
 
   <div class="tb-sep"></div>
 
+  <div class="menu" id="menu-archive">
+    <button class="btn" onclick="toggleMenu('menu-archive')">&#128218; Arkiv <span class="chev">&#9660;</span></button>
+    <div class="menu-panel" style="min-width:288px">
+      <h4>Dyk-arkiv <span id="dive-stats" class="dive-stats"></span></h4>
+      <div id="dive-list" class="tpl-list"><div class="tpl-empty">Inga sparade dyk &#228;nnu</div></div>
+      <div class="menu-divider"></div>
+      <button class="btn primary" style="justify-content:center" onclick="archiveSave()">&#128190; Spara dyk i arkiv</button>
+      <button class="btn" style="justify-content:center" onclick="newDive()">&#10133; Nytt dyk</button>
+      <p class="menu-note">Dyken sparas lokalt i webbl&#228;saren. Anv&#228;nd Spara (JSON) f&#246;r s&#228;kerhetskopia eller &#246;verf&#246;ring mellan enheter.</p>
+    </div>
+  </div>
+
+  <div class="menu" id="menu-project">
+    <button class="btn" onclick="toggleMenu('menu-project')">&#128193; Projekt <span class="chev">&#9660;</span></button>
+    <div class="menu-panel" style="min-width:300px">
+      <h4>Projekt &amp; kund</h4>
+      <div class="mrow">
+        <span class="ml">Aktivt projekt</span>
+        <select id="project-select" onchange="setActiveProject(this.value)"><option value="">&#8212; Inget projekt &#8212;</option></select>
+      </div>
+      <button class="btn" style="justify-content:center" onclick="applyProjectInfo()">&#11015; Anv&#228;nd projektets uppgifter i formul&#228;ret</button>
+      <div class="menu-divider"></div>
+      <div id="project-list" class="tpl-list"><div class="tpl-empty">Inga projekt &#228;nnu</div></div>
+      <button class="btn primary" style="justify-content:center" onclick="newProject()">&#10133; Nytt projekt</button>
+      <p class="menu-note">Ett projekt &#229;teranv&#228;nder kund-, plats- och projektnummer. Nya dyk taggas med aktivt projekt &#8211; klicka &#8220;Rapport&#8221; f&#246;r en utskrivbar sammanst&#228;llning av projektets dyk.</p>
+    </div>
+  </div>
+
+  <div class="tb-sep"></div>
+
   <button class="btn primary" onclick="window.print()">&#128424; Skriv ut</button>
 
   <div class="menu" id="menu-print">
@@ -265,10 +311,56 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
   <button class="btn" id="edit-btn" onclick="toggleEdit()">&#9998; Redigera text</button>
   <button class="btn" id="move-btn" onclick="toggleMove()">&#10021; Flytta / Skala</button>
 
+  <div class="menu" id="menu-templates">
+    <button class="btn" onclick="toggleMenu('menu-templates')">&#128209; Mallar <span class="chev">&#9660;</span></button>
+    <div class="menu-panel">
+      <h4>Mallar</h4>
+      <div id="tpl-list" class="tpl-list"><div class="tpl-empty">Inga sparade mallar &#228;nnu</div></div>
+      <div class="menu-divider"></div>
+      <button class="btn primary" style="justify-content:center" onclick="saveTemplate()">&#128190; Spara nuvarande som mall</button>
+      <p class="menu-note">En mall f&#246;rifyller hela formul&#228;ret &#8211; bra f&#246;r &#229;terkommande team, utrustning och larminfo, eller f&#246;r att duplicera g&#229;rdagens plan.</p>
+    </div>
+  </div>
+
+  <div class="menu" id="menu-brand">
+    <button class="btn" onclick="toggleMenu('menu-brand')">&#127912; Anpassa <span class="chev">&#9660;</span></button>
+    <div class="menu-panel">
+      <h4>F&#246;retagsanpassning</h4>
+      <div class="mrow">
+        <span class="ml">Egen logga</span>
+        <input type="file" id="logo-input" accept="image/*" onchange="onLogoPicked(event)" style="font-size:11.5px">
+      </div>
+      <div class="mrow">
+        <span class="ml">Temaf&#228;rg <span class="val" id="accentval">#ff9900</span></span>
+        <input type="color" id="accent-input" value="#ff9900" oninput="setAccent(this.value)" style="width:100%;height:30px;border:1px solid #d5d5dd;border-radius:7px;cursor:pointer;background:#fff;padding:2px">
+      </div>
+      <div class="menu-divider"></div>
+      <h4>Egna f&#228;lt</h4>
+      <div id="cf-manage" class="tpl-list"><div class="tpl-empty">Inga egna f&#228;lt &#228;nnu</div></div>
+      <button class="btn" style="justify-content:center" onclick="addCustomField()">&#10133; L&#228;gg till eget f&#228;lt</button>
+      <p class="menu-note">Egna f&#228;lt visas i en &#8220;Egna f&#228;lt&#8221;-ruta i dykloggen och skrivs ut. F&#228;lten g&#228;ller alla dyk; v&#228;rdena sparas per dyk.</p>
+      <div class="menu-divider"></div>
+      <button class="btn" style="justify-content:center" onclick="resetBranding()">&#8634; &#197;terst&#228;ll logga &amp; f&#228;rg</button>
+    </div>
+  </div>
+
   <div class="tb-spacer"></div>
 
   <button class="btn" onclick="saveJSON()">&#128190; Spara</button>
   <button class="btn" onclick="loadJSON()">&#128194; Ladda</button>
+
+  <div class="menu" id="menu-export">
+    <button class="btn" onclick="toggleMenu('menu-export')">&#128228; Export <span class="chev">&#9660;</span></button>
+    <div class="menu-panel" style="left:auto;right:0;min-width:264px">
+      <h4>Export &amp; delning</h4>
+      <button class="btn" style="justify-content:flex-start" onclick="exportCSV()">&#128202; CSV (Excel)</button>
+      <button class="btn" style="justify-content:flex-start" onclick="exportUDDF()">&#127760; UDDF (dykprogram)</button>
+      <button class="btn" style="justify-content:flex-start" onclick="emailLog()">&#9993;&#65039; Mejla sammanfattning</button>
+      <div class="menu-divider"></div>
+      <p class="menu-note">PDF: klicka <b>Skriv ut</b> och v&#228;lj &#8220;Spara som PDF&#8221; (ger b&#228;st kvalitet). Mejl &#246;ppnar ett utkast med en textsammanfattning.</p>
+    </div>
+  </div>
+
   <button class="btn danger" onclick="clearAll()">&#128465; Rensa</button>
 </div>
 <div class="tb-hint edit-hint">&#9998; Klicka p&#229; valfri text f&#246;r att &#228;ndra den</div>
@@ -407,6 +499,12 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
 
       </div>
     </div>
+  </div>
+
+  <!-- EGNA FÄLT (custom fields) -->
+  <div class="sec" id="cf-section" style="display:none">
+    <div class="tab">Egna f&#228;lt</div>
+    <div class="sb" id="cf-host"></div>
   </div>
 
 </div>
@@ -799,7 +897,7 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
 <!-- Arbetstyp modal -->
 <div id="at-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:center;justify-content:center">
   <div style="background:#fff;border-radius:4px;width:300px;max-height:75vh;display:flex;flex-direction:column;box-shadow:0 6px 28px rgba(0,0,0,.35)">
-    <div style="background:#f90;padding:9px 14px;border-radius:4px 4px 0 0;display:flex;justify-content:space-between;align-items:center;flex-shrink:0">
+    <div style="background:var(--accent);padding:9px 14px;border-radius:4px 4px 0 0;display:flex;justify-content:space-between;align-items:center;flex-shrink:0">
       <span style="font-weight:700;font-size:13px">Redigera arbetstyper</span>
       <button onclick="closeAtModal()" style="background:none;border:none;font-size:20px;cursor:pointer;line-height:1;font-weight:700;padding:0">&times;</button>
     </div>
@@ -849,6 +947,408 @@ function toggleMenu(id) {
 // Close any open menu when clicking outside of it
 document.addEventListener('pointerdown', e => { if (!e.target.closest('.menu')) closeMenus(); }, true);
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMenus(); });
+
+// --- Generic file download helper ---
+function download(name, content, type) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([content], { type: type || 'text/plain' }));
+  a.download = name;
+  a.click();
+}
+
+// ====================== Mallar (templates) ======================
+function getTemplates() { try { return JSON.parse(localStorage.getItem('dyklogg_templates') || '{}'); } catch (e) { return {}; } }
+function setTemplates(o) { try { localStorage.setItem('dyklogg_templates', JSON.stringify(o)); } catch (e) {} }
+function renderTemplateList() {
+  const list = document.getElementById('tpl-list'); if (!list) return;
+  const t = getTemplates(); const names = Object.keys(t);
+  if (!names.length) { list.innerHTML = '<div class="tpl-empty">Inga sparade mallar ännu</div>'; return; }
+  list.innerHTML = '';
+  names.forEach(n => {
+    const row = document.createElement('div'); row.className = 'tpl-item';
+    const b = document.createElement('button'); b.className = 'tpl-name'; b.textContent = n;
+    b.title = 'Använd mallen "' + n + '"'; b.onclick = () => applyTemplate(n);
+    const d = document.createElement('button'); d.className = 'tpl-del'; d.textContent = '×';
+    d.title = 'Ta bort mallen'; d.onclick = e => { e.stopPropagation(); deleteTemplate(n); };
+    row.appendChild(b); row.appendChild(d); list.appendChild(row);
+  });
+}
+function saveTemplate() {
+  const name = prompt('Namn på mallen (t.ex. "Standardteam" eller projektnamn):');
+  if (!name || !name.trim()) return;
+  const t = getTemplates(); t[name.trim()] = gatherAll(); setTemplates(t);
+  renderTemplateList(); toast('✓ Mall sparad');
+}
+function applyTemplate(n) {
+  const t = getTemplates(); if (!t[n]) return;
+  applyAll(JSON.parse(JSON.stringify(t[n])));
+  try { localStorage.setItem('dyklogg_autosave', JSON.stringify(gatherAll())); } catch (e) {}
+  closeMenus(); toast('✓ Mall "' + n + '" använd');
+}
+function deleteTemplate(n) {
+  if (!confirm('Ta bort mallen "' + n + '"?')) return;
+  const t = getTemplates(); delete t[n]; setTemplates(t); renderTemplateList(); toast('Mall borttagen');
+}
+
+// ====================== Företagsanpassning (branding) ======================
+function setAccent(color) {
+  document.documentElement.style.setProperty('--accent', color);
+  const v = document.getElementById('accentval'); if (v) v.textContent = color;
+  const inp = document.getElementById('accent-input'); if (inp && inp.value !== color) inp.value = color;
+  try { localStorage.setItem('dyklogg_accent', color); } catch (e) {}
+}
+function applyLogo(url) { document.querySelectorAll('img.company-logo').forEach(img => { img.src = url; }); }
+function onLogoPicked(e) {
+  const f = e.target.files && e.target.files[0]; if (!f) return;
+  const fr = new FileReader();
+  fr.onload = ev => {
+    const url = ev.target.result;
+    try { localStorage.setItem('dyklogg_logo', url); applyLogo(url); toast('✓ Logga uppdaterad'); }
+    catch (err) { alert('Bilden är för stor att spara. Välj en mindre fil.'); }
+  };
+  fr.readAsDataURL(f);
+}
+function resetBranding() {
+  setAccent('#ff9900');
+  try { localStorage.removeItem('dyklogg_accent'); } catch (e) {}
+  document.querySelectorAll('img.company-logo').forEach(img => { if (img.dataset.orig) img.src = img.dataset.orig; });
+  try { localStorage.removeItem('dyklogg_logo'); } catch (e) {}
+  const fi = document.getElementById('logo-input'); if (fi) fi.value = '';
+  toast('Återställt till standard');
+}
+(function initBranding() {
+  document.querySelectorAll('img[src*="dawab_logo"]').forEach(img => {
+    img.classList.add('company-logo');
+    if (!img.dataset.orig) img.dataset.orig = img.getAttribute('src');
+  });
+  try {
+    const c = localStorage.getItem('dyklogg_accent'); if (c) setAccent(c);
+    const l = localStorage.getItem('dyklogg_logo'); if (l) applyLogo(l);
+  } catch (e) {}
+  renderTemplateList();
+})();
+
+// ====================== Egna fält (custom fields) ======================
+// Definitions ({key,label}) are app-level (shared across all dives); the
+// values live per-dive as inputs with id "cf-<key>" (picked up by gatherAll).
+function getCustomFields() { try { return JSON.parse(localStorage.getItem('dyklogg_customfields') || '[]'); } catch (e) { return []; } }
+function setCustomFields(a) { try { localStorage.setItem('dyklogg_customfields', JSON.stringify(a)); } catch (e) {} }
+function renderCustomFields() {
+  const fields = getCustomFields();
+  const host = document.getElementById('cf-host');
+  const section = document.getElementById('cf-section');
+  if (host) {
+    // preserve current values before rebuild
+    const cur = {};
+    host.querySelectorAll('input[id^="cf-"]').forEach(i => cur[i.id] = i.value);
+    host.innerHTML = '';
+    fields.forEach(f => {
+      const row = document.createElement('div'); row.className = 'fl';
+      const lab = document.createElement('span'); lab.className = 'fll'; lab.textContent = f.label;
+      const inp = document.createElement('input'); inp.type = 'text'; inp.id = 'cf-' + f.key;
+      if (cur[inp.id] !== undefined) inp.value = cur[inp.id];
+      row.appendChild(lab); row.appendChild(inp); host.appendChild(row);
+    });
+    if (section) section.style.display = fields.length ? '' : 'none';
+  }
+  // management list in the Anpassa menu
+  const mng = document.getElementById('cf-manage');
+  if (mng) {
+    if (!fields.length) { mng.innerHTML = '<div class="tpl-empty">Inga egna fält ännu</div>'; }
+    else {
+      mng.innerHTML = '';
+      fields.forEach(f => {
+        const row = document.createElement('div'); row.className = 'tpl-item';
+        const name = document.createElement('span'); name.className = 'tpl-name'; name.style.cursor = 'default'; name.textContent = f.label;
+        const del = document.createElement('button'); del.className = 'tpl-del'; del.textContent = '×'; del.title = 'Ta bort fältet';
+        del.onclick = () => removeCustomField(f.key);
+        row.appendChild(name); row.appendChild(del); mng.appendChild(row);
+      });
+    }
+  }
+}
+function addCustomField() {
+  const label = prompt('Namn på det egna fältet (t.ex. "Gasblandning", "Tanktryck"):');
+  if (!label || !label.trim()) return;
+  const fields = getCustomFields();
+  fields.push({ key: 'f' + Date.now(), label: label.trim() });
+  setCustomFields(fields); renderCustomFields();
+  try { localStorage.setItem('dyklogg_autosave', JSON.stringify(gatherAll())); } catch (e) {}
+  toast('✓ Eget fält tillagt');
+}
+function removeCustomField(key) {
+  const f = getCustomFields().find(x => x.key === key);
+  if (!confirm('Ta bort fältet "' + (f ? f.label : '') + '"? Värdet i nuvarande dyk försvinner.')) return;
+  setCustomFields(getCustomFields().filter(x => x.key !== key));
+  renderCustomFields();
+  try { localStorage.setItem('dyklogg_autosave', JSON.stringify(gatherAll())); } catch (e) {}
+  toast('Fält borttaget');
+}
+renderCustomFields();   // build the fields before autosave restore fills their values
+
+// ====================== Dyk-arkiv (dive archive) ======================
+// Multiple dives stored locally; each entry keeps list-metadata + the full
+// gatherAll() blob. currentDiveId marks which archived dive the working draft
+// corresponds to (so re-saving updates it instead of creating a duplicate).
+function getDives() { try { return JSON.parse(localStorage.getItem('dyklogg_dives') || '{}'); } catch (e) { return {}; } }
+function setDives(o) { try { localStorage.setItem('dyklogg_dives', JSON.stringify(o)); return true; } catch (e) { alert('Kunde inte spara – webbläsarens lagring kan vara full.'); return false; } }
+let currentDiveId = null;
+try { currentDiveId = localStorage.getItem('dyklogg_current') || null; } catch (e) {}
+
+function diveMeta() {
+  const v = id => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
+  return { datum: v('datum') || v('b1-datum') || v('plan-datum'), dyknr: v('dyknr') || v('b1-dyknr'), plats: v('arbetsplats') || v('b1-arbetsplats') };
+}
+function diveTitle(d) {
+  const p = [];
+  if (d.dyknr) p.push('Dyk ' + d.dyknr);
+  if (d.plats) p.push(d.plats);
+  return p.join(' · ') || 'Namnlöst dyk';
+}
+function fmtWhen(ts) {
+  if (!ts) return '';
+  const d = new Date(ts);
+  return d.toLocaleDateString('sv-SE') + ' ' + d.toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit' });
+}
+function archiveSave() {
+  const dives = getDives();
+  const id = currentDiveId || ('d' + Date.now());
+  const m = diveMeta();
+  const prev = dives[id] || {};
+  dives[id] = { id: id, datum: m.datum, dyknr: m.dyknr, plats: m.plats, projectId: activeProjectId || prev.projectId || null, savedAt: Date.now(), data: gatherAll() };
+  if (!setDives(dives)) return;
+  currentDiveId = id; try { localStorage.setItem('dyklogg_current', id); } catch (e) {}
+  renderDiveList(); renderProjectList(); toast('✓ Dyk sparat i arkivet');
+}
+function newDive() {
+  if (!confirm('Starta ett nytt, tomt dyk?\nOsparade ändringar i det nuvarande går förlorade om du inte sparat det i arkivet.')) return;
+  document.querySelectorAll('input[type=text]').forEach(el => el.value = '');
+  document.querySelectorAll('input[type=checkbox]').forEach(el => el.checked = false);
+  ['main','b1','b2'].forEach(inst => { atInstances[inst].checked = {}; renderGrid(inst); });
+  glSpans().forEach(sp => sp.classList.remove('gsel'));
+  layoutTf = {}; document.querySelectorAll('[data-lid]').forEach(el => { el.style.transform = ''; });
+  selectEl(null);
+  currentDiveId = null; try { localStorage.removeItem('dyklogg_current'); localStorage.setItem('dyklogg_autosave', JSON.stringify(gatherAll())); } catch (e) {}
+  renderDiveList(); closeMenus(); toast('Nytt dyk påbörjat');
+}
+function loadDive(id) {
+  const d = getDives()[id]; if (!d) return;
+  applyAll(JSON.parse(JSON.stringify(d.data)));
+  currentDiveId = id;
+  if (d.projectId !== undefined) setActiveProject(d.projectId || '');
+  try { localStorage.setItem('dyklogg_current', id); localStorage.setItem('dyklogg_autosave', JSON.stringify(gatherAll())); } catch (e) {}
+  renderDiveList(); closeMenus(); toast('✓ Dyk laddat');
+}
+function deleteDive(id) {
+  const dives = getDives(); if (!dives[id]) return;
+  if (!confirm('Ta bort detta dyk ur arkivet? Detta går inte att ångra.')) return;
+  delete dives[id]; setDives(dives);
+  if (currentDiveId === id) { currentDiveId = null; try { localStorage.removeItem('dyklogg_current'); } catch (e) {} }
+  renderDiveList(); toast('Dyk borttaget');
+}
+function renderDiveList() {
+  const list = document.getElementById('dive-list'); if (!list) return;
+  const arr = Object.values(getDives()).sort((a, b) => (b.savedAt || 0) - (a.savedAt || 0));
+  const stats = document.getElementById('dive-stats');
+  if (stats) stats.textContent = arr.length ? (arr.length + (arr.length === 1 ? ' dyk' : ' dyk')) : '';
+  if (!arr.length) { list.innerHTML = '<div class="tpl-empty">Inga sparade dyk ännu</div>'; return; }
+  list.innerHTML = '';
+  arr.forEach(d => {
+    const row = document.createElement('div'); row.className = 'dive-item' + (d.id === currentDiveId ? ' current' : '');
+    const b = document.createElement('button'); b.className = 'dive-load'; b.onclick = () => loadDive(d.id);
+    const t = document.createElement('span'); t.className = 'dive-title'; t.textContent = diveTitle(d);
+    const meta = document.createElement('span'); meta.className = 'dive-meta';
+    const proj = d.projectId ? (getProjects()[d.projectId] || {}).name : '';
+    meta.textContent = [d.datum, proj, 'sparad ' + fmtWhen(d.savedAt)].filter(Boolean).join(' · ');
+    b.appendChild(t); b.appendChild(meta);
+    const del = document.createElement('button'); del.className = 'tpl-del'; del.textContent = '×'; del.title = 'Ta bort dyk';
+    del.onclick = e => { e.stopPropagation(); deleteDive(d.id); };
+    row.appendChild(b); row.appendChild(del); list.appendChild(row);
+  });
+}
+
+// ====================== Projekt / kund ======================
+function getProjects() { try { return JSON.parse(localStorage.getItem('dyklogg_projects') || '{}'); } catch (e) { return {}; } }
+function setProjects(o) { try { localStorage.setItem('dyklogg_projects', JSON.stringify(o)); return true; } catch (e) { alert('Kunde inte spara projektet.'); return false; } }
+let activeProjectId = null;
+try { activeProjectId = localStorage.getItem('dyklogg_activeproject') || null; } catch (e) {}
+
+function newProject() {
+  const name = prompt('Projektnamn:'); if (!name || !name.trim()) return;
+  const kund = prompt('Uppdragsgivare / kund (valfritt):') || '';
+  const plats = prompt('Plats / position (valfritt):') || '';
+  const projektnr = prompt('Projektnummer (valfritt):') || '';
+  const projects = getProjects();
+  const id = 'p' + Date.now();
+  projects[id] = { id: id, name: name.trim(), kund: kund.trim(), plats: plats.trim(), projektnr: projektnr.trim(), createdAt: Date.now() };
+  if (!setProjects(projects)) return;
+  setActiveProject(id);
+  renderProjectList();
+  toast('✓ Projekt skapat');
+}
+function setActiveProject(id) {
+  activeProjectId = id || null;
+  try { if (activeProjectId) localStorage.setItem('dyklogg_activeproject', activeProjectId); else localStorage.removeItem('dyklogg_activeproject'); } catch (e) {}
+  const sel = document.getElementById('project-select'); if (sel) sel.value = activeProjectId || '';
+  renderDiveList();
+}
+function applyProjectInfo() {
+  const p = getProjects()[activeProjectId];
+  if (!p) { toast('Välj ett aktivt projekt först'); return; }
+  const set = (id, val) => { const el = document.getElementById(id); if (el && val) el.value = val; };
+  set('arbetsplats', p.name); set('b1-arbetsplats', p.name); set('b2-arbetsplats', p.name);
+  set('uppdragsgivare', p.kund);
+  set('plats', p.plats);
+  set('projektnummer', p.projektnr);
+  set('upprattat', p.kund ? '' : '');
+  try { localStorage.setItem('dyklogg_autosave', JSON.stringify(gatherAll())); } catch (e) {}
+  closeMenus(); toast('✓ Projektuppgifter ifyllda');
+}
+function deleteProject(id) {
+  const projects = getProjects(); if (!projects[id]) return;
+  if (!confirm('Ta bort projektet "' + projects[id].name + '"?\nDyken ligger kvar i arkivet men avtaggas projektet.')) return;
+  delete projects[id]; setProjects(projects);
+  const dives = getDives(); let changed = false;
+  Object.values(dives).forEach(d => { if (d.projectId === id) { d.projectId = null; changed = true; } });
+  if (changed) setDives(dives);
+  if (activeProjectId === id) setActiveProject('');
+  renderProjectList(); renderDiveList(); toast('Projekt borttaget');
+}
+function projectDiveCount(id) { return Object.values(getDives()).filter(d => d.projectId === id).length; }
+function updateProjectSelect() {
+  const sel = document.getElementById('project-select'); if (!sel) return;
+  const projects = getProjects();
+  sel.innerHTML = '<option value="">— Inget projekt —</option>';
+  Object.values(projects).sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0)).forEach(p => {
+    const o = document.createElement('option'); o.value = p.id; o.textContent = p.name; sel.appendChild(o);
+  });
+  sel.value = activeProjectId || '';
+}
+function renderProjectList() {
+  updateProjectSelect();
+  const list = document.getElementById('project-list'); if (!list) return;
+  const arr = Object.values(getProjects()).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+  if (!arr.length) { list.innerHTML = '<div class="tpl-empty">Inga projekt ännu</div>'; return; }
+  list.innerHTML = '';
+  arr.forEach(p => {
+    const row = document.createElement('div'); row.className = 'dive-item' + (p.id === activeProjectId ? ' current' : '');
+    const b = document.createElement('button'); b.className = 'dive-load'; b.onclick = () => setActiveProject(p.id);
+    const t = document.createElement('span'); t.className = 'dive-title'; t.textContent = p.name;
+    const meta = document.createElement('span'); meta.className = 'dive-meta';
+    meta.textContent = [p.kund, p.projektnr, projectDiveCount(p.id) + ' dyk'].filter(Boolean).join(' · ');
+    b.appendChild(t); b.appendChild(meta);
+    const rep = document.createElement('button'); rep.className = 'tpl-del'; rep.textContent = '📄'; rep.title = 'Projektrapport';
+    rep.style.color = '#33333a'; rep.onclick = e => { e.stopPropagation(); projectReport(p.id); };
+    const del = document.createElement('button'); del.className = 'tpl-del'; del.textContent = '×'; del.title = 'Ta bort projekt';
+    del.onclick = e => { e.stopPropagation(); deleteProject(p.id); };
+    row.appendChild(b); row.appendChild(rep); row.appendChild(del); list.appendChild(row);
+  });
+}
+function projectReport(id) {
+  const p = getProjects()[id]; if (!p) return;
+  const dives = Object.values(getDives()).filter(d => d.projectId === id)
+    .sort((a, b) => (a.datum || '').localeCompare(b.datum || '') || (a.savedAt || 0) - (b.savedAt || 0));
+  const g = (d, k) => (d.data && d.data[k]) ? String(d.data[k]) : '';
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const rows = dives.map(d => '<tr><td>' + esc(d.dyknr || g(d, 'dyknr')) + '</td><td>' + esc(d.datum || g(d, 'datum')) +
+    '</td><td>' + esc(g(d, 'maxdjup')) + '</td><td>' + esc(g(d, 'bottentid')) + '</td><td>' + esc(g(d, 'time-in')) +
+    '–' + esc(g(d, 'time-out')) + '</td><td>' + esc(g(d, 'led-namn')) + '</td><td>' + esc(g(d, 'arbetsmoment')) + '</td></tr>').join('');
+  const html = '<!DOCTYPE html><html lang="sv"><head><meta charset="UTF-8"><title>Projektrapport – ' + esc(p.name) + '</title>' +
+    '<style>body{font-family:Arial,sans-serif;color:#111;margin:28px;font-size:12px}h1{font-size:22px;margin:0 0 2px}' +
+    '.sub{color:#c87a00;font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:14px}' +
+    '.meta{margin:0 0 16px;font-size:12px}.meta b{display:inline-block;min-width:120px;color:#555}' +
+    'table{width:100%;border-collapse:collapse}th,td{border:1px solid #bbb;padding:6px 8px;text-align:left;vertical-align:top}' +
+    'th{background:#f90;font-size:10px;text-transform:uppercase;letter-spacing:.4px}tr:nth-child(even) td{background:#faf7f2}' +
+    '.foot{margin-top:14px;color:#888;font-size:10px}@media print{.noprint{display:none}}' +
+    'button{background:#f90;border:none;padding:8px 16px;font-weight:700;border-radius:6px;cursor:pointer;margin-bottom:14px}</style></head><body>' +
+    '<button class="noprint" onclick="window.print()">🖨 Skriv ut rapport</button>' +
+    '<h1>' + esc(p.name) + '</h1><div class="sub">Projektrapport – Dyklogg</div>' +
+    '<div class="meta">' +
+    (p.kund ? '<div><b>Uppdragsgivare:</b> ' + esc(p.kund) + '</div>' : '') +
+    (p.projektnr ? '<div><b>Projektnummer:</b> ' + esc(p.projektnr) + '</div>' : '') +
+    (p.plats ? '<div><b>Plats:</b> ' + esc(p.plats) + '</div>' : '') +
+    '<div><b>Antal dyk:</b> ' + dives.length + '</div></div>' +
+    '<table><thead><tr><th>Dyk nr</th><th>Datum</th><th>Max djup</th><th>Bottentid</th><th>Tid</th><th>Dykledare</th><th>Arbetsmoment</th></tr></thead><tbody>' +
+    (rows || '<tr><td colspan="7" style="text-align:center;color:#888">Inga dyk i projektet ännu</td></tr>') +
+    '</tbody></table><div class="foot">Genererad ' + new Date().toLocaleString('sv-SE') + '</div></body></html>';
+  const w = window.open('', '_blank');
+  if (!w) { alert('Tillåt popup-fönster för att visa rapporten.'); return; }
+  w.document.write(html); w.document.close();
+}
+
+// ====================== UDDF-export ======================
+function exportUDDF() {
+  closeMenus();
+  const v = id => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const datum = v('datum') || v('b1-datum');
+  const dt = /^\d{4}-\d{2}-\d{2}$/.test(datum) ? datum + 'T' + (v('time-in') || '00:00') + ':00' : new Date().toISOString();
+  const depth = (parseFloat((v('maxdjup') || '0').replace(',', '.')) || 0).toString();
+  const tempC = parseFloat((v('temp') || '').replace(',', '.'));
+  const tempK = isNaN(tempC) ? '' : (tempC + 273.15).toFixed(2);
+  const uddf = '<?xml version="1.0" encoding="UTF-8"?>\n' +
+    '<uddf version="3.2.0">\n  <generator><name>Dyklogg</name><type>logbook</type></generator>\n' +
+    '  <profiledata>\n    <repetitiongroup>\n      <dive>\n' +
+    '        <informationbeforedive>\n          <datetime>' + esc(dt) + '</datetime>\n' +
+    (v('arbetsplats') ? '          <divenumber>' + esc(v('dyknr')) + '</divenumber>\n' : '') +
+    '        </informationbeforedive>\n' +
+    '        <informationafterdive>\n          <greatestdepth>' + esc(depth) + '</greatestdepth>\n' +
+    (v('bottentid') ? '          <diveduration>' + esc(v('bottentid')) + '</diveduration>\n' : '') +
+    (tempK ? '          <lowesttemperature>' + tempK + '</lowesttemperature>\n' : '') +
+    (v('sikt') ? '          <visibility>' + esc(v('sikt')) + '</visibility>\n' : '') +
+    '        </informationafterdive>\n      </dive>\n    </repetitiongroup>\n  </profiledata>\n</uddf>\n';
+  download(buildFileName().replace(/\.json$/, '') + '.uddf', uddf, 'application/xml');
+  toast('✓ UDDF exporterad');
+}
+
+// ====================== Mejla sammanfattning ======================
+function emailLog() {
+  closeMenus();
+  const v = id => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
+  const L = [];
+  const add = (label, val) => { if (val) L.push(label + ': ' + val); };
+  add('Datum', v('datum') || v('b1-datum'));
+  add('Dyk nr', v('dyknr'));
+  add('Arbetsplats', v('arbetsplats'));
+  add('Arbetsmoment', v('arbetsmoment'));
+  add('Starttid', v('time-in')); add('Sluttid', v('time-out'));
+  add('Max djup', v('maxdjup')); add('Bottentid', v('bottentid'));
+  add('Sikt', v('sikt')); add('Temperatur', v('temp'));
+  add('Dykledare', v('led-namn'));
+  const subject = 'Dyklogg' + (v('dyknr') ? ' – dyk ' + v('dyknr') : '') + (v('datum') ? ' (' + v('datum') + ')' : '');
+  const body = L.join('\n') + '\n\n(Skapad i Dyklogg. Bifoga ev. PDF/JSON manuellt.)';
+  window.location.href = 'mailto:?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+}
+
+// ====================== CSV-export ======================
+function fieldLabel(inp) {
+  const row = inp.closest('.ddr,.fl,.sf,.svgfield,.svgtime,td,label');
+  if (row) {
+    const lab = row.querySelector('.dl,.fll,.lbl,span,label');
+    if (lab && lab !== inp) { const t = lab.textContent.replace(/\s+/g, ' ').trim(); if (t) return t.replace(/:\s*$/, ''); }
+    if (row.tagName === 'LABEL') { const t = row.textContent.replace(/\s+/g, ' ').trim(); if (t) return t; }
+  }
+  return inp.id || '';
+}
+function exportCSV() {
+  closeMenus();
+  const rows = [['Fält', 'Värde']];
+  const root = document.getElementById('view-combined');
+  root.querySelectorAll('input[type=text], input[type=date]').forEach(inp => {
+    const v = (inp.value || '').trim(); if (!v) return;
+    rows.push([fieldLabel(inp), v]);
+  });
+  root.querySelectorAll('input[type=checkbox]').forEach(cb => {
+    if (!cb.checked) return;
+    const lab = cb.closest('label'); const t = lab ? lab.textContent.replace(/\s+/g, ' ').trim() : '';
+    if (t) rows.push([t, 'Ja']);
+  });
+  const gl = [...document.querySelectorAll('#view-combined .groupletters span.gsel')].map(s => s.textContent).join(' ');
+  if (gl) rows.push(['Gruppbeteckning', gl]);
+  const csv = '﻿' + rows.map(r => r.map(c => '"' + String(c).replace(/"/g, '""') + '"').join(';')).join('\r\n');
+  download(buildFileName().replace(/\.json$/, '') + '.csv', csv, 'text/csv;charset=utf-8');
+  toast('✓ CSV exporterad');
+}
 
 // --- View switching ---
 let currentView = 'combined';
@@ -1073,7 +1573,7 @@ function renderAtModalListFor(inst) {
     const row = document.createElement('div'); row.style.cssText = 'display:flex;align-items:center;gap:8px';
     const inp = document.createElement('input'); inp.type='text'; inp.value=text;
     inp.style.cssText = 'flex:1;border:1px solid #ccc;border-radius:2px;padding:5px 7px;font-size:12px;outline:none;font-family:inherit';
-    inp.addEventListener('focus', () => inp.style.borderColor='#f90');
+    inp.addEventListener('focus', () => inp.style.borderColor='var(--accent)');
     inp.addEventListener('blur', () => { inp.style.borderColor='#ccc'; obj.typer[i]=inp.value.trim()||text; });
     const del = document.createElement('button'); del.textContent='\u00d7';
     del.style.cssText='background:#d33;color:#fff;border:none;border-radius:2px;width:26px;height:26px;font-size:16px;font-weight:700;cursor:pointer;flex-shrink:0;line-height:1';
@@ -1447,7 +1947,9 @@ function clearAll() {
   layoutTf = {};
   document.querySelectorAll('[data-lid]').forEach(el => { el.style.transform = ''; });
   selectEl(null);
-  try { localStorage.removeItem('dyklogg_autosave'); } catch(e) {}
+  currentDiveId = null;
+  try { localStorage.removeItem('dyklogg_autosave'); localStorage.removeItem('dyklogg_current'); } catch(e) {}
+  if (typeof renderDiveList === 'function') renderDiveList();
   toast('Rensat');
 }
 
@@ -1475,6 +1977,9 @@ function clearAll() {
   } catch(e) {}
   setPrintMode(v);
 })();
+// Render the dive archive + project lists once everything is initialised
+renderProjectList();
+renderDiveList();
 </script>
 </body>
 </html>
