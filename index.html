@@ -282,11 +282,25 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
   body.print-custom #view-dyklog{display:none!important}
   /* Full Dykplan back page printed in portrait (stående) */
   .ppage{page:pp}
-  /* Layout-lägen: Dykplan-baksida + hel Dykplan = stående eget ark; kopia = liggande eget ark */
+  /* Layout-lägen: baksidor på egna ark, utan skärmens marginal/skugga
+     (id-selektorn behövs för att vinna över skärmregeln #layout-extra .layout-page) */
   .layout-extra-label{display:none!important}
+  #layout-extra .layout-page{margin:0!important;box-shadow:none!important;padding:4mm 9mm}
   #layout-extra .layout-back{break-before:page;page-break-before:always;width:100%!important}
   #layout-extra .layout-plan{width:100%!important}
   #layout-extra .layout-copy-page{break-before:page;page-break-before:always;width:100%!important}
+  /* Dykprofil-grafen: lås höjden till den uppmätta skärmhöjden vid utskrift
+     (sätts av updatePrintFit). Annars växer den med bredden (width:100% +
+     fast bildförhållande) och motverkar krymp-till-ark-zoomen. */
+  .profsvg svg{height:var(--svgh,auto)}
+  /* Krymp-till-ark: zoom-faktorerna räknas ut dynamiskt av updatePrintFit()
+     så att varje sida alltid ryms på SITT ark – även när egna fält m.m. gjort
+     sidan högre. width kompenserar zoomens breddkrympning så arket förblir
+     fullbrett (annars radbryts texten och sidan växer igen).
+     Verifierat med riktiga PDF:er (test/utskrift.test.js). */
+  #view-combined .page{zoom:var(--pz-combined,1);width:calc(100%/var(--pz-combined,1))!important}
+  #view-dyklog .page{zoom:var(--pz-dyklog,1);width:calc(100%/var(--pz-dyklog,1))!important}
+  #layout-extra .layout-page{zoom:var(--pz-extra,1);width:calc(100%/var(--pz-extra,1))!important}
   /* "Ryms alltid på en A4": samma beprövade ihop-packning som dykplanen i
      Logg+Plan (där den ryms på HALVA ett liggande A4). En stående A4 är
      större, så då måste den rymmas. */
@@ -1305,6 +1319,7 @@ function renderCustomFields() {
       row.appendChild(lab); row.appendChild(inp); host.appendChild(row);
     });
     if (section) section.style.display = fields.length ? '' : 'none';
+    setTimeout(() => updatePrintFit(), 0);   // sidhöjden ändrades (deferred: körs även vid uppstart, innan layout-motorn initierats)
   }
   // management list in the Anpassa menu
   const mng = document.getElementById('cf-manage');
@@ -1735,6 +1750,7 @@ function setLayout(name) {
   }
   activeLayout = name;
   applyPageStyle();                                 // stående för Hel Dykplan, annars liggande
+  if (typeof updatePrintFit === 'function') updatePrintFit();
   updateLayoutUI();
   try { localStorage.setItem(K('layout'), name); } catch (e) {}
   closeMenus();
@@ -1764,7 +1780,42 @@ function applyPageStyle() {
 function setPaper(v) {
   try { localStorage.setItem(K('paper'), v); } catch(e) {}
   applyPageStyle();
+  if (typeof updatePrintFit === 'function') updatePrintFit();
 }
+
+// ===== Krymp-till-ark (utskrift) =====
+// Räknar ut en zoom-faktor per utskriftssida så att innehållet ALLTID ryms på
+// sitt ark – även när t.ex. egna fält gjort sidan högre. Faktorerna sätts som
+// CSS-variabler som bara används i @media print, så skärmen påverkas inte.
+function updatePrintFit() {
+  try { void _layoutExtra; } catch (e) { return; }        // layout-motorn ej initierad än (uppstart)
+  // Lås varje dykprofil-grafs höjd till dess skärmhöjd, så att print-layouten
+  // inte växer när zoomens breddkompensation gör kolumnerna bredare.
+  document.querySelectorAll('.profsvg svg').forEach(s => {
+    const h = s.getBoundingClientRect().height;
+    if (h > 0) s.style.setProperty('--svgh', Math.round(h) + 'px');
+  });
+  const mm = 96 / 25.4;                                   // CSS-px per millimeter
+  let paper = 'A4'; try { paper = localStorage.getItem(K('paper')) || 'A4'; } catch (e) {}
+  const dims = paper === 'A3' ? [297, 420] : [210, 297];  // [kortsida, långsida] i mm
+  const sheetH = ((activeLayout === 'hel-plan') ? dims[1] : dims[0]) * mm;
+  // extraPx ≈ skillnaden mellan sidans print-padding och skärm-padding
+  // 0.96 = säkerhetsmarginal: skärm-mätningen skiljer sig något från
+  // print-layouten (padding, kolumnbredd), så vi tar i lite extra.
+  const fit = (el, extraPx) => {
+    if (!el || el.offsetHeight === 0) return 1;           // dold sida skrivs inte ut
+    const h = el.scrollHeight + extraPx;
+    return Math.min(1, Math.floor((sheetH / h) * 0.96 * 1000) / 1000);
+  };
+  const root = document.documentElement.style;
+  root.setProperty('--pz-combined', fit(document.querySelector('#view-combined .page'), 33));
+  root.setProperty('--pz-dyklog', fit(document.querySelector('#view-dyklog .page'), 33));
+  root.setProperty('--pz-extra', fit(_layoutExtra.querySelector('.layout-page'), 2));
+}
+window.addEventListener('beforeprint', updatePrintFit);
+// Egna fält m.m. kan ändra sidhöjden medan man skriver – håll faktorerna färska.
+let _pfTimer = null;
+document.addEventListener('input', () => { clearTimeout(_pfTimer); _pfTimer = setTimeout(updatePrintFit, 400); });
 (function() {
   let v = 'A4';
   try { v = localStorage.getItem(K('paper')) || 'A4'; } catch(e) {}
