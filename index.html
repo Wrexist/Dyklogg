@@ -284,6 +284,19 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
   #layout-extra .layout-back{break-before:page;page-break-before:always;width:100%!important;page:pp}
   #layout-extra .layout-plan{width:100%!important;page:pp}
   #layout-extra .layout-copy-page{break-before:page;page-break-before:always;width:100%!important}
+  /* "Ryms alltid på en A4": samma beprövade ihop-packning som dykplanen i
+     Logg+Plan (där den ryms på HALVA ett liggande A4). En stående A4 är
+     större, så då måste den rymmas. */
+  #layout-extra .layout-back, #layout-extra .layout-plan{gap:2px}
+  #layout-extra .layout-back .sb, #layout-extra .layout-plan .sb{padding:3px 8px}
+  #layout-extra .layout-back .fl, #layout-extra .layout-plan .fl{margin-bottom:1px}
+  #layout-extra .layout-back .fll, #layout-extra .layout-plan .fll{font-size:9.5px}
+  #layout-extra .layout-back .chk, #layout-extra .layout-plan .chk{line-height:1.1}
+  #layout-extra .layout-back .eqcol, #layout-extra .layout-plan .eqcol{padding:2px 8px}
+  #layout-extra .layout-back .eqt, #layout-extra .layout-plan .eqt{margin:0 0 1px}
+  #layout-extra .layout-back .riskt, #layout-extra .layout-plan .riskt{line-height:1.2}
+  #layout-extra .layout-back .logo, #layout-extra .layout-plan .logo{height:34px!important}
+  #layout-extra .layout-back .sec, #layout-extra .layout-plan .sec{break-inside:avoid}
 @page{size:A4 landscape;margin:0}
 @page pp{size:A4 portrait;margin:0}
 </style>
