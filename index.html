@@ -108,6 +108,9 @@ input[type=checkbox]{width:12px;height:12px;accent-color:var(--accent);cursor:po
 
 .title{font-size:30px;font-weight:900;text-transform:uppercase;letter-spacing:-.5px;line-height:1}
 .logo{height:40px;width:auto;flex-shrink:0;object-fit:contain}
+/* Bläckfisk-loggan är dold som standard; slås på under Anpassa */
+.octopus-logo{display:none}
+body.show-octopus .octopus-logo{display:inline-block}
 .sub{color:var(--accent);font-weight:700;font-size:9px;text-transform:uppercase;letter-spacing:.5px;margin-top:1px}
 
 .meta{width:100%;border-collapse:collapse;border:1.5px solid #999}
@@ -373,6 +376,7 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
         <span class="ml">Temaf&#228;rg <span class="val" id="accentval">#ff9900</span></span>
         <input type="color" id="accent-input" value="#ff9900" oninput="setAccent(this.value)" style="width:100%;height:30px;border:1px solid #d5d5dd;border-radius:7px;cursor:pointer;background:#fff;padding:2px">
       </div>
+      <label class="mchk"><input type="checkbox" id="octopus-chk" onchange="setOctopus(this.checked)"> <span>Visa bl&#228;ckfisk-logga<small>Den extra bl&#228;ckfisk-symbolen p&#229; dyklogg och dykplan (av som standard)</small></span></label>
       <div class="menu-divider"></div>
       <h4>Egna f&#228;lt</h4>
       <div id="cf-manage" class="tpl-list"><div class="tpl-empty">Inga egna f&#228;lt &#228;nnu</div></div>
@@ -464,7 +468,7 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
       <div class="sub et" contenteditable="false">Arbetsdyk &#8211; Kommersiell Dykverksamhet</div>
     </div>
     <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
-      <img src="blackfisk.png" alt="" class="logo" style="height:38px">
+      <img src="blackfisk.png" alt="" class="logo octopus-logo" style="height:38px">
       <img src="dawab_logo.png" alt="DAWAB" class="logo">
     </div>
   </div>
@@ -600,7 +604,10 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
 
   <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
     <div class="title et" contenteditable="false">Dykplan</div>
-    <img src="blackfisk.png" alt="DAWAB" class="logo" style="height:52px">
+    <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+      <img src="blackfisk.png" alt="" class="logo octopus-logo" style="height:40px">
+      <img src="dawab_logo.png" alt="DAWAB" class="logo">
+    </div>
     <div style="display:flex;align-items:flex-end;gap:5px;font-weight:700;font-size:11px;flex-shrink:0">
       <span class="et" contenteditable="false">Datum:</span>
       <input type="text" id="plan-datum" style="width:110px">
@@ -747,7 +754,7 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
       <div class="sub">Arbetsdyk &#8211; Kommersiell Dykverksamhet</div>
     </div>
     <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
-      <img src="blackfisk.png" alt="" class="logo" style="height:38px">
+      <img src="blackfisk.png" alt="" class="logo octopus-logo" style="height:38px">
       <img src="dawab_logo.png" alt="DAWAB" class="logo">
     </div>
   </div>
@@ -866,7 +873,7 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
       <div class="sub">Arbetsdyk &#8211; Kommersiell Dykverksamhet</div>
     </div>
     <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
-      <img src="blackfisk.png" alt="" class="logo" style="height:38px">
+      <img src="blackfisk.png" alt="" class="logo octopus-logo" style="height:38px">
       <img src="dawab_logo.png" alt="DAWAB" class="logo">
     </div>
   </div>
@@ -1189,12 +1196,19 @@ function onLogoPicked(e) {
   };
   fr.readAsDataURL(f);
 }
+/** Visar eller döljer den extra bläckfisk-loggan på dyklogg och dykplan. */
+function setOctopus(on) {
+  document.body.classList.toggle('show-octopus', !!on);
+  const chk = document.getElementById('octopus-chk'); if (chk) chk.checked = !!on;
+  try { localStorage.setItem(K('octopus'), on ? '1' : '0'); } catch (e) {}
+}
 function resetBranding() {
   setAccent(CONFIG.accent);
   try { localStorage.removeItem(K('accent')); } catch (e) {}
   document.querySelectorAll('img.company-logo').forEach(img => { if (img.dataset.orig) img.src = img.dataset.orig; });
   try { localStorage.removeItem(K('logo')); } catch (e) {}
   const fi = document.getElementById('logo-input'); if (fi) fi.value = '';
+  setOctopus(false);                         // bläckfisken är av som standard
   toast('Återställt till standard');
 }
 (function initBranding() {
@@ -1205,6 +1219,7 @@ function resetBranding() {
   try {
     const c = localStorage.getItem(K('accent')); if (c) setAccent(c);
     const l = localStorage.getItem(K('logo')); if (l) applyLogo(l);
+    setOctopus(localStorage.getItem(K('octopus')) === '1');   // av om inget sparat
   } catch (e) {}
   renderTemplateList();
 })();
@@ -1226,7 +1241,8 @@ function exportProfile() {
     arbetstyper: atInstances.main.typer.slice(),
     margins: { ml: ls('ml') || '4', mr: ls('mr') || '4', mid: ls('mid') || '4' },
     paper: ls('paper') || 'A4',
-    printmode: ls('printmode') || 'off'
+    printmode: ls('printmode') || 'off',
+    octopus: ls('octopus') === '1'
   };
   download('dyklogg-foretagsprofil.json', JSON.stringify(profile, null, 2), 'application/json');
   closeMenus(); toast('✓ Företagsprofil sparad');
@@ -1262,6 +1278,7 @@ function applyProfile(p) {
   }
   if (p.paper) { setPaper(p.paper); const el = document.getElementById('papersize'); if (el) el.value = p.paper; }
   if (p.printmode) setPrintMode(p.printmode);
+  if (p.octopus !== undefined) setOctopus(!!p.octopus);
   try { localStorage.setItem(K('autosave'), JSON.stringify(gatherAll())); } catch (e) {}
   closeMenus(); toast('✓ Företagsprofil laddad');
 }
