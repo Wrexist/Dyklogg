@@ -13,8 +13,8 @@
 :root{--accent:#f90}
 body{font-family:Arial,Helvetica,sans-serif;font-size:11px;background:#d8d8d8;color:#000}
 
-.toolbar{position:sticky;top:0;z-index:99;background:linear-gradient(180deg,#202026,#141418);color:#fff;padding:8px 16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;box-shadow:0 2px 10px rgba(0,0,0,.28);font-size:12px}
-.tb-brand{display:flex;align-items:center;gap:7px;font-size:16px;font-weight:900;letter-spacing:.2px;margin-right:4px;user-select:none}
+.toolbar{position:sticky;top:0;z-index:99;background:linear-gradient(180deg,#23232a,#141418);color:#fff;padding:9px 16px;display:flex;align-items:center;gap:7px;flex-wrap:wrap;border-bottom:1px solid rgba(255,255,255,.07);box-shadow:0 4px 18px rgba(0,0,0,.30);font-size:12px}
+.tb-brand{display:flex;align-items:center;gap:7px;font-size:15.5px;font-weight:800;letter-spacing:.2px;margin-right:4px;user-select:none}
 .tb-brand .dot{font-size:17px}
 .tb-sep{width:1px;height:26px;background:rgba(255,255,255,.14);margin:0 3px}
 .tb-spacer{flex:1 1 12px}
@@ -24,18 +24,22 @@ body{font-family:Arial,Helvetica,sans-serif;font-size:11px;background:#d8d8d8;co
 .seg button:hover{color:#fff}
 .seg button.active{background:var(--accent);color:#1a1a1a;box-shadow:0 1px 3px rgba(0,0,0,.3)}
 /* Buttons */
-.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 13px;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;background:#2c2c33;color:#ececf0;transition:background .15s,transform .05s;white-space:nowrap;line-height:1}
-.btn:hover{background:#3a3a43}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;background:rgba(255,255,255,.05);color:#d4d4dd;transition:background .14s,color .14s,transform .05s;white-space:nowrap;line-height:1}
+.btn:hover{background:rgba(255,255,255,.12);color:#fff}
 .btn:active{transform:translateY(1px)}
-.btn.primary{background:var(--accent);color:#1a1a1a}
-.btn.primary:hover{background:#ffab2e}
-.btn.active{background:#1a8a3a;color:#fff}
+.btn.primary{background:var(--accent);color:#191919;font-weight:700}
+.btn.primary:hover{filter:brightness(1.07)}
+.btn.active{background:var(--accent);color:#191919}
+.btn.danger{color:#ff9b8e}
 .btn.danger:hover{background:#c0392b;color:#fff}
-.btn .chev{font-size:9px;opacity:.7;margin-left:1px}
+.btn.icon{padding:8px;width:34px;justify-content:center}
+.ic{width:15px;height:15px;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.btn.icon .ic{width:16px;height:16px}
+.chev{width:11px;height:11px;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;opacity:.5;margin-left:-1px}
 /* Dropdown menus */
 .menu{position:relative;display:inline-flex}
-.menu.open>.btn{background:#3a3a43}
-.menu-panel{position:absolute;top:calc(100% + 9px);left:0;background:#fff;color:#26262b;border-radius:12px;box-shadow:0 14px 38px rgba(0,0,0,.32);padding:15px 16px;min-width:248px;z-index:130;display:none;flex-direction:column;gap:13px;animation:menupop .14s ease-out}
+.menu.open>.btn{background:rgba(255,255,255,.14);color:#fff}
+.menu-panel{position:absolute;top:calc(100% + 9px);left:0;background:#fff;color:#26262b;border-radius:12px;box-shadow:0 14px 38px rgba(0,0,0,.32);padding:15px 16px;min-width:248px;max-height:82vh;overflow-y:auto;z-index:130;display:none;flex-direction:column;gap:13px;animation:menupop .14s ease-out}
 .menu.open .menu-panel{display:flex}
 @keyframes menupop{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
 .menu-panel h4{font-size:10.5px;text-transform:uppercase;letter-spacing:.7px;color:#9a9aa5;font-weight:800;margin:0 0 -3px}
@@ -225,6 +229,16 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
 <style id="page-style"></style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="i-archive" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="4" rx="1"/><path d="M5 8v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8"/><path d="M9.5 12h5"/></symbol>
+<symbol id="i-sliders" viewBox="0 0 24 24"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="17" x2="20" y2="17"/><circle cx="10" cy="7" r="2.3"/><circle cx="15" cy="17" r="2.3"/></symbol>
+<symbol id="i-pencil" viewBox="0 0 24 24"><path d="M14.06 6.19l3.75 3.75M3 17.25V21h3.75L17.8 9.94a1.5 1.5 0 0 0 0-2.12l-1.62-1.62a1.5 1.5 0 0 0-2.12 0L3 17.25z"/></symbol>
+<symbol id="i-move" viewBox="0 0 24 24"><polyline points="9 5 12 2 15 5"/><polyline points="9 19 12 22 15 19"/><polyline points="5 9 2 12 5 15"/><polyline points="19 9 22 12 19 15"/><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/></symbol>
+<symbol id="i-printer" viewBox="0 0 24 24"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="7" rx="1"/></symbol>
+<symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 13a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></symbol>
+<symbol id="i-file" viewBox="0 0 24 24"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="14 3 14 9 20 9"/></symbol>
+<symbol id="i-chev" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></symbol>
+</defs></svg>
 
 <div class="toolbar">
   <div class="tb-brand"><span class="dot">&#128025;</span> Dyklogg</div>
@@ -236,41 +250,89 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
 
   <div class="tb-sep"></div>
 
+  <!-- ARKIV: dyk-arkiv + projekt -->
   <div class="menu" id="menu-archive">
-    <button class="btn" onclick="toggleMenu('menu-archive')">&#128218; Arkiv <span class="chev">&#9660;</span></button>
-    <div class="menu-panel" style="min-width:288px">
+    <button class="btn" onclick="toggleMenu('menu-archive')"><svg class="ic"><use href="#i-archive"/></svg> Arkiv <svg class="chev"><use href="#i-chev"/></svg></button>
+    <div class="menu-panel" style="min-width:300px">
       <h4>Dyk-arkiv <span id="dive-stats" class="dive-stats"></span></h4>
       <div id="dive-list" class="tpl-list"><div class="tpl-empty">Inga sparade dyk &#228;nnu</div></div>
+      <button class="btn primary" style="justify-content:center" onclick="archiveSave()">Spara dyk i arkiv</button>
+      <button class="btn" style="justify-content:center" onclick="newDive()">+ Nytt dyk</button>
+      <p class="menu-note">Dyken sparas lokalt i webbl&#228;saren. Anv&#228;nd Fil &#8594; Spara f&#246;r s&#228;kerhetskopia eller &#246;verf&#246;ring mellan enheter.</p>
       <div class="menu-divider"></div>
-      <button class="btn primary" style="justify-content:center" onclick="archiveSave()">&#128190; Spara dyk i arkiv</button>
-      <button class="btn" style="justify-content:center" onclick="newDive()">&#10133; Nytt dyk</button>
-      <p class="menu-note">Dyken sparas lokalt i webbl&#228;saren. Anv&#228;nd Spara (JSON) f&#246;r s&#228;kerhetskopia eller &#246;verf&#246;ring mellan enheter.</p>
-    </div>
-  </div>
-
-  <div class="menu" id="menu-project">
-    <button class="btn" onclick="toggleMenu('menu-project')">&#128193; Projekt <span class="chev">&#9660;</span></button>
-    <div class="menu-panel" style="min-width:300px">
       <h4>Projekt &amp; kund</h4>
       <div class="mrow">
         <span class="ml">Aktivt projekt</span>
         <select id="project-select" onchange="setActiveProject(this.value)"><option value="">&#8212; Inget projekt &#8212;</option></select>
       </div>
-      <button class="btn" style="justify-content:center" onclick="applyProjectInfo()">&#11015; Anv&#228;nd projektets uppgifter i formul&#228;ret</button>
-      <div class="menu-divider"></div>
+      <button class="btn" style="justify-content:center" onclick="applyProjectInfo()">Anv&#228;nd projektets uppgifter i formul&#228;ret</button>
       <div id="project-list" class="tpl-list"><div class="tpl-empty">Inga projekt &#228;nnu</div></div>
-      <button class="btn primary" style="justify-content:center" onclick="newProject()">&#10133; Nytt projekt</button>
-      <p class="menu-note">Ett projekt &#229;teranv&#228;nder kund-, plats- och projektnummer. Nya dyk taggas med aktivt projekt &#8211; klicka &#8220;Rapport&#8221; f&#246;r en utskrivbar sammanst&#228;llning av projektets dyk.</p>
+      <button class="btn primary" style="justify-content:center" onclick="newProject()">+ Nytt projekt</button>
+      <p class="menu-note">Ett projekt &#229;teranv&#228;nder kund-, plats- och projektnummer. Klicka rapport-ikonen i listan f&#246;r en utskrivbar sammanst&#228;llning.</p>
+    </div>
+  </div>
+
+  <!-- ANPASSA: mallar + branding + egna f&#228;lt + f&#246;retagsprofil -->
+  <div class="menu" id="menu-brand">
+    <button class="btn" onclick="toggleMenu('menu-brand')"><svg class="ic"><use href="#i-sliders"/></svg> Anpassa <svg class="chev"><use href="#i-chev"/></svg></button>
+    <div class="menu-panel">
+      <h4>Mallar</h4>
+      <div id="tpl-list" class="tpl-list"><div class="tpl-empty">Inga sparade mallar &#228;nnu</div></div>
+      <button class="btn primary" style="justify-content:center" onclick="saveTemplate()">Spara nuvarande som mall</button>
+      <p class="menu-note">En mall f&#246;rifyller hela formul&#228;ret &#8211; bra f&#246;r &#229;terkommande team, utrustning och larminfo.</p>
+      <div class="menu-divider"></div>
+      <h4>F&#246;retagsanpassning</h4>
+      <div class="mrow">
+        <span class="ml">Egen logga</span>
+        <input type="file" id="logo-input" accept="image/*" onchange="onLogoPicked(event)" style="font-size:11.5px">
+      </div>
+      <div class="mrow">
+        <span class="ml">Temaf&#228;rg <span class="val" id="accentval">#ff9900</span></span>
+        <input type="color" id="accent-input" value="#ff9900" oninput="setAccent(this.value)" style="width:100%;height:30px;border:1px solid #d5d5dd;border-radius:7px;cursor:pointer;background:#fff;padding:2px">
+      </div>
+      <div class="menu-divider"></div>
+      <h4>Egna f&#228;lt</h4>
+      <div id="cf-manage" class="tpl-list"><div class="tpl-empty">Inga egna f&#228;lt &#228;nnu</div></div>
+      <button class="btn" style="justify-content:center" onclick="addCustomField()">+ L&#228;gg till eget f&#228;lt</button>
+      <p class="menu-note">Egna f&#228;lt visas i en &#8220;Egna f&#228;lt&#8221;-ruta i dykloggen och skrivs ut. F&#228;lten g&#228;ller alla dyk; v&#228;rdena sparas per dyk.</p>
+      <div class="menu-divider"></div>
+      <h4>F&#246;retagsprofil</h4>
+      <button class="btn primary" style="justify-content:center" onclick="exportProfile()">Spara f&#246;retagsprofil</button>
+      <button class="btn" style="justify-content:center" onclick="importProfile()">Ladda f&#246;retagsprofil</button>
+      <p class="menu-note">Samlar logga, f&#228;rg, egna f&#228;lt, mallar, arbetstyper och marginaler i en fil. St&#228;ll in en g&#229;ng och dela med hela teamet.</p>
+      <div class="menu-divider"></div>
+      <button class="btn" style="justify-content:center" onclick="resetBranding()">&#197;terst&#228;ll logga &amp; f&#228;rg</button>
     </div>
   </div>
 
   <div class="tb-sep"></div>
 
-  <button class="btn primary" onclick="window.print()">&#128424; Skriv ut</button>
+  <!-- L&#228;gen (ikon-knappar) -->
+  <button class="btn icon" id="edit-btn" title="Redigera text" aria-label="Redigera text" onclick="toggleEdit()"><svg class="ic"><use href="#i-pencil"/></svg></button>
+  <button class="btn icon" id="move-btn" title="Flytta / Skala" aria-label="Flytta / Skala" onclick="toggleMove()"><svg class="ic"><use href="#i-move"/></svg></button>
+
+  <div class="tb-spacer"></div>
+
+  <!-- Skriv ut + inst&#228;llningar -->
+  <button class="btn primary" onclick="window.print()"><svg class="ic"><use href="#i-printer"/></svg> Skriv ut</button>
 
   <div class="menu" id="menu-print">
-    <button class="btn" onclick="toggleMenu('menu-print')">&#9881; Utskrift <span class="chev">&#9660;</span></button>
-    <div class="menu-panel">
+    <button class="btn icon" title="Utskriftsinst&#228;llningar" aria-label="Utskriftsinst&#228;llningar" onclick="toggleMenu('menu-print')"><svg class="ic"><use href="#i-gear"/></svg></button>
+    <div class="menu-panel" style="left:auto;right:0">
+      <h4>Marginaler</h4>
+      <div class="mrow">
+        <span class="ml">Vikmarginal <span class="val" id="midval">4 mm</span></span>
+        <input type="range" id="midgap" min="0" max="50" step="1" value="4" oninput="setMid(this.value)">
+      </div>
+      <div class="mrow">
+        <span class="ml">V&#228;nster <span class="val" id="mleftval">4 mm</span></span>
+        <input type="range" id="mleft" min="0" max="30" step="1" value="4" oninput="setMargin('ml',this.value)">
+      </div>
+      <div class="mrow">
+        <span class="ml">H&#246;ger <span class="val" id="mrightval">4 mm</span></span>
+        <input type="range" id="mright" min="0" max="30" step="1" value="4" oninput="setMargin('mr',this.value)">
+      </div>
+      <div class="menu-divider"></div>
       <h4>Utskriftsinst&#228;llningar</h4>
       <div class="mrow">
         <span class="ml">Pappersformat</span>
@@ -292,87 +354,25 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
     </div>
   </div>
 
-  <div class="menu" id="menu-layout">
-    <button class="btn" onclick="toggleMenu('menu-layout')">&#128208; Marginaler <span class="chev">&#9660;</span></button>
-    <div class="menu-panel">
-      <h4>Marginaler</h4>
-      <div class="mrow">
-        <span class="ml">Vikmarginal <span class="val" id="midval">4 mm</span></span>
-        <input type="range" id="midgap" min="0" max="50" step="1" value="4" oninput="setMid(this.value)">
-      </div>
-      <div class="mrow">
-        <span class="ml">V&#228;nster <span class="val" id="mleftval">4 mm</span></span>
-        <input type="range" id="mleft" min="0" max="30" step="1" value="4" oninput="setMargin('ml',this.value)">
-      </div>
-      <div class="mrow">
-        <span class="ml">H&#246;ger <span class="val" id="mrightval">4 mm</span></span>
-        <input type="range" id="mright" min="0" max="30" step="1" value="4" oninput="setMargin('mr',this.value)">
-      </div>
-    </div>
-  </div>
-
-  <div class="tb-sep"></div>
-
-  <button class="btn" id="edit-btn" onclick="toggleEdit()">&#9998; Redigera text</button>
-  <button class="btn" id="move-btn" onclick="toggleMove()">&#10021; Flytta / Skala</button>
-
-  <div class="menu" id="menu-templates">
-    <button class="btn" onclick="toggleMenu('menu-templates')">&#128209; Mallar <span class="chev">&#9660;</span></button>
-    <div class="menu-panel">
-      <h4>Mallar</h4>
-      <div id="tpl-list" class="tpl-list"><div class="tpl-empty">Inga sparade mallar &#228;nnu</div></div>
+  <!-- FIL: spara/ladda + export + rensa -->
+  <div class="menu" id="menu-file">
+    <button class="btn" onclick="toggleMenu('menu-file')"><svg class="ic"><use href="#i-file"/></svg> Fil <svg class="chev"><use href="#i-chev"/></svg></button>
+    <div class="menu-panel" style="left:auto;right:0;min-width:250px">
+      <h4>Spara &amp; ladda</h4>
+      <button class="btn" style="justify-content:flex-start" onclick="saveJSON()">Spara (JSON)</button>
+      <button class="btn" style="justify-content:flex-start" onclick="loadJSON()">Ladda (JSON)</button>
       <div class="menu-divider"></div>
-      <button class="btn primary" style="justify-content:center" onclick="saveTemplate()">&#128190; Spara nuvarande som mall</button>
-      <p class="menu-note">En mall f&#246;rifyller hela formul&#228;ret &#8211; bra f&#246;r &#229;terkommande team, utrustning och larminfo, eller f&#246;r att duplicera g&#229;rdagens plan.</p>
-    </div>
-  </div>
-
-  <div class="menu" id="menu-brand">
-    <button class="btn" onclick="toggleMenu('menu-brand')">&#127912; Anpassa <span class="chev">&#9660;</span></button>
-    <div class="menu-panel">
-      <h4>F&#246;retagsanpassning</h4>
-      <div class="mrow">
-        <span class="ml">Egen logga</span>
-        <input type="file" id="logo-input" accept="image/*" onchange="onLogoPicked(event)" style="font-size:11.5px">
-      </div>
-      <div class="mrow">
-        <span class="ml">Temaf&#228;rg <span class="val" id="accentval">#ff9900</span></span>
-        <input type="color" id="accent-input" value="#ff9900" oninput="setAccent(this.value)" style="width:100%;height:30px;border:1px solid #d5d5dd;border-radius:7px;cursor:pointer;background:#fff;padding:2px">
-      </div>
-      <div class="menu-divider"></div>
-      <h4>Egna f&#228;lt</h4>
-      <div id="cf-manage" class="tpl-list"><div class="tpl-empty">Inga egna f&#228;lt &#228;nnu</div></div>
-      <button class="btn" style="justify-content:center" onclick="addCustomField()">&#10133; L&#228;gg till eget f&#228;lt</button>
-      <p class="menu-note">Egna f&#228;lt visas i en &#8220;Egna f&#228;lt&#8221;-ruta i dykloggen och skrivs ut. F&#228;lten g&#228;ller alla dyk; v&#228;rdena sparas per dyk.</p>
-      <div class="menu-divider"></div>
-      <h4>F&#246;retagsprofil</h4>
-      <button class="btn primary" style="justify-content:center" onclick="exportProfile()">&#128190; Spara f&#246;retagsprofil</button>
-      <button class="btn" style="justify-content:center" onclick="importProfile()">&#128194; Ladda f&#246;retagsprofil</button>
-      <p class="menu-note">Samlar logga, f&#228;rg, egna f&#228;lt, mallar, arbetstyper och marginaler i en fil. St&#228;ll in en g&#229;ng och dela med hela teamet &#8211; s&#229; f&#229;r alla enheter exakt samma upps&#228;ttning.</p>
-      <div class="menu-divider"></div>
-      <button class="btn" style="justify-content:center" onclick="resetBranding()">&#8634; &#197;terst&#228;ll logga &amp; f&#228;rg</button>
-    </div>
-  </div>
-
-  <div class="tb-spacer"></div>
-
-  <button class="btn" onclick="saveJSON()">&#128190; Spara</button>
-  <button class="btn" onclick="loadJSON()">&#128194; Ladda</button>
-
-  <div class="menu" id="menu-export">
-    <button class="btn" onclick="toggleMenu('menu-export')">&#128228; Export <span class="chev">&#9660;</span></button>
-    <div class="menu-panel" style="left:auto;right:0;min-width:264px">
       <h4>Export &amp; delning</h4>
-      <button class="btn" style="justify-content:flex-start" onclick="exportCSV()">&#128202; CSV (Excel)</button>
-      <button class="btn" style="justify-content:flex-start" onclick="exportUDDF()">&#127760; UDDF (dykprogram)</button>
-      <button class="btn" style="justify-content:flex-start" onclick="emailLog()">&#9993;&#65039; Mejla sammanfattning</button>
+      <button class="btn" style="justify-content:flex-start" onclick="exportCSV()">CSV (Excel)</button>
+      <button class="btn" style="justify-content:flex-start" onclick="exportUDDF()">UDDF (dykprogram)</button>
+      <button class="btn" style="justify-content:flex-start" onclick="emailLog()">Mejla sammanfattning</button>
+      <p class="menu-note">PDF: klicka <b>Skriv ut</b> och v&#228;lj &#8220;Spara som PDF&#8221; (ger b&#228;st kvalitet).</p>
       <div class="menu-divider"></div>
-      <p class="menu-note">PDF: klicka <b>Skriv ut</b> och v&#228;lj &#8220;Spara som PDF&#8221; (ger b&#228;st kvalitet). Mejl &#246;ppnar ett utkast med en textsammanfattning.</p>
+      <button class="btn danger" style="justify-content:flex-start" onclick="clearAll()">Rensa hela formul&#228;ret</button>
     </div>
   </div>
-
-  <button class="btn danger" onclick="clearAll()">&#128465; Rensa</button>
 </div>
+
 <div class="tb-hint edit-hint">&#9998; Klicka p&#229; valfri text f&#246;r att &#228;ndra den</div>
 <div class="tb-hint move-hint">&#10021; Klicka p&#229; n&#229;got f&#246;r att flytta &#8211; dra h&#246;rnet f&#246;r att skala &#8211; piltangenter nudgar &#8211; dubbelklick &#229;terst&#228;ller &#8211; <b>allt sparas automatiskt</b></div>
 
