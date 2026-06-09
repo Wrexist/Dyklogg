@@ -284,8 +284,8 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
   .ppage{page:pp}
   /* Layout-lägen: Dykplan-baksida + hel Dykplan = stående eget ark; kopia = liggande eget ark */
   .layout-extra-label{display:none!important}
-  #layout-extra .layout-back{break-before:page;page-break-before:always;width:100%!important;page:pp}
-  #layout-extra .layout-plan{width:100%!important;page:pp}
+  #layout-extra .layout-back{break-before:page;page-break-before:always;width:100%!important}
+  #layout-extra .layout-plan{width:100%!important}
   #layout-extra .layout-copy-page{break-before:page;page-break-before:always;width:100%!important}
   /* "Ryms alltid på en A4": samma beprövade ihop-packning som dykplanen i
      Logg+Plan (där den ryms på HALVA ett liggande A4). En stående A4 är
@@ -1734,6 +1734,7 @@ function setLayout(name) {
     _planPage('layout-plan');                       // stående A4, ingen baksida-etikett
   }
   activeLayout = name;
+  applyPageStyle();                                 // stående för Hel Dykplan, annars liggande
   updateLayoutUI();
   try { localStorage.setItem(K('layout'), name); } catch (e) {}
   closeMenus();
@@ -1750,9 +1751,19 @@ document.addEventListener('input', syncCopyBack);
 document.addEventListener('change', syncCopyBack);
 
 // --- Paper size for print (default A4 = two A5 halves side by side) ---
+// Sätter utskriftens orientering. Webbläsare kan inte blanda stående/liggande
+// i samma jobb, så hela jobbet får EN orientering: Hel Dykplan = stående
+// (ensamt ark), alla andra lägen = liggande.
+function applyPageStyle() {
+  let paper = 'A4';
+  try { paper = localStorage.getItem(K('paper')) || 'A4'; } catch (e) {}
+  const orient = (typeof activeLayout !== 'undefined' && activeLayout === 'hel-plan') ? 'portrait' : 'landscape';
+  const ps = document.getElementById('page-style');
+  if (ps) ps.textContent = '@page{size:' + paper + ' ' + orient + ';margin:0}';
+}
 function setPaper(v) {
-  document.getElementById('page-style').textContent = '@page{size:' + v + ' landscape;margin:0}';
   try { localStorage.setItem(K('paper'), v); } catch(e) {}
+  applyPageStyle();
 }
 (function() {
   let v = 'A4';
