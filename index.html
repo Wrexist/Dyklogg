@@ -24,18 +24,30 @@ body{font-family:Arial,Helvetica,sans-serif;font-size:11px;background:#d8d8d8;co
 .seg button:hover{color:#fff}
 .seg button.active{background:var(--accent);color:#1a1a1a;box-shadow:0 1px 3px rgba(0,0,0,.3)}
 /* Buttons */
-.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;background:rgba(255,255,255,.05);color:#d4d4dd;transition:background .14s,color .14s,transform .05s;white-space:nowrap;line-height:1}
-.btn:hover{background:rgba(255,255,255,.12);color:#fff}
+/* Knappar: bas-stilen är gjord för att vara läsbar på VIT meny-panel.
+   Toolbar-fältet (mörkt) får en egen genomskinlig variant längre ner. */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;background:#ececf1;color:#33333a;transition:background .14s,color .14s,transform .05s;white-space:nowrap;line-height:1}
+.btn:hover{background:#e0e0e8}
 .btn:active{transform:translateY(1px)}
 .btn.primary{background:var(--accent);color:#191919;font-weight:700}
 .btn.primary:hover{filter:brightness(1.07)}
 .btn.active{background:var(--accent);color:#191919}
-.btn.danger{color:#ff9b8e}
+.btn.danger{color:#c0392b;background:#f7e9e7}
 .btn.danger:hover{background:#c0392b;color:#fff}
 .btn.icon{padding:8px;width:34px;justify-content:center}
+/* Toolbar-fältet (mörkt): genomskinliga ljusa knappar */
+.toolbar .btn{background:rgba(255,255,255,.06);color:#d4d4dd}
+.toolbar .btn:hover{background:rgba(255,255,255,.13);color:#fff}
+.toolbar .btn.primary{background:var(--accent);color:#191919}
+.toolbar .btn.primary:hover{filter:brightness(1.07)}
+.toolbar .btn.active{background:var(--accent);color:#191919}
+.toolbar .btn.danger{color:#ff9b8e;background:rgba(255,255,255,.06)}
 .ic{width:15px;height:15px;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
 .btn.icon .ic{width:16px;height:16px}
 .chev{width:11px;height:11px;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;opacity:.5;margin-left:-1px}
+.layout-opt{justify-content:flex-start}
+.layout-opt small{opacity:.55;font-weight:400;margin-left:5px}
+.layout-opt.sel{background:var(--accent);color:#191919}
 /* Dropdown menus */
 .menu{position:relative;display:inline-flex}
 .menu.open>.btn{background:rgba(255,255,255,.14);color:#fff}
@@ -197,6 +209,13 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
 .lbox .ltools button{background:#1a8a3a;color:#fff;border:none;border-radius:3px;font-size:11px;font-weight:700;padding:2px 7px;cursor:pointer;line-height:1.4;box-shadow:0 1px 3px rgba(0,0,0,.25)}
 .lbox .ltools button:hover{background:#157a32}
 
+/* Layout-lägen: baksidan (Dykplan) visas under framsidan på skärmen */
+#layout-extra{display:none}
+#layout-extra .layout-page{margin:14px auto;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.12);position:relative}
+#layout-extra .layout-back{width:820px;padding:14px}
+#layout-extra .layout-plan{width:1160px;padding:14px}
+.layout-extra-label{width:1160px;max-width:92vw;margin:20px auto 0;color:#666;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px}
+
 @media print{
   .lbox,.lhover{display:none!important;outline:none!important}
   body{background:#fff}
@@ -223,6 +242,10 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
   body.print-custom #view-dyklog{display:none!important}
   /* Full Dykplan back page printed in portrait (stående) */
   .ppage{page:pp}
+  /* Layout-lägen: baksida på eget ark (stående), hel dykplan liggande */
+  .layout-extra-label{display:none!important}
+  #layout-extra .layout-back{break-before:page;page-break-before:always;width:100%!important;page:pp}
+  #layout-extra .layout-plan{width:100%!important}
 @page{size:A4 landscape;margin:0}
 @page pp{size:A4 portrait;margin:0}
 </style>
@@ -238,6 +261,7 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
 <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 13a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></symbol>
 <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="14 3 14 9 20 9"/></symbol>
 <symbol id="i-chev" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></symbol>
+<symbol id="i-layout" viewBox="0 0 24 24"><polygon points="12 3 21 8 12 13 3 8 12 3"/><polyline points="3 13 12 18 21 13"/></symbol>
 </defs></svg>
 
 <div class="toolbar">
@@ -246,6 +270,18 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
   <div class="seg" role="tablist">
     <button class="active" id="tab-combined" onclick="switchView('combined')">Logg + Plan</button>
     <button id="tab-dyklog" onclick="switchView('dyklog')">2&#215; Dyklogg</button>
+  </div>
+
+  <div class="menu" id="menu-layout">
+    <button class="btn" onclick="toggleMenu('menu-layout')"><svg class="ic"><use href="#i-layout"/></svg> <span id="layout-label">Layout</span> <svg class="chev"><use href="#i-chev"/></svg></button>
+    <div class="menu-panel" style="min-width:288px">
+      <h4>Layout</h4>
+      <button class="btn layout-opt" data-lay="logg-plan" onclick="setLayout('logg-plan')">1 Dyklogg + 1 Dykplan <small>standard</small></button>
+      <button class="btn layout-opt" data-lay="2x" onclick="setLayout('2x')">2&#215; Dyklogg</button>
+      <button class="btn layout-opt" data-lay="2x-plan" onclick="setLayout('2x-plan')">2&#215; Dyklogg + Dykplan p&#229; baksidan</button>
+      <button class="btn layout-opt" data-lay="hel-plan" onclick="setLayout('hel-plan')">Hel Dykplan (liggande)</button>
+      <p class="menu-note">V&#228;ljer vad som hamnar p&#229; sidan. Har layouten en baksida visas den under framsidan h&#228;r p&#229; sk&#228;rmen, och skrivs ut p&#229; ett eget ark.</p>
+    </div>
   </div>
 
   <div class="tb-sep"></div>
@@ -1429,15 +1465,19 @@ function fieldLabel(inp) {
 function exportCSV() {
   closeMenus();
   const rows = [['Fält', 'Värde']];
-  const root = document.getElementById('view-combined');
-  root.querySelectorAll('input[type=text], input[type=date]').forEach(inp => {
-    const v = (inp.value || '').trim(); if (!v) return;
-    rows.push([fieldLabel(inp), v]);
-  });
-  root.querySelectorAll('input[type=checkbox]').forEach(cb => {
-    if (!cb.checked) return;
-    const lab = cb.closest('label'); const t = lab ? lab.textContent.replace(/\s+/g, ' ').trim() : '';
-    if (t) rows.push([t, 'Ja']);
+  // Dyklogg-kolumnen + dykplanen, oavsett vilken layout som är aktiv (planen kan vara flyttad)
+  const roots = [document.querySelector('#view-combined .cl'), document.querySelector('#view-combined .cr') || _planEl];
+  roots.forEach(root => {
+    if (!root) return;
+    root.querySelectorAll('input[type=text], input[type=date]').forEach(inp => {
+      const v = (inp.value || '').trim(); if (!v) return;
+      rows.push([fieldLabel(inp), v]);
+    });
+    root.querySelectorAll('input[type=checkbox]').forEach(cb => {
+      if (!cb.checked) return;
+      const lab = cb.closest('label'); const t = lab ? lab.textContent.replace(/\s+/g, ' ').trim() : '';
+      if (t) rows.push([t, 'Ja']);
+    });
   });
   const gl = [...document.querySelectorAll('#view-combined .groupletters span.gsel')].map(s => s.textContent).join(' ');
   if (gl) rows.push(['Gruppbeteckning', gl]);
@@ -1449,11 +1489,78 @@ function exportCSV() {
 // --- View switching ---
 let currentView = 'combined';
 function switchView(v) {
+  if (typeof resetLayout === 'function') resetLayout();   // städa ev. layout-baksida först
   currentView = v;
   document.getElementById('view-combined').style.display = v==='combined' ? 'flex' : 'none';
   document.getElementById('view-dyklog').style.display   = v==='dyklog'   ? 'flex' : 'none';
   document.getElementById('tab-combined').classList.toggle('active', v==='combined');
   document.getElementById('tab-dyklog').classList.toggle('active', v==='dyklog');
+  // Segmentknapparna är också "layouter" – håll Layout-menyn i synk
+  activeLayout = (v === 'combined') ? 'logg-plan' : '2x';
+  if (typeof updateLayoutUI === 'function') updateLayoutUI();
+}
+
+// ====================== Layout-lägen (fram-/baksida) ======================
+// Väljer vad som hamnar på arket. Vi FLYTTAR den riktiga dykplanen (.cr) dit
+// den ska – aldrig kopierar – så inga dubbla id:n och all ifylld data följer med.
+// Baksida (#layout-extra) visas under framsidan på skärmen och skrivs ut på eget ark.
+let activeLayout = 'logg-plan';
+const _planEl = document.querySelector('#view-combined .cr');
+const _planHome = _planEl ? _planEl.parentNode : null;
+const _planClass = _planEl ? _planEl.className : '';
+const _planStyle = _planEl ? (_planEl.getAttribute('style') || '') : '';
+const _layoutExtra = document.createElement('div');
+_layoutExtra.id = 'layout-extra';
+(function () { const dv = document.getElementById('view-dyklog'); if (dv) dv.after(_layoutExtra); })();
+
+function resetLayout() {
+  if (_planEl && _planHome && _planEl.parentNode !== _planHome) {
+    _planEl.className = _planClass;
+    if (_planStyle) _planEl.setAttribute('style', _planStyle); else _planEl.removeAttribute('style');
+    _planHome.appendChild(_planEl);                 // tillbaka till Logg+Plan-arket (sist = efter .cl)
+  }
+  _layoutExtra.style.display = 'none';
+  _layoutExtra.innerHTML = '';
+}
+function _planPage(cls) {
+  const page = document.createElement('div');
+  page.className = 'page layout-page ' + cls;
+  _planEl.className = '';                            // släpp .cr/.col (halv bredd) → full bredd
+  _planEl.style.cssText = 'display:flex;flex-direction:column;gap:6px;width:100%';
+  page.appendChild(_planEl);
+  _layoutExtra.innerHTML = '';
+  if (cls === 'layout-back') {
+    const label = document.createElement('div');
+    label.className = 'layout-extra-label';
+    label.textContent = '⤵ Baksida – Dykplan';
+    _layoutExtra.appendChild(label);
+  }
+  _layoutExtra.appendChild(page);
+  _layoutExtra.style.display = 'block';
+}
+function setLayout(name) {
+  resetLayout();
+  if (name === 'logg-plan') { switchView('combined'); }
+  else if (name === '2x') { switchView('dyklog'); }
+  else if (name === '2x-plan') { switchView('dyklog'); _planPage('layout-back'); }
+  else if (name === 'hel-plan') {
+    document.getElementById('view-combined').style.display = 'none';
+    document.getElementById('view-dyklog').style.display = 'none';
+    document.getElementById('tab-combined').classList.remove('active');
+    document.getElementById('tab-dyklog').classList.remove('active');
+    currentView = 'combined';
+    _planPage('layout-plan');
+  }
+  activeLayout = name;
+  updateLayoutUI();
+  try { localStorage.setItem(K('layout'), name); } catch (e) {}
+  closeMenus();
+}
+function updateLayoutUI() {
+  const names = { 'logg-plan': 'Logg + Plan', '2x': '2× Dyklogg', '2x-plan': '2× + Dykplan', 'hel-plan': 'Hel Dykplan' };
+  const lbl = document.getElementById('layout-label');
+  if (lbl) lbl.textContent = names[activeLayout] || 'Layout';
+  document.querySelectorAll('.layout-opt').forEach(b => b.classList.toggle('sel', b.getAttribute('data-lay') === activeLayout));
 }
 
 // --- Paper size for print (default A4 = two A5 halves side by side) ---
@@ -1597,8 +1704,8 @@ function buildPrintExtras() {
       c1.style.display = 'flex';
       document.body.appendChild(c1);
     }
-    // Page 2: a whole Dykplan, full landscape width
-    const plan = document.querySelector('#view-combined .cr');
+    // Page 2: a whole Dykplan, full landscape width (planen kan vara flyttad av en layout)
+    const plan = document.querySelector('#view-combined .cr') || _planEl;
     if (plan) {
       const planClone = plan.cloneNode(true);
       copyFieldValues(plan, planClone);
@@ -2133,6 +2240,12 @@ function clearAll() {
 // Render the dive archive + project lists once everything is initialised
 renderProjectList();
 renderDiveList();
+// Återställ valt layout-läge (default: Logg + Plan)
+(function() {
+  let v = 'logg-plan';
+  try { v = localStorage.getItem(K('layout')) || 'logg-plan'; } catch (e) {}
+  setLayout(v);
+})();
 </script>
 </body>
 </html>
