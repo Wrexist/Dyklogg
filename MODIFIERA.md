@@ -157,15 +157,16 @@ Den enskilda dyk-datan ingår **inte** i profilen (den hanteras separat under
 
 ## 10. Testa att allt fungerar efter en ändring
 
-Det finns ett automatiskt test som kontrollerar att spara/ladda och migrering
-fungerar. Kör så här (kräver Node.js):
+Det finns ett automatiskt test (`test/persistens.test.js`) som kontrollerar att
+spara/ladda och migrering fungerar. Kör så här (kräver Node.js):
 
 ```bash
-cd /tmp && mkdir -p dyktest && cd dyktest
-npm init -y && npm install jsdom
-# kopiera test.js (se projektets testfil) hit, peka den mot din index.html
-node test.js
+cd test
+npm install jsdom      # bara första gången
+node persistens.test.js
 ```
+
+(Se även `test/README.md` för samma instruktioner.)
 
 Du ska se `28 OK, 0 FAIL`. Får du `FAIL` har något i sparlogiken gått sönder –
 ångra din senaste ändring och prova igen.
