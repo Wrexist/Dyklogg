@@ -2,7 +2,7 @@
 <!--
   DYKLOGG & DYKPLAN — hela appen ligger i denna enda fil (HTML + CSS + JS).
   Vill du ändra något? Läs MODIFIERA.md (steg-för-steg på svenska).
-  Det mesta styrs från CONFIG-blocket högst upp i <script> längre ner.
+  Det mesta styrs från CONFIG-blocket högst upp i skript-delen längre ner.
 -->
 <html lang="sv">
 <head>
@@ -211,6 +211,29 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
 .lbox .ltools{position:absolute;left:0;top:-23px;display:flex;gap:3px;white-space:nowrap}
 .lbox .ltools button{background:#1a8a3a;color:#fff;border:none;border-radius:3px;font-size:11px;font-weight:700;padding:2px 7px;cursor:pointer;line-height:1.4;box-shadow:0 1px 3px rgba(0,0,0,.25)}
 .lbox .ltools button:hover{background:#157a32}
+
+/* Premium-modaler (prompt/confirm/alert-ersättning) */
+.modal-overlay{position:fixed;inset:0;background:rgba(14,14,20,.5);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);z-index:300;display:none;align-items:center;justify-content:center;padding:20px;animation:modalfade .16s ease-out}
+.modal-overlay.open{display:flex}
+.modal-card{background:#fff;color:#26262b;border-radius:16px;box-shadow:0 24px 70px rgba(0,0,0,.42);width:390px;max-width:100%;max-height:88vh;overflow-y:auto;animation:modalpop .2s cubic-bezier(.2,.85,.3,1)}
+@keyframes modalfade{from{opacity:0}to{opacity:1}}
+@keyframes modalpop{from{opacity:0;transform:translateY(12px) scale(.97)}to{opacity:1;transform:none}}
+.modal-head{padding:18px 22px 2px;font-size:15.5px;font-weight:800;letter-spacing:-.1px}
+.modal-body{padding:12px 22px 4px;display:flex;flex-direction:column;gap:13px}
+.modal-msg{font-size:13px;line-height:1.55;color:#4a4a53;white-space:pre-line}
+.modal-field{display:flex;flex-direction:column;gap:6px}
+.modal-field label{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:#9a9aa5}
+.modal-field input{font-size:13.5px;padding:10px 12px;border:1px solid #dcdce3;border-radius:9px;outline:none;font-family:inherit;color:#26262b;background:#fafafb;transition:border-color .14s,box-shadow .14s,background .14s}
+.modal-field input:focus{border-color:var(--accent);background:#fff;box-shadow:0 0 0 3px rgba(255,153,0,.16)}
+.modal-foot{padding:16px 22px 20px;display:flex;gap:9px;justify-content:flex-end}
+.modal-btn{padding:9px 17px;border:none;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:background .14s,filter .14s,transform .05s}
+.modal-btn:active{transform:translateY(1px)}
+.modal-btn.ghost{background:#eeeef2;color:#44444c}
+.modal-btn.ghost:hover{background:#e3e3ea}
+.modal-btn.primary{background:var(--accent);color:#191919}
+.modal-btn.primary:hover{filter:brightness(1.07)}
+.modal-btn.danger{background:#c0392b;color:#fff}
+.modal-btn.danger:hover{filter:brightness(1.08)}
 
 /* Layout-lägen: baksidan (Dykplan) visas under framsidan på skärmen */
 #layout-extra{display:none}
@@ -1032,6 +1055,59 @@ function download(name, content, type) {
   a.click();
 }
 
+// ====================== Snygga modaler (ersätter prompt/confirm/alert) ======
+// uiModal returnerar ett Promise. Texterna escapas. Stängs med Esc / klick utanför.
+function _esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
+function uiModal(opts) {
+  opts = opts || {};
+  const fields = opts.fields || [];
+  return new Promise(resolve => {
+    const overlay = document.createElement('div');
+    overlay.className = 'modal-overlay open';
+    const card = document.createElement('div');
+    card.className = 'modal-card';
+    let h = '';
+    if (opts.title) h += '<div class="modal-head">' + _esc(opts.title) + '</div>';
+    h += '<div class="modal-body">';
+    if (opts.message) h += '<div class="modal-msg">' + _esc(opts.message) + '</div>';
+    fields.forEach(f => {
+      h += '<div class="modal-field"><label>' + _esc(f.label) + '</label>'
+        + '<input data-k="' + _esc(f.key) + '" type="text" value="' + _esc(f.value || '') + '" placeholder="' + _esc(f.placeholder || '') + '"></div>';
+    });
+    h += '</div><div class="modal-foot">';
+    if (!opts.okOnly) h += '<button class="modal-btn ghost" data-act="cancel">' + _esc(opts.cancelText || 'Avbryt') + '</button>';
+    h += '<button class="modal-btn ' + (opts.danger ? 'danger' : 'primary') + '" data-act="ok">' + _esc(opts.okText || 'OK') + '</button>';
+    h += '</div>';
+    card.innerHTML = h;
+    overlay.appendChild(card);
+    document.body.appendChild(overlay);
+    const inputs = card.querySelectorAll('input[data-k]');
+    if (inputs[0]) setTimeout(() => { inputs[0].focus(); inputs[0].select(); }, 30);
+    const done = res => { overlay.remove(); document.removeEventListener('keydown', onKey, true); resolve(res); };
+    const values = () => { const v = {}; inputs.forEach(i => v[i.getAttribute('data-k')] = i.value.trim()); return v; };
+    const ok = () => done(fields.length ? values() : true);
+    const cancel = () => done(fields.length ? null : false);
+    card.querySelector('[data-act="ok"]').onclick = ok;
+    const cb = card.querySelector('[data-act="cancel"]'); if (cb) cb.onclick = cancel;
+    overlay.addEventListener('mousedown', e => { if (e.target === overlay) cancel(); });
+    function onKey(e) {
+      if (e.key === 'Escape') { e.preventDefault(); cancel(); }
+      else if (e.key === 'Enter' && fields.length <= 1) { e.preventDefault(); ok(); }
+    }
+    document.addEventListener('keydown', onKey, true);
+  });
+}
+function uiAlert(message, title) { return uiModal({ title: title || '', message: message, okOnly: true }); }
+function uiConfirm(message, opts) {
+  opts = opts || {};
+  return uiModal({ title: opts.title || 'Bekräfta', message: message, okText: opts.okText || 'OK', cancelText: opts.cancelText || 'Avbryt', danger: opts.danger });
+}
+async function uiPrompt(label, deflt, opts) {
+  opts = opts || {};
+  const r = await uiModal({ title: opts.title || '', okText: opts.okText || 'OK', fields: [{ key: 'v', label: label, value: deflt || '', placeholder: opts.placeholder || '' }] });
+  return r ? r.v : null;
+}
+
 // ====================== Mallar (templates) ======================
 function getTemplates() { try { return JSON.parse(localStorage.getItem(K('templates')) || '{}'); } catch (e) { return {}; } }
 function setTemplates(o) { try { localStorage.setItem(K('templates'), JSON.stringify(o)); } catch (e) {} }
@@ -1049,8 +1125,8 @@ function renderTemplateList() {
     row.appendChild(b); row.appendChild(d); list.appendChild(row);
   });
 }
-function saveTemplate() {
-  const name = prompt('Namn på mallen (t.ex. "Standardteam" eller projektnamn):');
+async function saveTemplate() {
+  const name = await uiPrompt('Namn på mallen', '', { title: 'Spara som mall', okText: 'Spara mall', placeholder: 't.ex. Standardteam eller projektnamn' });
   if (!name || !name.trim()) return;
   const t = getTemplates(); t[name.trim()] = gatherAll(); setTemplates(t);
   renderTemplateList(); toast('✓ Mall sparad');
@@ -1061,8 +1137,8 @@ function applyTemplate(n) {
   try { localStorage.setItem(K('autosave'), JSON.stringify(gatherAll())); } catch (e) {}
   closeMenus(); toast('✓ Mall "' + n + '" använd');
 }
-function deleteTemplate(n) {
-  if (!confirm('Ta bort mallen "' + n + '"?')) return;
+async function deleteTemplate(n) {
+  if (!await uiConfirm('Ta bort mallen "' + n + '"?', { title: 'Ta bort mall', okText: 'Ta bort', danger: true })) return;
   const t = getTemplates(); delete t[n]; setTemplates(t); renderTemplateList(); toast('Mall borttagen');
 }
 
@@ -1080,7 +1156,7 @@ function onLogoPicked(e) {
   fr.onload = ev => {
     const url = ev.target.result;
     try { localStorage.setItem(K('logo'), url); applyLogo(url); toast('✓ Logga uppdaterad'); }
-    catch (err) { alert('Bilden är för stor att spara. Välj en mindre fil.'); }
+    catch (err) { uiAlert('Bilden är för stor att spara. Välj en mindre fil.', 'För stor bild'); }
   };
   fr.readAsDataURL(f);
 }
@@ -1129,13 +1205,13 @@ function importProfile() {
   const inp = document.createElement('input'); inp.type = 'file'; inp.accept = '.json,application/json';
   inp.onchange = e => {
     const fr = new FileReader();
-    fr.onload = ev => { try { applyProfile(JSON.parse(ev.target.result)); } catch (err) { alert('Kunde inte läsa profilen: ' + err); } };
+    fr.onload = ev => { try { applyProfile(JSON.parse(ev.target.result)); } catch (err) { uiAlert('Kunde inte läsa profilen: ' + err, 'Fel'); } };
     fr.readAsText(e.target.files[0]);
   };
   inp.click();
 }
 function applyProfile(p) {
-  if (!p || typeof p !== 'object') { alert('Ogiltig företagsprofil.'); return; }
+  if (!p || typeof p !== 'object') { uiAlert('Ogiltig företagsprofil.', 'Fel'); return; }
   if (p.accent) setAccent(p.accent);
   if (p.logo) { try { localStorage.setItem(K('logo'), p.logo); } catch (e) {} applyLogo(p.logo); }
   if (Array.isArray(p.customfields)) { setCustomFields(p.customfields); renderCustomFields(); }
@@ -1197,8 +1273,8 @@ function renderCustomFields() {
     }
   }
 }
-function addCustomField() {
-  const label = prompt('Namn på det egna fältet (t.ex. "Gasblandning", "Tanktryck"):');
+async function addCustomField() {
+  const label = await uiPrompt('Namn på fältet', '', { title: 'Nytt eget fält', okText: 'Lägg till', placeholder: 't.ex. Gasblandning, Tanktryck' });
   if (!label || !label.trim()) return;
   const fields = getCustomFields();
   fields.push({ key: 'f' + Date.now(), label: label.trim() });
@@ -1206,9 +1282,9 @@ function addCustomField() {
   try { localStorage.setItem(K('autosave'), JSON.stringify(gatherAll())); } catch (e) {}
   toast('✓ Eget fält tillagt');
 }
-function removeCustomField(key) {
+async function removeCustomField(key) {
   const f = getCustomFields().find(x => x.key === key);
-  if (!confirm('Ta bort fältet "' + (f ? f.label : '') + '"? Värdet i nuvarande dyk försvinner.')) return;
+  if (!await uiConfirm('Ta bort fältet "' + (f ? f.label : '') + '"? Värdet i nuvarande dyk försvinner.', { title: 'Ta bort fält', okText: 'Ta bort', danger: true })) return;
   setCustomFields(getCustomFields().filter(x => x.key !== key));
   renderCustomFields();
   try { localStorage.setItem(K('autosave'), JSON.stringify(gatherAll())); } catch (e) {}
@@ -1221,7 +1297,7 @@ renderCustomFields();   // build the fields before autosave restore fills their 
 // gatherAll() blob. currentDiveId marks which archived dive the working draft
 // corresponds to (so re-saving updates it instead of creating a duplicate).
 function getDives() { try { return JSON.parse(localStorage.getItem(K('dives')) || '{}'); } catch (e) { return {}; } }
-function setDives(o) { try { localStorage.setItem(K('dives'), JSON.stringify(o)); return true; } catch (e) { alert('Kunde inte spara – webbläsarens lagring kan vara full.'); return false; } }
+function setDives(o) { try { localStorage.setItem(K('dives'), JSON.stringify(o)); return true; } catch (e) { uiAlert('Kunde inte spara – webbläsarens lagring kan vara full.', 'Lagring full'); return false; } }
 let currentDiveId = null;
 try { currentDiveId = localStorage.getItem(K('current')) || null; } catch (e) {}
 
@@ -1250,8 +1326,8 @@ function archiveSave() {
   currentDiveId = id; try { localStorage.setItem(K('current'), id); } catch (e) {}
   renderDiveList(); renderProjectList(); toast('✓ Dyk sparat i arkivet');
 }
-function newDive() {
-  if (!confirm('Starta ett nytt, tomt dyk?\nOsparade ändringar i det nuvarande går förlorade om du inte sparat det i arkivet.')) return;
+async function newDive() {
+  if (!await uiConfirm('Starta ett nytt, tomt dyk?\nOsparade ändringar i det nuvarande går förlorade om du inte sparat det i arkivet.', { title: 'Nytt dyk', okText: 'Nytt dyk' })) return;
   document.querySelectorAll('input[type=text]').forEach(el => el.value = '');
   document.querySelectorAll('input[type=checkbox]').forEach(el => el.checked = false);
   ['main','b1','b2'].forEach(inst => { atInstances[inst].checked = {}; renderGrid(inst); });
@@ -1269,9 +1345,9 @@ function loadDive(id) {
   try { localStorage.setItem(K('current'), id); localStorage.setItem(K('autosave'), JSON.stringify(gatherAll())); } catch (e) {}
   renderDiveList(); closeMenus(); toast('✓ Dyk laddat');
 }
-function deleteDive(id) {
+async function deleteDive(id) {
   const dives = getDives(); if (!dives[id]) return;
-  if (!confirm('Ta bort detta dyk ur arkivet? Detta går inte att ångra.')) return;
+  if (!await uiConfirm('Ta bort detta dyk ur arkivet? Detta går inte att ångra.', { title: 'Ta bort dyk', okText: 'Ta bort', danger: true })) return;
   delete dives[id]; setDives(dives);
   if (currentDiveId === id) { currentDiveId = null; try { localStorage.removeItem(K('current')); } catch (e) {} }
   renderDiveList(); toast('Dyk borttaget');
@@ -1299,18 +1375,26 @@ function renderDiveList() {
 
 // ====================== Projekt / kund ======================
 function getProjects() { try { return JSON.parse(localStorage.getItem(K('projects')) || '{}'); } catch (e) { return {}; } }
-function setProjects(o) { try { localStorage.setItem(K('projects'), JSON.stringify(o)); return true; } catch (e) { alert('Kunde inte spara projektet.'); return false; } }
+function setProjects(o) { try { localStorage.setItem(K('projects'), JSON.stringify(o)); return true; } catch (e) { uiAlert('Kunde inte spara projektet.', 'Fel'); return false; } }
 let activeProjectId = null;
 try { activeProjectId = localStorage.getItem(K('activeproject')) || null; } catch (e) {}
 
-function newProject() {
-  const name = prompt('Projektnamn:'); if (!name || !name.trim()) return;
-  const kund = prompt('Uppdragsgivare / kund (valfritt):') || '';
-  const plats = prompt('Plats / position (valfritt):') || '';
-  const projektnr = prompt('Projektnummer (valfritt):') || '';
+async function newProject() {
+  const r = await uiModal({
+    title: 'Nytt projekt', okText: 'Skapa projekt',
+    fields: [
+      { key: 'name', label: 'Projektnamn', placeholder: 't.ex. Kajrenovering Hamnen' },
+      { key: 'kund', label: 'Uppdragsgivare / kund', placeholder: '(valfritt)' },
+      { key: 'plats', label: 'Plats / position', placeholder: '(valfritt)' },
+      { key: 'projektnr', label: 'Projektnummer', placeholder: '(valfritt)' },
+      { key: 'projektledare', label: 'Projektledare', placeholder: '(valfritt)' },
+      { key: 'upprattadav', label: 'Dykplan upprättad av', placeholder: '(valfritt)' }
+    ]
+  });
+  if (!r || !r.name) return;
   const projects = getProjects();
   const id = 'p' + Date.now();
-  projects[id] = { id: id, name: name.trim(), kund: kund.trim(), plats: plats.trim(), projektnr: projektnr.trim(), createdAt: Date.now() };
+  projects[id] = { id: id, name: r.name, kund: r.kund, plats: r.plats, projektnr: r.projektnr, projektledare: r.projektledare, upprattadav: r.upprattadav, createdAt: Date.now() };
   if (!setProjects(projects)) return;
   setActiveProject(id);
   renderProjectList();
@@ -1326,17 +1410,20 @@ function applyProjectInfo() {
   const p = getProjects()[activeProjectId];
   if (!p) { toast('Välj ett aktivt projekt först'); return; }
   const set = (id, val) => { const el = document.getElementById(id); if (el && val) el.value = val; };
+  // Dyklogg-rutan (arbetsplats/projekt)
   set('arbetsplats', p.name); set('b1-arbetsplats', p.name); set('b2-arbetsplats', p.name);
+  // Dykplanen – varje uppgift hamnar på sin rätta plats
   set('uppdragsgivare', p.kund);
   set('plats', p.plats);
   set('projektnummer', p.projektnr);
-  set('upprattat', p.kund ? '' : '');
+  set('projektledare', p.projektledare);
+  set('upprattat', p.upprattadav);
   try { localStorage.setItem(K('autosave'), JSON.stringify(gatherAll())); } catch (e) {}
-  closeMenus(); toast('✓ Projektuppgifter ifyllda');
+  closeMenus(); toast('✓ Projektuppgifter ifyllda i dykplanen');
 }
-function deleteProject(id) {
+async function deleteProject(id) {
   const projects = getProjects(); if (!projects[id]) return;
-  if (!confirm('Ta bort projektet "' + projects[id].name + '"?\nDyken ligger kvar i arkivet men avtaggas projektet.')) return;
+  if (!await uiConfirm('Ta bort projektet "' + projects[id].name + '"?\nDyken ligger kvar i arkivet men avtaggas projektet.', { title: 'Ta bort projekt', okText: 'Ta bort', danger: true })) return;
   delete projects[id]; setProjects(projects);
   const dives = getDives(); let changed = false;
   Object.values(dives).forEach(d => { if (d.projectId === id) { d.projectId = null; changed = true; } });
@@ -1402,7 +1489,7 @@ function projectReport(id) {
     (rows || '<tr><td colspan="7" style="text-align:center;color:#888">Inga dyk i projektet ännu</td></tr>') +
     '</tbody></table><div class="foot">Genererad ' + new Date().toLocaleString('sv-SE') + '</div></body></html>';
   const w = window.open('', '_blank');
-  if (!w) { alert('Tillåt popup-fönster för att visa rapporten.'); return; }
+  if (!w) { uiAlert('Tillåt popup-fönster för att visa rapporten.', 'Popup blockerad'); return; }
   w.document.write(html); w.document.close();
 }
 
@@ -2185,15 +2272,15 @@ function loadJSON() {
       try {
         applyAll(JSON.parse(ev.target.result));
         toast('\u2713 Laddad!');
-      } catch(err) { alert('Fel vid laddning: ' + err); }
+      } catch(err) { uiAlert('Fel vid laddning: ' + err, 'Kunde inte ladda'); }
     };
     fr.readAsText(e.target.files[0]);
   };
   inp.click();
 }
 
-function clearAll() {
-  if (!confirm('Rensa hela formul\u00e4ret?')) return;
+async function clearAll() {
+  if (!await uiConfirm('Rensa hela formul\u00e4ret? Detta t\u00f6mmer alla f\u00e4lt i det aktuella dyket.', { title: 'Rensa formul\u00e4ret', okText: 'Rensa', danger: true })) return;
   document.querySelectorAll('input[type=text]').forEach(el => el.value = '');
   document.querySelectorAll('input[type=checkbox]').forEach(el => el.checked = false);
   ['main','b1','b2'].forEach(inst=>{ atInstances[inst].checked = {}; renderGrid(inst); });
