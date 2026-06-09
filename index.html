@@ -1,4 +1,9 @@
 <!DOCTYPE html>
+<!--
+  DYKLOGG & DYKPLAN — hela appen ligger i denna enda fil (HTML + CSS + JS).
+  Vill du ändra något? Läs MODIFIERA.md (steg-för-steg på svenska).
+  Det mesta styrs från CONFIG-blocket högst upp i <script> längre ner.
+-->
 <html lang="sv">
 <head>
 <meta charset="UTF-8">
@@ -339,6 +344,11 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
       <div id="cf-manage" class="tpl-list"><div class="tpl-empty">Inga egna f&#228;lt &#228;nnu</div></div>
       <button class="btn" style="justify-content:center" onclick="addCustomField()">&#10133; L&#228;gg till eget f&#228;lt</button>
       <p class="menu-note">Egna f&#228;lt visas i en &#8220;Egna f&#228;lt&#8221;-ruta i dykloggen och skrivs ut. F&#228;lten g&#228;ller alla dyk; v&#228;rdena sparas per dyk.</p>
+      <div class="menu-divider"></div>
+      <h4>F&#246;retagsprofil</h4>
+      <button class="btn primary" style="justify-content:center" onclick="exportProfile()">&#128190; Spara f&#246;retagsprofil</button>
+      <button class="btn" style="justify-content:center" onclick="importProfile()">&#128194; Ladda f&#246;retagsprofil</button>
+      <p class="menu-note">Samlar logga, f&#228;rg, egna f&#228;lt, mallar, arbetstyper och marginaler i en fil. St&#228;ll in en g&#229;ng och dela med hela teamet &#8211; s&#229; f&#229;r alla enheter exakt samma upps&#228;ttning.</p>
       <div class="menu-divider"></div>
       <button class="btn" style="justify-content:center" onclick="resetBranding()">&#8634; &#197;terst&#228;ll logga &amp; f&#228;rg</button>
     </div>
@@ -910,26 +920,58 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
 </div>
 
 <script>
-// Independent layout versions for the three position-based data groups in autosave/JSON.
-// Bump ONLY the group whose layout actually changed, so unrelated saved data survives a
-// template tweak (e.g. moving a label must not wipe checkbox or arbetstyp selections).
-const ETV = 10; // editable label (.et) order  — bump when .et elements are added/removed/reordered
-const CBV = 2;  // non-id checkbox order (utrustning / åtgärder) — bump when those change
-const ATV = 4;  // default arbetstyp list — bump when the default typer change
-const LTV = 2;  // layout-transform (move/scale) element order — bump when the DOM structure changes
+/* ============================================================================
+ *  DYKLOGG — KONFIGURATION (börja här!)
+ *  Nästan allt du vill ändra snabbt rör du i CONFIG nedan.
+ *  En komplett "hur ändrar jag X?"-guide finns i filen MODIFIERA.md.
+ * ========================================================================== */
+const CONFIG = {
+  // Namnrymd för all sparad data i webbläsaren (localStorage).
+  // Byt bara om du medvetet vill köra två separata versioner sida vid sida.
+  store: 'dyklogg',
 
-// Map saved data to its group versions. New saves carry _etv/_cbv/_atv directly; older saves
-// only had a single _schema, so derive each group's version from it for backward compatibility.
-function groupVersions(d) {
+  // Standard temafärg. Kan även ändras live i menyn "Anpassa".
+  accent: '#ff9900',
+
+  // Standardlistan med arbetstyper. ÄNDRA HÄR så ändras alla nya dyk.
+  // (Står på EN plats nu — tidigare var listan inklistrad tre gånger.)
+  arbetstyper: ['Besiktning', 'Betongarbete', 'Demontage', 'Gjutning', 'HCL',
+    'Inspektion', 'Montage', 'Mätning', 'Skärning/Brocco', 'Svetsning',
+    'Tvätta', 'Vattenblästring']
+};
+
+// Bygger en localStorage-nyckel i appens namnrymd: K('x') ger strängen "<store>_x".
+const K = name => CONFIG.store + '_' + name;
+
+/* --- Inläsning av GAMLA sparfiler (FRYST — rör ej) --------------------------
+ * Förr nycklades sparad data på DOM-position, och fyra "versionsnummer" styrde
+ * när gammal data skulle slängas (man var tvungen att höja dem för hand vid
+ * varje ändring av formuläret). Det är borttaget — data nycklas nu på NAMN.
+ * Konstanterna nedan används ENBART för att kunna läsa in sparfiler som
+ * skapades före övergången. Du ska aldrig behöva ändra dem.                   */
+const LEGACY_ETV = 10, LEGACY_CBV = 2, LEGACY_ATV = 4, LEGACY_LTV = 2;
+function legacyGroupVersions(d) {
   if (d._etv !== undefined || d._cbv !== undefined || d._atv !== undefined)
-    return { et: d._etv, cb: d._cbv, at: d._atv };
+    return { et: d._etv, cb: d._cbv, at: d._atv, lt: d._ltv };
   const s = d._schema;
-  if (s === undefined) return { et: 0, cb: 0, at: 0 };
+  if (s === undefined) return { et: 0, cb: 0, at: 0, lt: 0 };
   return {
     et: s >= 6 ? 5 : s >= 5 ? 4 : s >= 4 ? 3 : s >= 2 ? 2 : 1,
     cb: s >= 2 ? 2 : 1,
-    at: s >= 3 ? 3 : s >= 2 ? 2 : 1
+    at: s >= 3 ? 3 : s >= 2 ? 2 : 1,
+    lt: 0
   };
+}
+
+// Strukturfingeravtryck för flytta/skala-positioner. Räknas ut automatiskt ur
+// DOM:en, så ingen behöver "bumpa" något: ändrar du strukturen i en vy nollas
+// bara de visuella nudge-positionerna — text, kryss och data rörs aldrig.
+function layoutSig() {
+  let s = '';
+  document.querySelectorAll('[data-lid]').forEach(el => { s += el.tagName; });
+  let h = 0;
+  for (let i = 0; i < s.length; i++) { h = (h * 31 + s.charCodeAt(i)) | 0; }
+  return s.length + ':' + h;
 }
 let editMode = false;
 
@@ -957,8 +999,8 @@ function download(name, content, type) {
 }
 
 // ====================== Mallar (templates) ======================
-function getTemplates() { try { return JSON.parse(localStorage.getItem('dyklogg_templates') || '{}'); } catch (e) { return {}; } }
-function setTemplates(o) { try { localStorage.setItem('dyklogg_templates', JSON.stringify(o)); } catch (e) {} }
+function getTemplates() { try { return JSON.parse(localStorage.getItem(K('templates')) || '{}'); } catch (e) { return {}; } }
+function setTemplates(o) { try { localStorage.setItem(K('templates'), JSON.stringify(o)); } catch (e) {} }
 function renderTemplateList() {
   const list = document.getElementById('tpl-list'); if (!list) return;
   const t = getTemplates(); const names = Object.keys(t);
@@ -982,7 +1024,7 @@ function saveTemplate() {
 function applyTemplate(n) {
   const t = getTemplates(); if (!t[n]) return;
   applyAll(JSON.parse(JSON.stringify(t[n])));
-  try { localStorage.setItem('dyklogg_autosave', JSON.stringify(gatherAll())); } catch (e) {}
+  try { localStorage.setItem(K('autosave'), JSON.stringify(gatherAll())); } catch (e) {}
   closeMenus(); toast('✓ Mall "' + n + '" använd');
 }
 function deleteTemplate(n) {
@@ -995,7 +1037,7 @@ function setAccent(color) {
   document.documentElement.style.setProperty('--accent', color);
   const v = document.getElementById('accentval'); if (v) v.textContent = color;
   const inp = document.getElementById('accent-input'); if (inp && inp.value !== color) inp.value = color;
-  try { localStorage.setItem('dyklogg_accent', color); } catch (e) {}
+  try { localStorage.setItem(K('accent'), color); } catch (e) {}
 }
 function applyLogo(url) { document.querySelectorAll('img.company-logo').forEach(img => { img.src = url; }); }
 function onLogoPicked(e) {
@@ -1003,16 +1045,16 @@ function onLogoPicked(e) {
   const fr = new FileReader();
   fr.onload = ev => {
     const url = ev.target.result;
-    try { localStorage.setItem('dyklogg_logo', url); applyLogo(url); toast('✓ Logga uppdaterad'); }
+    try { localStorage.setItem(K('logo'), url); applyLogo(url); toast('✓ Logga uppdaterad'); }
     catch (err) { alert('Bilden är för stor att spara. Välj en mindre fil.'); }
   };
   fr.readAsDataURL(f);
 }
 function resetBranding() {
-  setAccent('#ff9900');
-  try { localStorage.removeItem('dyklogg_accent'); } catch (e) {}
+  setAccent(CONFIG.accent);
+  try { localStorage.removeItem(K('accent')); } catch (e) {}
   document.querySelectorAll('img.company-logo').forEach(img => { if (img.dataset.orig) img.src = img.dataset.orig; });
-  try { localStorage.removeItem('dyklogg_logo'); } catch (e) {}
+  try { localStorage.removeItem(K('logo')); } catch (e) {}
   const fi = document.getElementById('logo-input'); if (fi) fi.value = '';
   toast('Återställt till standard');
 }
@@ -1022,17 +1064,71 @@ function resetBranding() {
     if (!img.dataset.orig) img.dataset.orig = img.getAttribute('src');
   });
   try {
-    const c = localStorage.getItem('dyklogg_accent'); if (c) setAccent(c);
-    const l = localStorage.getItem('dyklogg_logo'); if (l) applyLogo(l);
+    const c = localStorage.getItem(K('accent')); if (c) setAccent(c);
+    const l = localStorage.getItem(K('logo')); if (l) applyLogo(l);
   } catch (e) {}
   renderTemplateList();
 })();
 
+// ====================== Företagsprofil (export/import av all anpassning) ======
+// Samlar ALL anpassning (logga, färg, egna fält, mallar, arbetstyper, marginaler,
+// pappersval) i EN delbar fil. Tanken: ställ in en gång på en dator och dela
+// profilen med hela teamet så får alla exakt samma uppsättning. Den enskilda
+// dyk-datan (vad man skrivit i ett dyk) ligger kvar separat och rörs inte här.
+function exportProfile() {
+  const ls = k => { try { return localStorage.getItem(K(k)); } catch (e) { return null; } };
+  const profile = {
+    _type: 'dyklogg-foretagsprofil', _v: 1, savedAt: Date.now(),
+    accent: ls('accent') || CONFIG.accent,
+    logo: ls('logo') || null,
+    customfields: getCustomFields(),
+    templates: getTemplates(),
+    arbetstyper: atInstances.main.typer.slice(),
+    margins: { ml: ls('ml') || '4', mr: ls('mr') || '4', mid: ls('mid') || '4' },
+    paper: ls('paper') || 'A4',
+    printmode: ls('printmode') || 'off'
+  };
+  download('dyklogg-foretagsprofil.json', JSON.stringify(profile, null, 2), 'application/json');
+  closeMenus(); toast('✓ Företagsprofil sparad');
+}
+function importProfile() {
+  const inp = document.createElement('input'); inp.type = 'file'; inp.accept = '.json,application/json';
+  inp.onchange = e => {
+    const fr = new FileReader();
+    fr.onload = ev => { try { applyProfile(JSON.parse(ev.target.result)); } catch (err) { alert('Kunde inte läsa profilen: ' + err); } };
+    fr.readAsText(e.target.files[0]);
+  };
+  inp.click();
+}
+function applyProfile(p) {
+  if (!p || typeof p !== 'object') { alert('Ogiltig företagsprofil.'); return; }
+  if (p.accent) setAccent(p.accent);
+  if (p.logo) { try { localStorage.setItem(K('logo'), p.logo); } catch (e) {} applyLogo(p.logo); }
+  if (Array.isArray(p.customfields)) { setCustomFields(p.customfields); renderCustomFields(); }
+  if (p.templates && typeof p.templates === 'object') {
+    const t = getTemplates(); Object.assign(t, p.templates); setTemplates(t); renderTemplateList();
+  }
+  if (Array.isArray(p.arbetstyper) && p.arbetstyper.length) {
+    ['main','b1','b2'].forEach(inst => { atInstances[inst].typer = p.arbetstyper.slice(); });
+    ['main','b1','b2'].forEach(renderGrid);
+  }
+  if (p.margins) {
+    const sync = (id, v) => { const el = document.getElementById(id); if (el && v != null) el.value = v; };
+    if (p.margins.ml != null) { setMargin('ml', p.margins.ml); sync('mleft', p.margins.ml); }
+    if (p.margins.mr != null) { setMargin('mr', p.margins.mr); sync('mright', p.margins.mr); }
+    if (p.margins.mid != null) { setMid(p.margins.mid); sync('midgap', p.margins.mid); }
+  }
+  if (p.paper) { setPaper(p.paper); const el = document.getElementById('papersize'); if (el) el.value = p.paper; }
+  if (p.printmode) setPrintMode(p.printmode);
+  try { localStorage.setItem(K('autosave'), JSON.stringify(gatherAll())); } catch (e) {}
+  closeMenus(); toast('✓ Företagsprofil laddad');
+}
+
 // ====================== Egna fält (custom fields) ======================
 // Definitions ({key,label}) are app-level (shared across all dives); the
 // values live per-dive as inputs with id "cf-<key>" (picked up by gatherAll).
-function getCustomFields() { try { return JSON.parse(localStorage.getItem('dyklogg_customfields') || '[]'); } catch (e) { return []; } }
-function setCustomFields(a) { try { localStorage.setItem('dyklogg_customfields', JSON.stringify(a)); } catch (e) {} }
+function getCustomFields() { try { return JSON.parse(localStorage.getItem(K('customfields')) || '[]'); } catch (e) { return []; } }
+function setCustomFields(a) { try { localStorage.setItem(K('customfields'), JSON.stringify(a)); } catch (e) {} }
 function renderCustomFields() {
   const fields = getCustomFields();
   const host = document.getElementById('cf-host');
@@ -1073,7 +1169,7 @@ function addCustomField() {
   const fields = getCustomFields();
   fields.push({ key: 'f' + Date.now(), label: label.trim() });
   setCustomFields(fields); renderCustomFields();
-  try { localStorage.setItem('dyklogg_autosave', JSON.stringify(gatherAll())); } catch (e) {}
+  try { localStorage.setItem(K('autosave'), JSON.stringify(gatherAll())); } catch (e) {}
   toast('✓ Eget fält tillagt');
 }
 function removeCustomField(key) {
@@ -1081,7 +1177,7 @@ function removeCustomField(key) {
   if (!confirm('Ta bort fältet "' + (f ? f.label : '') + '"? Värdet i nuvarande dyk försvinner.')) return;
   setCustomFields(getCustomFields().filter(x => x.key !== key));
   renderCustomFields();
-  try { localStorage.setItem('dyklogg_autosave', JSON.stringify(gatherAll())); } catch (e) {}
+  try { localStorage.setItem(K('autosave'), JSON.stringify(gatherAll())); } catch (e) {}
   toast('Fält borttaget');
 }
 renderCustomFields();   // build the fields before autosave restore fills their values
@@ -1090,10 +1186,10 @@ renderCustomFields();   // build the fields before autosave restore fills their 
 // Multiple dives stored locally; each entry keeps list-metadata + the full
 // gatherAll() blob. currentDiveId marks which archived dive the working draft
 // corresponds to (so re-saving updates it instead of creating a duplicate).
-function getDives() { try { return JSON.parse(localStorage.getItem('dyklogg_dives') || '{}'); } catch (e) { return {}; } }
-function setDives(o) { try { localStorage.setItem('dyklogg_dives', JSON.stringify(o)); return true; } catch (e) { alert('Kunde inte spara – webbläsarens lagring kan vara full.'); return false; } }
+function getDives() { try { return JSON.parse(localStorage.getItem(K('dives')) || '{}'); } catch (e) { return {}; } }
+function setDives(o) { try { localStorage.setItem(K('dives'), JSON.stringify(o)); return true; } catch (e) { alert('Kunde inte spara – webbläsarens lagring kan vara full.'); return false; } }
 let currentDiveId = null;
-try { currentDiveId = localStorage.getItem('dyklogg_current') || null; } catch (e) {}
+try { currentDiveId = localStorage.getItem(K('current')) || null; } catch (e) {}
 
 function diveMeta() {
   const v = id => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
@@ -1117,7 +1213,7 @@ function archiveSave() {
   const prev = dives[id] || {};
   dives[id] = { id: id, datum: m.datum, dyknr: m.dyknr, plats: m.plats, projectId: activeProjectId || prev.projectId || null, savedAt: Date.now(), data: gatherAll() };
   if (!setDives(dives)) return;
-  currentDiveId = id; try { localStorage.setItem('dyklogg_current', id); } catch (e) {}
+  currentDiveId = id; try { localStorage.setItem(K('current'), id); } catch (e) {}
   renderDiveList(); renderProjectList(); toast('✓ Dyk sparat i arkivet');
 }
 function newDive() {
@@ -1128,7 +1224,7 @@ function newDive() {
   glSpans().forEach(sp => sp.classList.remove('gsel'));
   layoutTf = {}; document.querySelectorAll('[data-lid]').forEach(el => { el.style.transform = ''; });
   selectEl(null);
-  currentDiveId = null; try { localStorage.removeItem('dyklogg_current'); localStorage.setItem('dyklogg_autosave', JSON.stringify(gatherAll())); } catch (e) {}
+  currentDiveId = null; try { localStorage.removeItem(K('current')); localStorage.setItem(K('autosave'), JSON.stringify(gatherAll())); } catch (e) {}
   renderDiveList(); closeMenus(); toast('Nytt dyk påbörjat');
 }
 function loadDive(id) {
@@ -1136,14 +1232,14 @@ function loadDive(id) {
   applyAll(JSON.parse(JSON.stringify(d.data)));
   currentDiveId = id;
   if (d.projectId !== undefined) setActiveProject(d.projectId || '');
-  try { localStorage.setItem('dyklogg_current', id); localStorage.setItem('dyklogg_autosave', JSON.stringify(gatherAll())); } catch (e) {}
+  try { localStorage.setItem(K('current'), id); localStorage.setItem(K('autosave'), JSON.stringify(gatherAll())); } catch (e) {}
   renderDiveList(); closeMenus(); toast('✓ Dyk laddat');
 }
 function deleteDive(id) {
   const dives = getDives(); if (!dives[id]) return;
   if (!confirm('Ta bort detta dyk ur arkivet? Detta går inte att ångra.')) return;
   delete dives[id]; setDives(dives);
-  if (currentDiveId === id) { currentDiveId = null; try { localStorage.removeItem('dyklogg_current'); } catch (e) {} }
+  if (currentDiveId === id) { currentDiveId = null; try { localStorage.removeItem(K('current')); } catch (e) {} }
   renderDiveList(); toast('Dyk borttaget');
 }
 function renderDiveList() {
@@ -1168,10 +1264,10 @@ function renderDiveList() {
 }
 
 // ====================== Projekt / kund ======================
-function getProjects() { try { return JSON.parse(localStorage.getItem('dyklogg_projects') || '{}'); } catch (e) { return {}; } }
-function setProjects(o) { try { localStorage.setItem('dyklogg_projects', JSON.stringify(o)); return true; } catch (e) { alert('Kunde inte spara projektet.'); return false; } }
+function getProjects() { try { return JSON.parse(localStorage.getItem(K('projects')) || '{}'); } catch (e) { return {}; } }
+function setProjects(o) { try { localStorage.setItem(K('projects'), JSON.stringify(o)); return true; } catch (e) { alert('Kunde inte spara projektet.'); return false; } }
 let activeProjectId = null;
-try { activeProjectId = localStorage.getItem('dyklogg_activeproject') || null; } catch (e) {}
+try { activeProjectId = localStorage.getItem(K('activeproject')) || null; } catch (e) {}
 
 function newProject() {
   const name = prompt('Projektnamn:'); if (!name || !name.trim()) return;
@@ -1188,7 +1284,7 @@ function newProject() {
 }
 function setActiveProject(id) {
   activeProjectId = id || null;
-  try { if (activeProjectId) localStorage.setItem('dyklogg_activeproject', activeProjectId); else localStorage.removeItem('dyklogg_activeproject'); } catch (e) {}
+  try { if (activeProjectId) localStorage.setItem(K('activeproject'), activeProjectId); else localStorage.removeItem(K('activeproject')); } catch (e) {}
   const sel = document.getElementById('project-select'); if (sel) sel.value = activeProjectId || '';
   renderDiveList();
 }
@@ -1201,7 +1297,7 @@ function applyProjectInfo() {
   set('plats', p.plats);
   set('projektnummer', p.projektnr);
   set('upprattat', p.kund ? '' : '');
-  try { localStorage.setItem('dyklogg_autosave', JSON.stringify(gatherAll())); } catch (e) {}
+  try { localStorage.setItem(K('autosave'), JSON.stringify(gatherAll())); } catch (e) {}
   closeMenus(); toast('✓ Projektuppgifter ifyllda');
 }
 function deleteProject(id) {
@@ -1363,11 +1459,11 @@ function switchView(v) {
 // --- Paper size for print (default A4 = two A5 halves side by side) ---
 function setPaper(v) {
   document.getElementById('page-style').textContent = '@page{size:' + v + ' landscape;margin:0}';
-  try { localStorage.setItem('dyklogg_paper', v); } catch(e) {}
+  try { localStorage.setItem(K('paper'), v); } catch(e) {}
 }
 (function() {
   let v = 'A4';
-  try { v = localStorage.getItem('dyklogg_paper') || 'A4'; } catch(e) {}
+  try { v = localStorage.getItem(K('paper')) || 'A4'; } catch(e) {}
   const sel = document.getElementById('papersize');
   if (sel) sel.value = v;
   setPaper(v);
@@ -1378,11 +1474,11 @@ function setMid(v) {
   document.documentElement.style.setProperty('--mid', v + 'mm');
   const out = document.getElementById('midval');
   if (out) out.textContent = v + ' mm';
-  try { localStorage.setItem('dyklogg_mid', v); } catch(e) {}
+  try { localStorage.setItem(K('mid'), v); } catch(e) {}
 }
 (function() {
   let v = '4';
-  try { v = localStorage.getItem('dyklogg_mid') || '4'; } catch(e) {}
+  try { v = localStorage.getItem(K('mid')) || '4'; } catch(e) {}
   const sl = document.getElementById('midgap');
   if (sl) sl.value = v;
   setMid(v);
@@ -1393,12 +1489,12 @@ function setMargin(side, v) {
   document.documentElement.style.setProperty('--' + side, v + 'mm');
   const out = document.getElementById((side === 'ml' ? 'mleft' : 'mright') + 'val');
   if (out) out.textContent = v + ' mm';
-  try { localStorage.setItem('dyklogg_' + side, v); } catch(e) {}
+  try { localStorage.setItem(K(side), v); } catch(e) {}
 }
 (function() {
   [['ml','mleft'],['mr','mright']].forEach(([side,id]) => {
     let v = '4';
-    try { v = localStorage.getItem('dyklogg_' + side) || '4'; } catch(e) {}
+    try { v = localStorage.getItem(K(side)) || '4'; } catch(e) {}
     const sl = document.getElementById(id);
     if (sl) sl.value = v;
     setMargin(side, v);
@@ -1432,7 +1528,7 @@ function setDuplicate(on) {
   dupOn = !!on;
   const cb = document.getElementById('dupchk');
   if (cb) cb.checked = dupOn;
-  try { localStorage.setItem('dyklogg_dup', dupOn ? '1' : '0'); } catch(e) {}
+  try { localStorage.setItem(K('dup'), dupOn ? '1' : '0'); } catch(e) {}
   if (dupOn) mirrorB1toB2();
 }
 (function() {
@@ -1452,7 +1548,7 @@ function setPrintMode(v) {
   printMode = v || 'off';
   const sel = document.getElementById('duplexsel');
   if (sel) sel.value = printMode;
-  try { localStorage.setItem('dyklogg_printmode', printMode); } catch(e) {}
+  try { localStorage.setItem(K('printmode'), printMode); } catch(e) {}
 }
 function copyFieldValues(src, clone) {
   const s = src.querySelectorAll('input, textarea, select');
@@ -1521,10 +1617,12 @@ window.addEventListener('beforeprint', buildPrintExtras);
 window.addEventListener('afterprint', removePrintExtras);
 
 // --- Arbetstyp instances for dyklog tab ---
+// Tre oberoende upps\u00e4ttningar (huvudvyn + de tv\u00e5 dyklogg-bladen). Alla utg\u00e5r
+// fr\u00e5n samma standardlista (CONFIG.arbetstyper) men kan redigeras var f\u00f6r sig.
 const atInstances = {
-  main: { typer: ['Besiktning','Betongarbete','Demontage','Gjutning','HCL','Inspektion','Montage','M\u00e4tning','Sk\u00e4rning/Brocco','Svetsning','Tv\u00e4tta','Vattenbl\u00e4string'], checked: {} },
-  b1:   { typer: ['Besiktning','Betongarbete','Demontage','Gjutning','HCL','Inspektion','Montage','M\u00e4tning','Sk\u00e4rning/Brocco','Svetsning','Tv\u00e4tta','Vattenbl\u00e4string'], checked: {} },
-  b2:   { typer: ['Besiktning','Betongarbete','Demontage','Gjutning','HCL','Inspektion','Montage','M\u00e4tning','Sk\u00e4rning/Brocco','Svetsning','Tv\u00e4tta','Vattenbl\u00e4string'], checked: {} }
+  main: { typer: CONFIG.arbetstyper.slice(), checked: {} },
+  b1:   { typer: CONFIG.arbetstyper.slice(), checked: {} },
+  b2:   { typer: CONFIG.arbetstyper.slice(), checked: {} }
 };
 
 function renderGrid(inst) {
@@ -1597,7 +1695,7 @@ glSpans().forEach(sp => {
   sp.addEventListener('click', () => {
     sp.classList.toggle('gsel');
     if (dupOn) mirrorB1toB2();
-    try { localStorage.setItem('dyklogg_autosave', JSON.stringify(gatherAll())); } catch(e) {}
+    try { localStorage.setItem(K('autosave'), JSON.stringify(gatherAll())); } catch(e) {}
   });
 });
 
@@ -1616,7 +1714,8 @@ function toggleEdit() {
 // =====================================================================
 // Each movable element gets a stable position-based data-lid (assigned in
 // document order across both views). Transforms are stored by lid as
-// {x,y,s} and persisted with the rest of the form (version-gated by LTV).
+// {x,y,s} and persisted with the rest of the form (re-applied only when the
+// layout fingerprint, layoutSig(), still matches — see applyAll).
 let moveMode = false;
 let selEl = null;
 let layoutTf = {};                 // lid -> {x, y, s}
@@ -1677,7 +1776,7 @@ function positionBox() {
 
 let _layoutSavedTimer = null;
 function saveLayoutSoon() {
-  try { localStorage.setItem('dyklogg_autosave', JSON.stringify(gatherAll())); } catch (e) {}
+  try { localStorage.setItem(K('autosave'), JSON.stringify(gatherAll())); } catch (e) {}
   // Debounced confirmation so rapid drags don't spam the toast
   clearTimeout(_layoutSavedTimer);
   _layoutSavedTimer = setTimeout(() => toast('✓ Position sparad'), 500);
@@ -1818,19 +1917,73 @@ function toggleMove() {
   }
 }
 
-// --- Editable label text helpers ---
+// =====================================================================
+//  STABILA NYCKLAR  — text-etiketter, kryssrutor och gruppbokstäver
+// =====================================================================
+// Varje sådant element får en NAMNGIVEN nyckel (sparad i el.dataset.k) som
+// bygger på elementets innehåll, inte dess position i sidan. Därför kan du
+// flytta, lägga till och ta bort rader i formuläret utan att sparad data
+// hamnar fel — och utan att behöva röra några versionsnummer.
+function _slug(s) { return (s || '').replace(/\s+/g, ' ').trim().slice(0, 40); }
+function _dedup(base, seen) { const n = seen[base] = (seen[base] || 0) + 1; return n > 1 ? base + '#' + n : base; }
+
+// Tilldelar de stabila nycklarna en gång när sidan laddats.
+function assignDataKeys() {
+  const seenEt = {};
+  document.querySelectorAll('.et').forEach(el => {
+    if (el.dataset.k0 === undefined) el.dataset.k0 = el.innerHTML;   // kom ihåg standardtexten
+    el.dataset.k = _dedup(_slug(el.dataset.k0), seenEt);
+  });
+  const seenCb = {};
+  getNonIdCheckboxes().forEach(cb => {
+    const lab = cb.closest('label');
+    cb.dataset.k = _dedup(_slug(lab ? lab.textContent : 'kryss'), seenCb);
+  });
+  document.querySelectorAll('.groupletters').forEach((g, ci) => {
+    g.querySelectorAll('span').forEach(sp => { sp.dataset.k = 'gl' + ci + '_' + _slug(sp.textContent); });
+  });
+}
+
+// --- Editable label text (sparas under "et.<nyckel>") ---
 function getEditableTexts() {
   const d = {};
-  document.querySelectorAll('.et').forEach((el, i) => { d['_et' + i] = el.innerHTML; });
+  document.querySelectorAll('.et').forEach(el => { d['et.' + el.dataset.k] = el.innerHTML; });
   return d;
 }
 function setEditableTexts(d) {
-  document.querySelectorAll('.et').forEach((el, i) => { if (d['_et' + i] !== undefined) el.innerHTML = d['_et' + i]; });
+  document.querySelectorAll('.et').forEach(el => { const v = d['et.' + el.dataset.k]; if (v !== undefined) el.innerHTML = v; });
 }
 
-// Non-ID checkboxes (utrustning, åtgärder etc) — excludes atgrid which is handled separately
+// Kryssrutor utan id (utrustning, åtgärder m.m.) — atgrid hanteras separat.
 function getNonIdCheckboxes() {
   return Array.from(document.querySelectorAll('input[type=checkbox]:not([id])')).filter(cb => !cb.closest('#atgrid') && !cb.closest('#atgrid-b1') && !cb.closest('#atgrid-b2'));
+}
+assignDataKeys();   // ge alla element sina stabila nycklar direkt
+
+// Migrerar en GAMMAL sparfil (positionsnycklar) till de nya namngivna
+// nycklarna. Körs överst i applyAll. Gör inget med filer i nytt format.
+function migrateLegacy(d) {
+  const hasOld = Object.keys(d).some(k => /^_(et|cb|gl)\d+$/.test(k)) || d._etv !== undefined || d._schema !== undefined;
+  if (!hasOld) return;
+  const gv = legacyGroupVersions(d);
+  // .et och kryssrutor migreras bara om den gamla versionen matchar baslinjen
+  // (annars slängdes datan förr ändå — vi behåller exakt samma beteende).
+  if (gv.et === LEGACY_ETV) {
+    document.querySelectorAll('.et').forEach((el, i) => {
+      if (d['_et' + i] !== undefined && d['et.' + el.dataset.k] === undefined) d['et.' + el.dataset.k] = d['_et' + i];
+    });
+  }
+  if (gv.cb === LEGACY_CBV) {
+    getNonIdCheckboxes().forEach((cb, i) => {
+      if (d['_cb' + i] !== undefined && d['cb.' + cb.dataset.k] === undefined) d['cb.' + cb.dataset.k] = d['_cb' + i];
+    });
+  }
+  // Gruppbokstäver hade aldrig någon versionsgrind — migrera alltid per index.
+  glSpans().forEach((sp, i) => {
+    if (d['_gl' + i] !== undefined && d[sp.dataset.k] === undefined) d[sp.dataset.k] = d['_gl' + i];
+  });
+  // Behåll sparade flytta/skala-positioner om den gamla layout-versionen stämde.
+  if (d._layout && d._lsig === undefined && d._ltv === LEGACY_LTV) d._lsig = layoutSig();
 }
 
 function gatherAll() {
@@ -1838,7 +1991,7 @@ function gatherAll() {
   document.querySelectorAll('input[type=text][id], input[type=date][id], input[type=checkbox][id]').forEach(el => {
     d[el.id] = el.type === 'checkbox' ? el.checked : el.value;
   });
-  getNonIdCheckboxes().forEach((cb, i) => { d['_cb' + i] = cb.checked; });
+  getNonIdCheckboxes().forEach(cb => { d['cb.' + cb.dataset.k] = cb.checked; });
   // Sync all atgrid checked states
   ['main','b1','b2'].forEach(inst => {
     const gridId = inst==='main' ? 'atgrid' : 'atgrid-'+inst;
@@ -1850,24 +2003,19 @@ function gatherAll() {
     b1:   { typer: atInstances.b1.typer,   checked: atInstances.b1.checked },
     b2:   { typer: atInstances.b2.typer,   checked: atInstances.b2.checked }
   });
-  glSpans().forEach((sp, i) => { d['_gl' + i] = sp.classList.contains('gsel'); });
+  glSpans().forEach(sp => { d[sp.dataset.k] = sp.classList.contains('gsel'); });
   Object.assign(d, getEditableTexts());
   d._layout = JSON.stringify(layoutTf);
-  d._etv = ETV; d._cbv = CBV; d._atv = ATV; d._ltv = LTV;
+  d._lsig = layoutSig();   // strukturfingeravtryck för flytta/skala-positionerna
   return d;
 }
 
 function applyAll(d) {
-  // Drop only the position-based groups whose layout changed since this data was saved, so
-  // unrelated saved values (checkboxes, arbetstyp, untouched labels) are preserved.
-  const gv = groupVersions(d);
-  if (gv.et !== ETV) Object.keys(d).forEach(k => { if (/^_et\d+$/.test(k)) delete d[k]; });
-  if (gv.cb !== CBV) Object.keys(d).forEach(k => { if (/^_cb\d+$/.test(k)) delete d[k]; });
-  if (gv.at !== ATV) { delete d._atInstances; delete d._arbetstyper; delete d._atChecked; }
+  migrateLegacy(d);   // översätt ev. gammalt positionsformat till namngivna nycklar
   document.querySelectorAll('input[type=text][id], input[type=date][id], input[type=checkbox][id]').forEach(el => {
     if (d[el.id] !== undefined) el.type === 'checkbox' ? el.checked = d[el.id] : el.value = d[el.id];
   });
-  getNonIdCheckboxes().forEach((cb, i) => { if (d['_cb' + i] !== undefined) cb.checked = d['_cb' + i]; });
+  getNonIdCheckboxes().forEach(cb => { const v = d['cb.' + cb.dataset.k]; if (v !== undefined) cb.checked = v; });
   if (d._atInstances) {
     const saved = JSON.parse(d._atInstances);
     ['main','b1','b2'].forEach(inst => {
@@ -1878,11 +2026,12 @@ function applyAll(d) {
   if (d._arbetstyper && !d._atInstances) atInstances.main.typer = JSON.parse(d._arbetstyper);
   if (d._atChecked   && !d._atInstances) atInstances.main.checked = JSON.parse(d._atChecked);
   ['main','b1','b2'].forEach(inst => renderGrid(inst));
-  glSpans().forEach((sp, i) => { if (d['_gl' + i] !== undefined) sp.classList.toggle('gsel', !!d['_gl' + i]); });
+  glSpans().forEach(sp => { const v = d[sp.dataset.k]; if (v !== undefined) sp.classList.toggle('gsel', !!v); });
   setEditableTexts(d);
-  // Restore move/scale transforms only if the DOM structure matches (LTV)
+  // Återställ flytta/skala-positioner bara om strukturen är densamma som när
+  // de sparades (jämför fingeravtrycket). Annars börjar de om från standard.
   document.querySelectorAll('[data-lid]').forEach(el => { el.style.transform = ''; });
-  layoutTf = (d._layout && d._ltv === LTV) ? (function () { try { return JSON.parse(d._layout); } catch (e) { return {}; } })() : {};
+  layoutTf = (d._layout && d._lsig === layoutSig()) ? (function () { try { return JSON.parse(d._layout); } catch (e) { return {}; } })() : {};
   applyAllTf();
   if (typeof positionBox === 'function') positionBox();
 }
@@ -1897,10 +2046,10 @@ function toast(msg) {
 
 // Autosave to localStorage on any input change
 document.addEventListener('input', () => {
-  try { localStorage.setItem('dyklogg_autosave', JSON.stringify(gatherAll())); } catch(e) {}
+  try { localStorage.setItem(K('autosave'), JSON.stringify(gatherAll())); } catch(e) {}
 });
 document.addEventListener('change', () => {
-  try { localStorage.setItem('dyklogg_autosave', JSON.stringify(gatherAll())); } catch(e) {}
+  try { localStorage.setItem(K('autosave'), JSON.stringify(gatherAll())); } catch(e) {}
 });
 
 // Build a filename from the dive's date + dive number, e.g. dyklogg_2026-06-02_nr3.json
@@ -1948,7 +2097,7 @@ function clearAll() {
   document.querySelectorAll('[data-lid]').forEach(el => { el.style.transform = ''; });
   selectEl(null);
   currentDiveId = null;
-  try { localStorage.removeItem('dyklogg_autosave'); localStorage.removeItem('dyklogg_current'); } catch(e) {}
+  try { localStorage.removeItem(K('autosave')); localStorage.removeItem(K('current')); } catch(e) {}
   if (typeof renderDiveList === 'function') renderDiveList();
   toast('Rensat');
 }
@@ -1956,7 +2105,7 @@ function clearAll() {
 // Restore autosave on page load
 (function() {
   try {
-    const saved = localStorage.getItem('dyklogg_autosave');
+    const saved = localStorage.getItem(K('autosave'));
     if (saved) applyAll(JSON.parse(saved));
     else ['main','b1','b2'].forEach(inst=>renderGrid(inst));
   } catch(e) { ['main','b1','b2'].forEach(inst=>renderGrid(inst)); }
@@ -1965,15 +2114,15 @@ function clearAll() {
 // Restore duplicate mode after data + grids are in place
 (function() {
   let on = '0';
-  try { on = localStorage.getItem('dyklogg_dup') || '0'; } catch(e) {}
+  try { on = localStorage.getItem(K('dup')) || '0'; } catch(e) {}
   if (on === '1') setDuplicate(true);
 })();
 // Restore double-sided print mode (with migration from the old boolean toggle)
 (function() {
   let v = 'off';
   try {
-    v = localStorage.getItem('dyklogg_printmode')
-        || (localStorage.getItem('dyklogg_duplex') === '1' ? 'copy' : 'off');
+    v = localStorage.getItem(K('printmode'))
+        || (localStorage.getItem(K('duplex')) === '1' ? 'copy' : 'off');
   } catch(e) {}
   setPrintMode(v);
 })();
