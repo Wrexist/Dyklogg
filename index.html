@@ -1033,6 +1033,7 @@ function legacyGroupVersions(d) {
 // Strukturfingeravtryck för flytta/skala-positioner. Räknas ut automatiskt ur
 // DOM:en, så ingen behöver "bumpa" något: ändrar du strukturen i en vy nollas
 // bara de visuella nudge-positionerna — text, kryss och data rörs aldrig.
+/** Strukturfingeravtryck över alla [data-lid]-element; avgör om sparade flytta/skala-positioner fortfarande passar DOM:en. */
 function layoutSig() {
   let s = '';
   document.querySelectorAll('[data-lid]').forEach(el => { s += el.tagName; });
@@ -1068,6 +1069,7 @@ function download(name, content, type) {
 // ====================== Snygga modaler (ersätter prompt/confirm/alert) ======
 // uiModal returnerar ett Promise. Texterna escapas. Stängs med Esc / klick utanför.
 function _esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
+/** Visar en modal och returnerar ett Promise: fältvärden, true/false eller null (vid avbrytt). Texter escapas. */
 function uiModal(opts) {
   opts = opts || {};
   const fields = opts.fields || [];
@@ -1107,11 +1109,14 @@ function uiModal(opts) {
     document.addEventListener('keydown', onKey, true);
   });
 }
+/** Visar en enkel OK-modal (ersätter alert). */
 function uiAlert(message, title) { return uiModal({ title: title || '', message: message, okOnly: true }); }
+/** Visar en bekräftelse-modal; resolvar true vid OK, false vid avbryt (ersätter confirm). */
 function uiConfirm(message, opts) {
   opts = opts || {};
   return uiModal({ title: opts.title || 'Bekräfta', message: message, okText: opts.okText || 'OK', cancelText: opts.cancelText || 'Avbryt', danger: opts.danger });
 }
+/** Visar en modal med ett textfält; resolvar den ifyllda texten eller null (ersätter prompt). */
 async function uiPrompt(label, deflt, opts) {
   opts = opts || {};
   const r = await uiModal({ title: opts.title || '', okText: opts.okText || 'OK', fields: [{ key: 'v', label: label, value: deflt || '', placeholder: opts.placeholder || '' }] });
@@ -1135,24 +1140,28 @@ function renderTemplateList() {
     row.appendChild(b); row.appendChild(d); list.appendChild(row);
   });
 }
+/** Sparar nuvarande formulär som en namngiven mall. */
 async function saveTemplate() {
   const name = await uiPrompt('Namn på mallen', '', { title: 'Spara som mall', okText: 'Spara mall', placeholder: 't.ex. Standardteam eller projektnamn' });
   if (!name || !name.trim()) return;
   const t = getTemplates(); t[name.trim()] = gatherAll(); setTemplates(t);
   renderTemplateList(); toast('✓ Mall sparad');
 }
+/** Tillämpar en sparad mall på formuläret. */
 function applyTemplate(n) {
   const t = getTemplates(); if (!t[n]) return;
   applyAll(JSON.parse(JSON.stringify(t[n])));
   try { localStorage.setItem(K('autosave'), JSON.stringify(gatherAll())); } catch (e) {}
   closeMenus(); toast('✓ Mall "' + n + '" använd');
 }
+/** Tar bort en sparad mall. */
 async function deleteTemplate(n) {
   if (!await uiConfirm('Ta bort mallen "' + n + '"?', { title: 'Ta bort mall', okText: 'Ta bort', danger: true })) return;
   const t = getTemplates(); delete t[n]; setTemplates(t); renderTemplateList(); toast('Mall borttagen');
 }
 
 // ====================== Företagsanpassning (branding) ======================
+/** Sätter och sparar appens temafärg (CSS-variabeln --accent). */
 function setAccent(color) {
   document.documentElement.style.setProperty('--accent', color);
   const v = document.getElementById('accentval'); if (v) v.textContent = color;
@@ -1160,6 +1169,7 @@ function setAccent(color) {
   try { localStorage.setItem(K('accent'), color); } catch (e) {}
 }
 function applyLogo(url) { document.querySelectorAll('img.company-logo').forEach(img => { img.src = url; }); }
+/** Läser in en vald bildfil som logga och sparar den lokalt. */
 function onLogoPicked(e) {
   const f = e.target.files && e.target.files[0]; if (!f) return;
   const fr = new FileReader();
@@ -1195,6 +1205,7 @@ function resetBranding() {
 // pappersval) i EN delbar fil. Tanken: ställ in en gång på en dator och dela
 // profilen med hela teamet så får alla exakt samma uppsättning. Den enskilda
 // dyk-datan (vad man skrivit i ett dyk) ligger kvar separat och rörs inte här.
+/** Exporterar all företagsanpassning (logga, färg, egna fält, mallar, arbetstyper, marginaler) till en delbar fil. */
 function exportProfile() {
   const ls = k => { try { return localStorage.getItem(K(k)); } catch (e) { return null; } };
   const profile = {
@@ -1211,6 +1222,7 @@ function exportProfile() {
   download('dyklogg-foretagsprofil.json', JSON.stringify(profile, null, 2), 'application/json');
   closeMenus(); toast('✓ Företagsprofil sparad');
 }
+/** Öppnar en filväljare och läser in en företagsprofil. */
 function importProfile() {
   const inp = document.createElement('input'); inp.type = 'file'; inp.accept = '.json,application/json';
   inp.onchange = e => {
@@ -1220,6 +1232,7 @@ function importProfile() {
   };
   inp.click();
 }
+/** Tillämpar en inläst företagsprofil på appen. */
 function applyProfile(p) {
   if (!p || typeof p !== 'object') { uiAlert('Ogiltig företagsprofil.', 'Fel'); return; }
   if (p.accent) setAccent(p.accent);
@@ -1283,6 +1296,7 @@ function renderCustomFields() {
     }
   }
 }
+/** Lägger till ett eget fält i dykloggen via en modal. */
 async function addCustomField() {
   const label = await uiPrompt('Namn på fältet', '', { title: 'Nytt eget fält', okText: 'Lägg till', placeholder: 't.ex. Gasblandning, Tanktryck' });
   if (!label || !label.trim()) return;
@@ -1292,6 +1306,7 @@ async function addCustomField() {
   try { localStorage.setItem(K('autosave'), JSON.stringify(gatherAll())); } catch (e) {}
   toast('✓ Eget fält tillagt');
 }
+/** Tar bort ett eget fält (och dess värde i nuvarande dyk). */
 async function removeCustomField(key) {
   const f = getCustomFields().find(x => x.key === key);
   if (!await uiConfirm('Ta bort fältet "' + (f ? f.label : '') + '"? Värdet i nuvarande dyk försvinner.', { title: 'Ta bort fält', okText: 'Ta bort', danger: true })) return;
@@ -1326,6 +1341,7 @@ function fmtWhen(ts) {
   const d = new Date(ts);
   return d.toLocaleDateString('sv-SE') + ' ' + d.toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit' });
 }
+/** Sparar eller uppdaterar det aktuella dyket i det lokala arkivet. */
 function archiveSave() {
   const dives = getDives();
   const id = currentDiveId || ('d' + Date.now());
@@ -1336,6 +1352,7 @@ function archiveSave() {
   currentDiveId = id; try { localStorage.setItem(K('current'), id); } catch (e) {}
   renderDiveList(); renderProjectList(); toast('✓ Dyk sparat i arkivet');
 }
+/** Tömmer formuläret och påbörjar ett nytt, tomt dyk. */
 async function newDive() {
   if (!await uiConfirm('Starta ett nytt, tomt dyk?\nOsparade ändringar i det nuvarande går förlorade om du inte sparat det i arkivet.', { title: 'Nytt dyk', okText: 'Nytt dyk' })) return;
   document.querySelectorAll('input[type=text]').forEach(el => el.value = '');
@@ -1347,6 +1364,7 @@ async function newDive() {
   currentDiveId = null; try { localStorage.removeItem(K('current')); localStorage.setItem(K('autosave'), JSON.stringify(gatherAll())); } catch (e) {}
   renderDiveList(); closeMenus(); toast('Nytt dyk påbörjat');
 }
+/** Laddar ett arkiverat dyk in i formuläret. */
 function loadDive(id) {
   const d = getDives()[id]; if (!d) return;
   applyAll(JSON.parse(JSON.stringify(d.data)));
@@ -1355,6 +1373,7 @@ function loadDive(id) {
   try { localStorage.setItem(K('current'), id); localStorage.setItem(K('autosave'), JSON.stringify(gatherAll())); } catch (e) {}
   renderDiveList(); closeMenus(); toast('✓ Dyk laddat');
 }
+/** Tar bort ett dyk ur arkivet. */
 async function deleteDive(id) {
   const dives = getDives(); if (!dives[id]) return;
   if (!await uiConfirm('Ta bort detta dyk ur arkivet? Detta går inte att ångra.', { title: 'Ta bort dyk', okText: 'Ta bort', danger: true })) return;
@@ -1389,6 +1408,7 @@ function setProjects(o) { try { localStorage.setItem(K('projects'), JSON.stringi
 let activeProjectId = null;
 try { activeProjectId = localStorage.getItem(K('activeproject')) || null; } catch (e) {}
 
+/** Skapar ett nytt projekt via en formulärmodal (namn, kund, plats, projektnr, projektledare, upprättad av). */
 async function newProject() {
   const r = await uiModal({
     title: 'Nytt projekt', okText: 'Skapa projekt',
@@ -1410,12 +1430,14 @@ async function newProject() {
   renderProjectList();
   toast('✓ Projekt skapat');
 }
+/** Sätter aktivt projekt och uppdaterar listor/UI. */
 function setActiveProject(id) {
   activeProjectId = id || null;
   try { if (activeProjectId) localStorage.setItem(K('activeproject'), activeProjectId); else localStorage.removeItem(K('activeproject')); } catch (e) {}
   const sel = document.getElementById('project-select'); if (sel) sel.value = activeProjectId || '';
   renderDiveList();
 }
+/** Fyller dykloggen och dykplanen med det aktiva projektets uppgifter på rätt fält. */
 function applyProjectInfo() {
   const p = getProjects()[activeProjectId];
   if (!p) { toast('Välj ett aktivt projekt först'); return; }
@@ -1431,6 +1453,7 @@ function applyProjectInfo() {
   try { localStorage.setItem(K('autosave'), JSON.stringify(gatherAll())); } catch (e) {}
   closeMenus(); toast('✓ Projektuppgifter ifyllda i dykplanen');
 }
+/** Tar bort ett projekt; tillhörande dyk avtaggas men ligger kvar i arkivet. */
 async function deleteProject(id) {
   const projects = getProjects(); if (!projects[id]) return;
   if (!await uiConfirm('Ta bort projektet "' + projects[id].name + '"?\nDyken ligger kvar i arkivet men avtaggas projektet.', { title: 'Ta bort projekt', okText: 'Ta bort', danger: true })) return;
@@ -1471,6 +1494,7 @@ function renderProjectList() {
     row.appendChild(b); row.appendChild(rep); row.appendChild(del); list.appendChild(row);
   });
 }
+/** Öppnar en utskrivbar sammanställning av alla dyk i ett projekt. */
 function projectReport(id) {
   const p = getProjects()[id]; if (!p) return;
   const dives = Object.values(getDives()).filter(d => d.projectId === id)
@@ -1504,6 +1528,7 @@ function projectReport(id) {
 }
 
 // ====================== UDDF-export ======================
+/** Exporterar dyket till UDDF-format (dykprogram). */
 function exportUDDF() {
   closeMenus();
   const v = id => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
@@ -1529,6 +1554,7 @@ function exportUDDF() {
 }
 
 // ====================== Mejla sammanfattning ======================
+/** Öppnar ett mejlutkast med en textsammanfattning av dyket. */
 function emailLog() {
   closeMenus();
   const v = id => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
@@ -1557,6 +1583,7 @@ function fieldLabel(inp) {
   }
   return inp.id || '';
 }
+/** Exporterar ifyllda fält (dyklogg + dykplan) till en CSV-fil. */
 function exportCSV() {
   closeMenus();
   const rows = [['Fält', 'Värde']];
@@ -1583,6 +1610,7 @@ function exportCSV() {
 
 // --- View switching ---
 let currentView = 'combined';
+/** Växlar mellan vyerna combined/dyklog och håller Layout-menyn i synk. */
 function switchView(v) {
   if (typeof resetLayout === 'function') resetLayout();   // städa ev. layout-baksida först
   currentView = v;
@@ -1606,6 +1634,7 @@ const _layoutExtra = document.createElement('div');
 _layoutExtra.id = 'layout-extra';
 (function () { const dv = document.getElementById('view-dyklog'); if (dv) dv.after(_layoutExtra); })();
 
+/** Återställer en ev. flyttad dykplan till sin plats i Logg+Plan-arket. */
 function resetLayout() {
   if (_planEl && _planHome && _planEl.parentNode !== _planHome) {
     _planEl.className = _planClass;
@@ -1631,6 +1660,7 @@ function _planPage(cls) {
   _layoutExtra.appendChild(page);
   _layoutExtra.style.display = 'block';
 }
+/** Aktiverar ett layout-läge: Logg+Plan, 2× Dyklogg, 2× + Dykplan på baksidan, eller Hel Dykplan. */
 function setLayout(name) {
   resetLayout();
   if (name === 'logg-plan') { switchView('combined'); }
@@ -1647,6 +1677,7 @@ function setLayout(name) {
   try { localStorage.setItem(K('layout'), name); } catch (e) {}
   closeMenus();
 }
+/** Uppdaterar Layout-knappens etikett och markerar det aktiva valet. */
 function updateLayoutUI() {
   const names = { 'logg-plan': 'Logg + Plan', '2x': '2× Dyklogg', '2x-plan': '2× + Dykplan', 'hel-plan': 'Hel Dykplan' };
   const lbl = document.getElementById('layout-label');
@@ -1742,6 +1773,7 @@ function setDuplicate(on) {
 //   'copy'      : back side = identical copy of the active view
 //   'logs-plan' : front = 2 Dyklogg (Dyklog-vyn), back = hel Dykplan (liggande, full bredd)
 let printMode = 'off';
+/** Sätter dubbelsidigt utskriftsläge (av/kopia/2 Dyklogg + hel Dykplan). */
 function setPrintMode(v) {
   printMode = v || 'off';
   const sel = document.getElementById('duplexsel');
@@ -1765,6 +1797,7 @@ function removePrintExtras() {
   document.querySelectorAll('[data-duplex="1"]').forEach(el => el.remove());
   document.body.classList.remove('print-custom');
 }
+/** Bygger ev. baksidor inför utskrift utifrån valt utskriftsläge. */
 function buildPrintExtras() {
   removePrintExtras();
   if (printMode === 'off') return;
@@ -2127,6 +2160,7 @@ function _slug(s) { return (s || '').replace(/\s+/g, ' ').trim().slice(0, 40); }
 function _dedup(base, seen) { const n = seen[base] = (seen[base] || 0) + 1; return n > 1 ? base + '#' + n : base; }
 
 // Tilldelar de stabila nycklarna en gång när sidan laddats.
+/** Tilldelar stabila, innehållsbaserade nycklar (dataset.k) till etiketter, kryssrutor och gruppbokstäver. */
 function assignDataKeys() {
   const seenEt = {};
   document.querySelectorAll('.et').forEach(el => {
@@ -2161,6 +2195,7 @@ assignDataKeys();   // ge alla element sina stabila nycklar direkt
 
 // Migrerar en GAMMAL sparfil (positionsnycklar) till de nya namngivna
 // nycklarna. Körs överst i applyAll. Gör inget med filer i nytt format.
+/** Översätter en gammal sparfil med positionsnycklar till de nya namngivna nycklarna. */
 function migrateLegacy(d) {
   const hasOld = Object.keys(d).some(k => /^_(et|cb|gl)\d+$/.test(k)) || d._etv !== undefined || d._schema !== undefined;
   if (!hasOld) return;
@@ -2185,6 +2220,7 @@ function migrateLegacy(d) {
   if (d._layout && d._lsig === undefined && d._ltv === LEGACY_LTV) d._lsig = layoutSig();
 }
 
+/** Samlar hela formulärets tillstånd till ett objekt (för spara/autospar/export). */
 function gatherAll() {
   const d = {};
   document.querySelectorAll('input[type=text][id], input[type=date][id], input[type=checkbox][id]').forEach(el => {
@@ -2209,6 +2245,7 @@ function gatherAll() {
   return d;
 }
 
+/** Återställer formuläret från ett insamlat tillstånd, med migrering av äldre sparformat. */
 function applyAll(d) {
   migrateLegacy(d);   // översätt ev. gammalt positionsformat till namngivna nycklar
   document.querySelectorAll('input[type=text][id], input[type=date][id], input[type=checkbox][id]').forEach(el => {
@@ -2235,6 +2272,7 @@ function applyAll(d) {
   if (typeof positionBox === 'function') positionBox();
 }
 
+/** Visar en kort bekräftelse-notis längst ner på skärmen. */
 function toast(msg) {
   const t = document.createElement('div');
   t.textContent = msg;
@@ -2262,6 +2300,7 @@ function buildFileName() {
   if (dyknr) name += '_nr' + clean(dyknr);
   return name + '.json';
 }
+/** Sparar hela dyket till en JSON-fil. */
 function saveJSON() {
   const d = gatherAll();
   const a = document.createElement('a');
@@ -2271,6 +2310,7 @@ function saveJSON() {
   toast('\u2713 Sparad!');
 }
 
+/** Laddar ett dyk från en vald JSON-fil. */
 function loadJSON() {
   const inp = document.createElement('input'); inp.type = 'file'; inp.accept = '.json';
   inp.onchange = e => {
@@ -2286,6 +2326,7 @@ function loadJSON() {
   inp.click();
 }
 
+/** Rensar hela formuläret efter bekräftelse. */
 async function clearAll() {
   if (!await uiConfirm('Rensa hela formul\u00e4ret? Detta t\u00f6mmer alla f\u00e4lt i det aktuella dyket.', { title: 'Rensa formul\u00e4ret', okText: 'Rensa', danger: true })) return;
   document.querySelectorAll('input[type=text]').forEach(el => el.value = '');
