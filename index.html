@@ -1,4 +1,9 @@
 <!DOCTYPE html>
+<!--
+  DYKLOGG & DYKPLAN — hela appen ligger i denna enda fil (HTML + CSS + JS).
+  Vill du ändra något? Läs MODIFIERA.md (steg-för-steg på svenska).
+  Det mesta styrs från CONFIG-blocket högst upp i skript-delen längre ner.
+-->
 <html lang="sv">
 <head>
 <meta charset="UTF-8">
@@ -8,8 +13,8 @@
 :root{--accent:#f90}
 body{font-family:Arial,Helvetica,sans-serif;font-size:11px;background:#d8d8d8;color:#000}
 
-.toolbar{position:sticky;top:0;z-index:99;background:linear-gradient(180deg,#202026,#141418);color:#fff;padding:8px 16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;box-shadow:0 2px 10px rgba(0,0,0,.28);font-size:12px}
-.tb-brand{display:flex;align-items:center;gap:7px;font-size:16px;font-weight:900;letter-spacing:.2px;margin-right:4px;user-select:none}
+.toolbar{position:sticky;top:0;z-index:99;background:linear-gradient(180deg,#23232a,#141418);color:#fff;padding:9px 16px;display:flex;align-items:center;gap:7px;flex-wrap:wrap;border-bottom:1px solid rgba(255,255,255,.07);box-shadow:0 4px 18px rgba(0,0,0,.30);font-size:12px}
+.tb-brand{display:flex;align-items:center;gap:7px;font-size:15.5px;font-weight:800;letter-spacing:.2px;margin-right:4px;user-select:none}
 .tb-brand .dot{font-size:17px}
 .tb-sep{width:1px;height:26px;background:rgba(255,255,255,.14);margin:0 3px}
 .tb-spacer{flex:1 1 12px}
@@ -19,18 +24,37 @@ body{font-family:Arial,Helvetica,sans-serif;font-size:11px;background:#d8d8d8;co
 .seg button:hover{color:#fff}
 .seg button.active{background:var(--accent);color:#1a1a1a;box-shadow:0 1px 3px rgba(0,0,0,.3)}
 /* Buttons */
-.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 13px;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;background:#2c2c33;color:#ececf0;transition:background .15s,transform .05s;white-space:nowrap;line-height:1}
-.btn:hover{background:#3a3a43}
+/* Knappar: bas-stilen är gjord för att vara läsbar på VIT meny-panel.
+   Toolbar-fältet (mörkt) får en egen genomskinlig variant längre ner. */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;background:#ececf1;color:#33333a;transition:background .14s,color .14s,transform .05s;white-space:nowrap;line-height:1}
+.btn:hover{background:#e0e0e8}
 .btn:active{transform:translateY(1px)}
-.btn.primary{background:var(--accent);color:#1a1a1a}
-.btn.primary:hover{background:#ffab2e}
-.btn.active{background:#1a8a3a;color:#fff}
+.btn.primary{background:var(--accent);color:#191919;font-weight:700}
+.btn.primary:hover{filter:brightness(1.07)}
+.btn.active{background:var(--accent);color:#191919}
+.btn.danger{color:#c0392b;background:#f7e9e7}
 .btn.danger:hover{background:#c0392b;color:#fff}
-.btn .chev{font-size:9px;opacity:.7;margin-left:1px}
+.btn.icon{padding:8px;width:34px;justify-content:center}
+/* Toolbar-fältet (mörkt): genomskinliga ljusa knappar.
+   OBS: använd ">" så att knapparna INNE i de vita panelerna inte träffas
+   (panelen ligger ju inuti .toolbar) – annars blir menytexten ljus på vitt. */
+.toolbar>.btn,.toolbar>.menu>.btn{background:rgba(255,255,255,.06);color:#e7e7ee}
+.toolbar>.btn:hover,.toolbar>.menu>.btn:hover{background:rgba(255,255,255,.14);color:#fff}
+.toolbar>.btn.primary,.toolbar>.menu>.btn.primary{background:var(--accent);color:#191919}
+.toolbar>.btn.primary:hover,.toolbar>.menu>.btn.primary:hover{filter:brightness(1.07)}
+.toolbar>.btn.active,.toolbar>.menu>.btn.active{background:var(--accent);color:#191919}
+.toolbar>.btn.danger{color:#ff9b8e;background:rgba(255,255,255,.06)}
+.ic{width:15px;height:15px;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.btn.icon .ic{width:16px;height:16px}
+.chev{width:11px;height:11px;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;opacity:.5;margin-left:-1px}
+/* Layout-val i menyn: tydliga, feta, mjuka */
+.layout-opt{justify-content:flex-start;font-weight:700;padding:11px 13px;font-size:12.5px}
+.layout-opt small{opacity:.6;font-weight:500;margin-left:7px;text-transform:none}
+.layout-opt.sel{background:var(--accent);color:#191919;box-shadow:0 2px 8px rgba(0,0,0,.12)}
 /* Dropdown menus */
 .menu{position:relative;display:inline-flex}
-.menu.open>.btn{background:#3a3a43}
-.menu-panel{position:absolute;top:calc(100% + 9px);left:0;background:#fff;color:#26262b;border-radius:12px;box-shadow:0 14px 38px rgba(0,0,0,.32);padding:15px 16px;min-width:248px;z-index:130;display:none;flex-direction:column;gap:13px;animation:menupop .14s ease-out}
+.menu.open>.btn{background:rgba(255,255,255,.14);color:#fff}
+.menu-panel{position:absolute;top:calc(100% + 9px);left:0;background:#fff;color:#26262b;border-radius:12px;box-shadow:0 14px 38px rgba(0,0,0,.32);padding:15px 16px;min-width:248px;max-height:82vh;overflow-y:auto;z-index:130;display:none;flex-direction:column;gap:13px;animation:menupop .14s ease-out}
 .menu.open .menu-panel{display:flex}
 @keyframes menupop{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
 .menu-panel h4{font-size:10.5px;text-transform:uppercase;letter-spacing:.7px;color:#9a9aa5;font-weight:800;margin:0 0 -3px}
@@ -84,6 +108,9 @@ input[type=checkbox]{width:12px;height:12px;accent-color:var(--accent);cursor:po
 
 .title{font-size:30px;font-weight:900;text-transform:uppercase;letter-spacing:-.5px;line-height:1}
 .logo{height:40px;width:auto;flex-shrink:0;object-fit:contain}
+/* Bläckfisk-loggan är dold som standard; slås på under Anpassa */
+.octopus-logo{display:none}
+body.show-octopus .octopus-logo{display:inline-block}
 .sub{color:var(--accent);font-weight:700;font-size:9px;text-transform:uppercase;letter-spacing:.5px;margin-top:1px}
 
 .meta{width:100%;border-collapse:collapse;border:1.5px solid #999}
@@ -188,6 +215,47 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
 .lbox .ltools button{background:#1a8a3a;color:#fff;border:none;border-radius:3px;font-size:11px;font-weight:700;padding:2px 7px;cursor:pointer;line-height:1.4;box-shadow:0 1px 3px rgba(0,0,0,.25)}
 .lbox .ltools button:hover{background:#157a32}
 
+/* Premium-modaler (prompt/confirm/alert-ersättning) */
+.modal-overlay{position:fixed;inset:0;background:rgba(14,14,20,.5);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);z-index:300;display:none;align-items:center;justify-content:center;padding:20px;animation:modalfade .16s ease-out}
+.modal-overlay.open{display:flex}
+.modal-card{background:#fff;color:#26262b;border-radius:16px;box-shadow:0 24px 70px rgba(0,0,0,.42);width:390px;max-width:100%;max-height:88vh;overflow-y:auto;animation:modalpop .2s cubic-bezier(.2,.85,.3,1)}
+@keyframes modalfade{from{opacity:0}to{opacity:1}}
+@keyframes modalpop{from{opacity:0;transform:translateY(12px) scale(.97)}to{opacity:1;transform:none}}
+.modal-head{padding:18px 22px 2px;font-size:15.5px;font-weight:800;letter-spacing:-.1px}
+.modal-body{padding:12px 22px 4px;display:flex;flex-direction:column;gap:13px}
+.modal-msg{font-size:13px;line-height:1.55;color:#4a4a53;white-space:pre-line}
+.modal-field{display:flex;flex-direction:column;gap:6px}
+.modal-field label{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:#9a9aa5}
+.modal-field input{font-size:13.5px;padding:10px 12px;border:1px solid #dcdce3;border-radius:9px;outline:none;font-family:inherit;color:#26262b;background:#fafafb;transition:border-color .14s,box-shadow .14s,background .14s}
+.modal-field input:focus{border-color:var(--accent);background:#fff;box-shadow:0 0 0 3px rgba(255,153,0,.16)}
+.modal-foot{padding:16px 22px 20px;display:flex;gap:9px;justify-content:flex-end}
+.modal-btn{padding:9px 17px;border:none;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:background .14s,filter .14s,transform .05s}
+.modal-btn:active{transform:translateY(1px)}
+.modal-btn.ghost{background:#eeeef2;color:#44444c}
+.modal-btn.ghost:hover{background:#e3e3ea}
+.modal-btn.primary{background:var(--accent);color:#191919}
+.modal-btn.primary:hover{filter:brightness(1.07)}
+.modal-btn.danger{background:#c0392b;color:#fff}
+.modal-btn.danger:hover{filter:brightness(1.08)}
+/* Arbetstyp-modalen i samma stil */
+.at-card{display:flex;flex-direction:column;width:344px;max-height:84vh;overflow:hidden}
+.at-x{background:none;border:none;font-size:23px;line-height:1;cursor:pointer;color:#b2b2bb;padding:0 2px;transition:color .14s}
+.at-x:hover{color:#26262b}
+.at-list{flex:1;overflow-y:auto;padding:10px 22px 4px;display:flex;flex-direction:column;gap:7px}
+.at-row{display:flex;align-items:center;gap:8px}
+.at-row input{flex:1;font-size:13px;padding:8px 11px;border:1px solid #dcdce3;border-radius:9px;outline:none;font-family:inherit;color:#26262b;background:#fafafb;transition:border-color .14s,box-shadow .14s,background .14s}
+.at-row input:focus{border-color:var(--accent);background:#fff;box-shadow:0 0 0 3px rgba(255,153,0,.16)}
+.at-del{background:#f4e4e2;color:#c0392b;border:none;border-radius:8px;width:32px;height:34px;font-size:18px;font-weight:700;cursor:pointer;flex-shrink:0;line-height:1;transition:background .14s,color .14s}
+.at-del:hover{background:#c0392b;color:#fff}
+
+/* Layout-lägen: baksidan visas under framsidan på skärmen */
+#layout-extra{display:none}
+#layout-extra .layout-page{margin:14px auto;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.12);position:relative}
+#layout-extra .layout-back{width:820px;padding:14px}   /* stående Dykplan-baksida */
+#layout-extra .layout-plan{width:820px;padding:14px}   /* hel Dykplan, stående A4 */
+#layout-extra .layout-copy-page{pointer-events:none}   /* statisk kopia av framsidan */
+.layout-extra-label{width:92%;max-width:1100px;margin:20px auto 0;color:#666;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px}
+
 @media print{
   .lbox,.lhover{display:none!important;outline:none!important}
   body{background:#fff}
@@ -214,82 +282,130 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
   body.print-custom #view-dyklog{display:none!important}
   /* Full Dykplan back page printed in portrait (stående) */
   .ppage{page:pp}
+  /* Layout-lägen: Dykplan-baksida + hel Dykplan = stående eget ark; kopia = liggande eget ark */
+  .layout-extra-label{display:none!important}
+  #layout-extra .layout-back{break-before:page;page-break-before:always;width:100%!important;page:pp}
+  #layout-extra .layout-plan{width:100%!important;page:pp}
+  #layout-extra .layout-copy-page{break-before:page;page-break-before:always;width:100%!important}
+  /* "Ryms alltid på en A4": samma beprövade ihop-packning som dykplanen i
+     Logg+Plan (där den ryms på HALVA ett liggande A4). En stående A4 är
+     större, så då måste den rymmas. */
+  #layout-extra .layout-back, #layout-extra .layout-plan{gap:2px}
+  #layout-extra .layout-back .sb, #layout-extra .layout-plan .sb{padding:3px 8px}
+  #layout-extra .layout-back .fl, #layout-extra .layout-plan .fl{margin-bottom:1px}
+  #layout-extra .layout-back .fll, #layout-extra .layout-plan .fll{font-size:9.5px}
+  #layout-extra .layout-back .chk, #layout-extra .layout-plan .chk{line-height:1.1}
+  #layout-extra .layout-back .eqcol, #layout-extra .layout-plan .eqcol{padding:2px 8px}
+  #layout-extra .layout-back .eqt, #layout-extra .layout-plan .eqt{margin:0 0 1px}
+  #layout-extra .layout-back .riskt, #layout-extra .layout-plan .riskt{line-height:1.2}
+  #layout-extra .layout-back .logo, #layout-extra .layout-plan .logo{height:34px!important}
+  #layout-extra .layout-back .sec, #layout-extra .layout-plan .sec{break-inside:avoid}
 @page{size:A4 landscape;margin:0}
 @page pp{size:A4 portrait;margin:0}
 </style>
 <style id="page-style"></style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="i-archive" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="4" rx="1"/><path d="M5 8v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8"/><path d="M9.5 12h5"/></symbol>
+<symbol id="i-sliders" viewBox="0 0 24 24"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="17" x2="20" y2="17"/><circle cx="10" cy="7" r="2.3"/><circle cx="15" cy="17" r="2.3"/></symbol>
+<symbol id="i-pencil" viewBox="0 0 24 24"><path d="M14.06 6.19l3.75 3.75M3 17.25V21h3.75L17.8 9.94a1.5 1.5 0 0 0 0-2.12l-1.62-1.62a1.5 1.5 0 0 0-2.12 0L3 17.25z"/></symbol>
+<symbol id="i-move" viewBox="0 0 24 24"><polyline points="9 5 12 2 15 5"/><polyline points="9 19 12 22 15 19"/><polyline points="5 9 2 12 5 15"/><polyline points="19 9 22 12 19 15"/><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/></symbol>
+<symbol id="i-printer" viewBox="0 0 24 24"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="7" rx="1"/></symbol>
+<symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 13a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></symbol>
+<symbol id="i-file" viewBox="0 0 24 24"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="14 3 14 9 20 9"/></symbol>
+<symbol id="i-chev" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></symbol>
+<symbol id="i-layout" viewBox="0 0 24 24"><polygon points="12 3 21 8 12 13 3 8 12 3"/><polyline points="3 13 12 18 21 13"/></symbol>
+</defs></svg>
 
 <div class="toolbar">
   <div class="tb-brand"><span class="dot">&#128025;</span> Dyklogg</div>
 
-  <div class="seg" role="tablist">
-    <button class="active" id="tab-combined" onclick="switchView('combined')">Logg + Plan</button>
-    <button id="tab-dyklog" onclick="switchView('dyklog')">2&#215; Dyklogg</button>
+  <div class="menu" id="menu-layout">
+    <button class="btn" onclick="toggleMenu('menu-layout')"><svg class="ic"><use href="#i-layout"/></svg> <span id="layout-label">Layout</span> <svg class="chev"><use href="#i-chev"/></svg></button>
+    <div class="menu-panel" style="min-width:288px">
+      <h4>Layout</h4>
+      <button class="btn layout-opt" data-lay="logg-plan" onclick="setLayout('logg-plan')">1 Dyklogg + 1 Dykplan <small>enkelsidig</small></button>
+      <button class="btn layout-opt" data-lay="2x" onclick="setLayout('2x')">2&#215; Dyklogg <small>enkelsidig</small></button>
+      <button class="btn layout-opt" data-lay="2x-copy" onclick="setLayout('2x-copy')">2&#215; Dyklogg dubbelsidig <small>kopia p&#229; baksidan</small></button>
+      <button class="btn layout-opt" data-lay="2x-plan" onclick="setLayout('2x-plan')">2&#215; Dyklogg + Dykplan <small>dykplan p&#229; baksidan</small></button>
+      <button class="btn layout-opt" data-lay="hel-plan" onclick="setLayout('hel-plan')">Hel Dykplan <small>st&#229;ende A4</small></button>
+      <p class="menu-note">H&#228;r v&#228;ljer du allt om fram- och baksida. Har layouten en baksida visas den under framsidan p&#229; sk&#228;rmen och skrivs ut p&#229; ett eget ark.</p>
+    </div>
   </div>
 
   <div class="tb-sep"></div>
 
+  <!-- ARKIV: dyk-arkiv + projekt -->
   <div class="menu" id="menu-archive">
-    <button class="btn" onclick="toggleMenu('menu-archive')">&#128218; Arkiv <span class="chev">&#9660;</span></button>
-    <div class="menu-panel" style="min-width:288px">
+    <button class="btn" onclick="toggleMenu('menu-archive')"><svg class="ic"><use href="#i-archive"/></svg> Arkiv <svg class="chev"><use href="#i-chev"/></svg></button>
+    <div class="menu-panel" style="min-width:300px">
       <h4>Dyk-arkiv <span id="dive-stats" class="dive-stats"></span></h4>
       <div id="dive-list" class="tpl-list"><div class="tpl-empty">Inga sparade dyk &#228;nnu</div></div>
+      <button class="btn primary" style="justify-content:center" onclick="archiveSave()">Spara dyk i arkiv</button>
+      <button class="btn" style="justify-content:center" onclick="newDive()">+ Nytt dyk</button>
+      <p class="menu-note">Dyken sparas lokalt i webbl&#228;saren. Anv&#228;nd Fil &#8594; Spara f&#246;r s&#228;kerhetskopia eller &#246;verf&#246;ring mellan enheter.</p>
       <div class="menu-divider"></div>
-      <button class="btn primary" style="justify-content:center" onclick="archiveSave()">&#128190; Spara dyk i arkiv</button>
-      <button class="btn" style="justify-content:center" onclick="newDive()">&#10133; Nytt dyk</button>
-      <p class="menu-note">Dyken sparas lokalt i webbl&#228;saren. Anv&#228;nd Spara (JSON) f&#246;r s&#228;kerhetskopia eller &#246;verf&#246;ring mellan enheter.</p>
-    </div>
-  </div>
-
-  <div class="menu" id="menu-project">
-    <button class="btn" onclick="toggleMenu('menu-project')">&#128193; Projekt <span class="chev">&#9660;</span></button>
-    <div class="menu-panel" style="min-width:300px">
       <h4>Projekt &amp; kund</h4>
       <div class="mrow">
         <span class="ml">Aktivt projekt</span>
         <select id="project-select" onchange="setActiveProject(this.value)"><option value="">&#8212; Inget projekt &#8212;</option></select>
       </div>
-      <button class="btn" style="justify-content:center" onclick="applyProjectInfo()">&#11015; Anv&#228;nd projektets uppgifter i formul&#228;ret</button>
-      <div class="menu-divider"></div>
+      <button class="btn" style="justify-content:center" onclick="applyProjectInfo()">Anv&#228;nd projektets uppgifter i formul&#228;ret</button>
       <div id="project-list" class="tpl-list"><div class="tpl-empty">Inga projekt &#228;nnu</div></div>
-      <button class="btn primary" style="justify-content:center" onclick="newProject()">&#10133; Nytt projekt</button>
-      <p class="menu-note">Ett projekt &#229;teranv&#228;nder kund-, plats- och projektnummer. Nya dyk taggas med aktivt projekt &#8211; klicka &#8220;Rapport&#8221; f&#246;r en utskrivbar sammanst&#228;llning av projektets dyk.</p>
+      <button class="btn primary" style="justify-content:center" onclick="newProject()">+ Nytt projekt</button>
+      <p class="menu-note">Ett projekt &#229;teranv&#228;nder kund-, plats- och projektnummer. Klicka rapport-ikonen i listan f&#246;r en utskrivbar sammanst&#228;llning.</p>
+    </div>
+  </div>
+
+  <!-- ANPASSA: mallar + branding + egna f&#228;lt + f&#246;retagsprofil -->
+  <div class="menu" id="menu-brand">
+    <button class="btn" onclick="toggleMenu('menu-brand')"><svg class="ic"><use href="#i-sliders"/></svg> Anpassa <svg class="chev"><use href="#i-chev"/></svg></button>
+    <div class="menu-panel">
+      <h4>Mallar</h4>
+      <div id="tpl-list" class="tpl-list"><div class="tpl-empty">Inga sparade mallar &#228;nnu</div></div>
+      <button class="btn primary" style="justify-content:center" onclick="saveTemplate()">Spara nuvarande som mall</button>
+      <p class="menu-note">En mall f&#246;rifyller hela formul&#228;ret &#8211; bra f&#246;r &#229;terkommande team, utrustning och larminfo.</p>
+      <div class="menu-divider"></div>
+      <h4>F&#246;retagsanpassning</h4>
+      <div class="mrow">
+        <span class="ml">Egen logga</span>
+        <input type="file" id="logo-input" accept="image/*" onchange="onLogoPicked(event)" style="font-size:11.5px">
+      </div>
+      <div class="mrow">
+        <span class="ml">Temaf&#228;rg <span class="val" id="accentval">#ff9900</span></span>
+        <input type="color" id="accent-input" value="#ff9900" oninput="setAccent(this.value)" style="width:100%;height:30px;border:1px solid #d5d5dd;border-radius:7px;cursor:pointer;background:#fff;padding:2px">
+      </div>
+      <label class="mchk"><input type="checkbox" id="octopus-chk" onchange="setOctopus(this.checked)"> <span>Visa bl&#228;ckfisk-logga<small>Den extra bl&#228;ckfisk-symbolen p&#229; dyklogg och dykplan (av som standard)</small></span></label>
+      <div class="menu-divider"></div>
+      <h4>Egna f&#228;lt</h4>
+      <div id="cf-manage" class="tpl-list"><div class="tpl-empty">Inga egna f&#228;lt &#228;nnu</div></div>
+      <button class="btn" style="justify-content:center" onclick="addCustomField()">+ L&#228;gg till eget f&#228;lt</button>
+      <p class="menu-note">Egna f&#228;lt visas i en &#8220;Egna f&#228;lt&#8221;-ruta i dykloggen och skrivs ut. F&#228;lten g&#228;ller alla dyk; v&#228;rdena sparas per dyk.</p>
+      <div class="menu-divider"></div>
+      <h4>F&#246;retagsprofil</h4>
+      <button class="btn primary" style="justify-content:center" onclick="exportProfile()">Spara f&#246;retagsprofil</button>
+      <button class="btn" style="justify-content:center" onclick="importProfile()">Ladda f&#246;retagsprofil</button>
+      <p class="menu-note">Samlar logga, f&#228;rg, egna f&#228;lt, mallar, arbetstyper och marginaler i en fil. St&#228;ll in en g&#229;ng och dela med hela teamet.</p>
+      <div class="menu-divider"></div>
+      <button class="btn" style="justify-content:center" onclick="resetBranding()">&#197;terst&#228;ll logga &amp; f&#228;rg</button>
     </div>
   </div>
 
   <div class="tb-sep"></div>
 
-  <button class="btn primary" onclick="window.print()">&#128424; Skriv ut</button>
+  <!-- L&#228;gen (ikon-knappar) -->
+  <button class="btn icon" id="edit-btn" title="Redigera text" aria-label="Redigera text" onclick="toggleEdit()"><svg class="ic"><use href="#i-pencil"/></svg></button>
+  <button class="btn icon" id="move-btn" title="Flytta / Skala" aria-label="Flytta / Skala" onclick="toggleMove()"><svg class="ic"><use href="#i-move"/></svg></button>
+
+  <div class="tb-spacer"></div>
+
+  <!-- Skriv ut + inst&#228;llningar -->
+  <button class="btn primary" onclick="window.print()"><svg class="ic"><use href="#i-printer"/></svg> Skriv ut</button>
 
   <div class="menu" id="menu-print">
-    <button class="btn" onclick="toggleMenu('menu-print')">&#9881; Utskrift <span class="chev">&#9660;</span></button>
-    <div class="menu-panel">
-      <h4>Utskriftsinst&#228;llningar</h4>
-      <div class="mrow">
-        <span class="ml">Pappersformat</span>
-        <select id="papersize" onchange="setPaper(this.value)">
-          <option value="A4">A4 &#8211; 2&#215;A5 (st&#229;ende)</option>
-          <option value="A3">A3 (st&#246;rre)</option>
-        </select>
-      </div>
-      <div class="mrow">
-        <span class="ml">Baksida (dubbelsidig)</span>
-        <select id="duplexsel" onchange="setPrintMode(this.value)">
-          <option value="off">Av (enkelsidig)</option>
-          <option value="copy">Kopia (samma som fram)</option>
-          <option value="logs-plan">2 Dyklogg + hel Dykplan</option>
-        </select>
-      </div>
-      <div class="menu-divider"></div>
-      <label class="mchk"><input type="checkbox" id="dupchk" onchange="setDuplicate(this.checked)"> <span>Dubblett<small>Skriv p&#229; v&#228;nster halva &#8211; kopieras till h&#246;ger</small></span></label>
-    </div>
-  </div>
-
-  <div class="menu" id="menu-layout">
-    <button class="btn" onclick="toggleMenu('menu-layout')">&#128208; Marginaler <span class="chev">&#9660;</span></button>
-    <div class="menu-panel">
+    <button class="btn icon" title="Utskriftsinst&#228;llningar" aria-label="Utskriftsinst&#228;llningar" onclick="toggleMenu('menu-print')"><svg class="ic"><use href="#i-gear"/></svg></button>
+    <div class="menu-panel" style="left:auto;right:0">
       <h4>Marginaler</h4>
       <div class="mrow">
         <span class="ml">Vikmarginal <span class="val" id="midval">4 mm</span></span>
@@ -303,66 +419,40 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
         <span class="ml">H&#246;ger <span class="val" id="mrightval">4 mm</span></span>
         <input type="range" id="mright" min="0" max="30" step="1" value="4" oninput="setMargin('mr',this.value)">
       </div>
-    </div>
-  </div>
-
-  <div class="tb-sep"></div>
-
-  <button class="btn" id="edit-btn" onclick="toggleEdit()">&#9998; Redigera text</button>
-  <button class="btn" id="move-btn" onclick="toggleMove()">&#10021; Flytta / Skala</button>
-
-  <div class="menu" id="menu-templates">
-    <button class="btn" onclick="toggleMenu('menu-templates')">&#128209; Mallar <span class="chev">&#9660;</span></button>
-    <div class="menu-panel">
-      <h4>Mallar</h4>
-      <div id="tpl-list" class="tpl-list"><div class="tpl-empty">Inga sparade mallar &#228;nnu</div></div>
       <div class="menu-divider"></div>
-      <button class="btn primary" style="justify-content:center" onclick="saveTemplate()">&#128190; Spara nuvarande som mall</button>
-      <p class="menu-note">En mall f&#246;rifyller hela formul&#228;ret &#8211; bra f&#246;r &#229;terkommande team, utrustning och larminfo, eller f&#246;r att duplicera g&#229;rdagens plan.</p>
-    </div>
-  </div>
-
-  <div class="menu" id="menu-brand">
-    <button class="btn" onclick="toggleMenu('menu-brand')">&#127912; Anpassa <span class="chev">&#9660;</span></button>
-    <div class="menu-panel">
-      <h4>F&#246;retagsanpassning</h4>
+      <h4>Utskriftsinst&#228;llningar</h4>
       <div class="mrow">
-        <span class="ml">Egen logga</span>
-        <input type="file" id="logo-input" accept="image/*" onchange="onLogoPicked(event)" style="font-size:11.5px">
+        <span class="ml">Pappersformat</span>
+        <select id="papersize" onchange="setPaper(this.value)">
+          <option value="A4">A4 &#8211; 2&#215;A5 (st&#229;ende)</option>
+          <option value="A3">A3 (st&#246;rre)</option>
+        </select>
       </div>
-      <div class="mrow">
-        <span class="ml">Temaf&#228;rg <span class="val" id="accentval">#ff9900</span></span>
-        <input type="color" id="accent-input" value="#ff9900" oninput="setAccent(this.value)" style="width:100%;height:30px;border:1px solid #d5d5dd;border-radius:7px;cursor:pointer;background:#fff;padding:2px">
-      </div>
+      <p class="menu-note">Baksida &amp; dubbelsidigt v&#228;ljer du nu enkelt under <b>Layout</b> uppe till v&#228;nster.</p>
       <div class="menu-divider"></div>
-      <h4>Egna f&#228;lt</h4>
-      <div id="cf-manage" class="tpl-list"><div class="tpl-empty">Inga egna f&#228;lt &#228;nnu</div></div>
-      <button class="btn" style="justify-content:center" onclick="addCustomField()">&#10133; L&#228;gg till eget f&#228;lt</button>
-      <p class="menu-note">Egna f&#228;lt visas i en &#8220;Egna f&#228;lt&#8221;-ruta i dykloggen och skrivs ut. F&#228;lten g&#228;ller alla dyk; v&#228;rdena sparas per dyk.</p>
-      <div class="menu-divider"></div>
-      <button class="btn" style="justify-content:center" onclick="resetBranding()">&#8634; &#197;terst&#228;ll logga &amp; f&#228;rg</button>
+      <label class="mchk"><input type="checkbox" id="dupchk" onchange="setDuplicate(this.checked)"> <span>Dubblett<small>Skriv p&#229; v&#228;nster halva &#8211; kopieras till h&#246;ger</small></span></label>
     </div>
   </div>
 
-  <div class="tb-spacer"></div>
-
-  <button class="btn" onclick="saveJSON()">&#128190; Spara</button>
-  <button class="btn" onclick="loadJSON()">&#128194; Ladda</button>
-
-  <div class="menu" id="menu-export">
-    <button class="btn" onclick="toggleMenu('menu-export')">&#128228; Export <span class="chev">&#9660;</span></button>
-    <div class="menu-panel" style="left:auto;right:0;min-width:264px">
+  <!-- FIL: spara/ladda + export + rensa -->
+  <div class="menu" id="menu-file">
+    <button class="btn" onclick="toggleMenu('menu-file')"><svg class="ic"><use href="#i-file"/></svg> Fil <svg class="chev"><use href="#i-chev"/></svg></button>
+    <div class="menu-panel" style="left:auto;right:0;min-width:250px">
+      <h4>Spara &amp; ladda</h4>
+      <button class="btn" style="justify-content:flex-start" onclick="saveJSON()">Spara (JSON)</button>
+      <button class="btn" style="justify-content:flex-start" onclick="loadJSON()">Ladda (JSON)</button>
+      <div class="menu-divider"></div>
       <h4>Export &amp; delning</h4>
-      <button class="btn" style="justify-content:flex-start" onclick="exportCSV()">&#128202; CSV (Excel)</button>
-      <button class="btn" style="justify-content:flex-start" onclick="exportUDDF()">&#127760; UDDF (dykprogram)</button>
-      <button class="btn" style="justify-content:flex-start" onclick="emailLog()">&#9993;&#65039; Mejla sammanfattning</button>
+      <button class="btn" style="justify-content:flex-start" onclick="exportCSV()">CSV (Excel)</button>
+      <button class="btn" style="justify-content:flex-start" onclick="exportUDDF()">UDDF (dykprogram)</button>
+      <button class="btn" style="justify-content:flex-start" onclick="emailLog()">Mejla sammanfattning</button>
+      <p class="menu-note">PDF: klicka <b>Skriv ut</b> och v&#228;lj &#8220;Spara som PDF&#8221; (ger b&#228;st kvalitet).</p>
       <div class="menu-divider"></div>
-      <p class="menu-note">PDF: klicka <b>Skriv ut</b> och v&#228;lj &#8220;Spara som PDF&#8221; (ger b&#228;st kvalitet). Mejl &#246;ppnar ett utkast med en textsammanfattning.</p>
+      <button class="btn danger" style="justify-content:flex-start" onclick="clearAll()">Rensa hela formul&#228;ret</button>
     </div>
   </div>
-
-  <button class="btn danger" onclick="clearAll()">&#128465; Rensa</button>
 </div>
+
 <div class="tb-hint edit-hint">&#9998; Klicka p&#229; valfri text f&#246;r att &#228;ndra den</div>
 <div class="tb-hint move-hint">&#10021; Klicka p&#229; n&#229;got f&#246;r att flytta &#8211; dra h&#246;rnet f&#246;r att skala &#8211; piltangenter nudgar &#8211; dubbelklick &#229;terst&#228;ller &#8211; <b>allt sparas automatiskt</b></div>
 
@@ -378,7 +468,7 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
       <div class="sub et" contenteditable="false">Arbetsdyk &#8211; Kommersiell Dykverksamhet</div>
     </div>
     <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
-      <img src="blackfisk.png" alt="" class="logo" style="height:38px">
+      <img src="blackfisk.png" alt="" class="logo octopus-logo" style="height:38px">
       <img src="dawab_logo.png" alt="DAWAB" class="logo">
     </div>
   </div>
@@ -514,7 +604,10 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
 
   <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
     <div class="title et" contenteditable="false">Dykplan</div>
-    <img src="blackfisk.png" alt="DAWAB" class="logo" style="height:52px">
+    <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+      <img src="blackfisk.png" alt="" class="logo octopus-logo" style="height:40px">
+      <img src="dawab_logo.png" alt="DAWAB" class="logo">
+    </div>
     <div style="display:flex;align-items:flex-end;gap:5px;font-weight:700;font-size:11px;flex-shrink:0">
       <span class="et" contenteditable="false">Datum:</span>
       <input type="text" id="plan-datum" style="width:110px">
@@ -661,7 +754,7 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
       <div class="sub">Arbetsdyk &#8211; Kommersiell Dykverksamhet</div>
     </div>
     <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
-      <img src="blackfisk.png" alt="" class="logo" style="height:38px">
+      <img src="blackfisk.png" alt="" class="logo octopus-logo" style="height:38px">
       <img src="dawab_logo.png" alt="DAWAB" class="logo">
     </div>
   </div>
@@ -780,7 +873,7 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
       <div class="sub">Arbetsdyk &#8211; Kommersiell Dykverksamhet</div>
     </div>
     <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
-      <img src="blackfisk.png" alt="" class="logo" style="height:38px">
+      <img src="blackfisk.png" alt="" class="logo octopus-logo" style="height:38px">
       <img src="dawab_logo.png" alt="DAWAB" class="logo">
     </div>
   </div>
@@ -895,41 +988,74 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
 
 
 <!-- Arbetstyp modal -->
-<div id="at-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:center;justify-content:center">
-  <div style="background:#fff;border-radius:4px;width:300px;max-height:75vh;display:flex;flex-direction:column;box-shadow:0 6px 28px rgba(0,0,0,.35)">
-    <div style="background:var(--accent);padding:9px 14px;border-radius:4px 4px 0 0;display:flex;justify-content:space-between;align-items:center;flex-shrink:0">
-      <span style="font-weight:700;font-size:13px">Redigera arbetstyper</span>
-      <button onclick="closeAtModal()" style="background:none;border:none;font-size:20px;cursor:pointer;line-height:1;font-weight:700;padding:0">&times;</button>
+<div id="at-overlay" class="modal-overlay">
+  <div class="modal-card at-card">
+    <div class="modal-head" style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+      <span>Redigera arbetstyper</span>
+      <button class="at-x" onclick="closeAtModal()" aria-label="St&#228;ng">&times;</button>
     </div>
-    <div id="at-modal-list" style="flex:1;overflow-y:auto;padding:10px 14px;display:flex;flex-direction:column;gap:6px"></div>
-    <div style="padding:8px 14px;border-top:1px solid #ddd;display:flex;gap:8px;flex-shrink:0">
-      <button onclick="addAtItem()" style="background:#2a6aad;color:#fff;border:none;border-radius:2px;padding:7px 0;font-size:11px;font-weight:700;cursor:pointer;flex:1">+ L&#228;gg till</button>
-      <button onclick="closeAtModal()" style="background:#1a8a3a;color:#fff;border:none;border-radius:2px;padding:7px 0;font-size:11px;font-weight:700;cursor:pointer;flex:1">&#10003; Klar</button>
+    <div id="at-modal-list" class="at-list"></div>
+    <div class="modal-foot" style="gap:9px">
+      <button class="modal-btn ghost" style="flex:1" onclick="addAtItem()">+ L&#228;gg till</button>
+      <button class="modal-btn primary" style="flex:1" onclick="closeAtModal()">&#10003; Klar</button>
     </div>
   </div>
 </div>
 
 <script>
-// Independent layout versions for the three position-based data groups in autosave/JSON.
-// Bump ONLY the group whose layout actually changed, so unrelated saved data survives a
-// template tweak (e.g. moving a label must not wipe checkbox or arbetstyp selections).
-const ETV = 10; // editable label (.et) order  — bump when .et elements are added/removed/reordered
-const CBV = 2;  // non-id checkbox order (utrustning / åtgärder) — bump when those change
-const ATV = 4;  // default arbetstyp list — bump when the default typer change
-const LTV = 2;  // layout-transform (move/scale) element order — bump when the DOM structure changes
+/* ============================================================================
+ *  DYKLOGG — KONFIGURATION (börja här!)
+ *  Nästan allt du vill ändra snabbt rör du i CONFIG nedan.
+ *  En komplett "hur ändrar jag X?"-guide finns i filen MODIFIERA.md.
+ * ========================================================================== */
+const CONFIG = {
+  // Namnrymd för all sparad data i webbläsaren (localStorage).
+  // Byt bara om du medvetet vill köra två separata versioner sida vid sida.
+  store: 'dyklogg',
 
-// Map saved data to its group versions. New saves carry _etv/_cbv/_atv directly; older saves
-// only had a single _schema, so derive each group's version from it for backward compatibility.
-function groupVersions(d) {
+  // Standard temafärg. Kan även ändras live i menyn "Anpassa".
+  accent: '#ff9900',
+
+  // Standardlistan med arbetstyper. ÄNDRA HÄR så ändras alla nya dyk.
+  // (Står på EN plats nu — tidigare var listan inklistrad tre gånger.)
+  arbetstyper: ['Besiktning', 'Betongarbete', 'Demontage', 'Gjutning', 'HCL',
+    'Inspektion', 'Montage', 'Mätning', 'Skärning/Brocco', 'Svetsning',
+    'Tvätta', 'Vattenblästring']
+};
+
+// Bygger en localStorage-nyckel i appens namnrymd: K('x') ger strängen "<store>_x".
+const K = name => CONFIG.store + '_' + name;
+
+/* --- Inläsning av GAMLA sparfiler (FRYST — rör ej) --------------------------
+ * Förr nycklades sparad data på DOM-position, och fyra "versionsnummer" styrde
+ * när gammal data skulle slängas (man var tvungen att höja dem för hand vid
+ * varje ändring av formuläret). Det är borttaget — data nycklas nu på NAMN.
+ * Konstanterna nedan används ENBART för att kunna läsa in sparfiler som
+ * skapades före övergången. Du ska aldrig behöva ändra dem.                   */
+const LEGACY_ETV = 10, LEGACY_CBV = 2, LEGACY_ATV = 4, LEGACY_LTV = 2;
+function legacyGroupVersions(d) {
   if (d._etv !== undefined || d._cbv !== undefined || d._atv !== undefined)
-    return { et: d._etv, cb: d._cbv, at: d._atv };
+    return { et: d._etv, cb: d._cbv, at: d._atv, lt: d._ltv };
   const s = d._schema;
-  if (s === undefined) return { et: 0, cb: 0, at: 0 };
+  if (s === undefined) return { et: 0, cb: 0, at: 0, lt: 0 };
   return {
     et: s >= 6 ? 5 : s >= 5 ? 4 : s >= 4 ? 3 : s >= 2 ? 2 : 1,
     cb: s >= 2 ? 2 : 1,
-    at: s >= 3 ? 3 : s >= 2 ? 2 : 1
+    at: s >= 3 ? 3 : s >= 2 ? 2 : 1,
+    lt: 0
   };
+}
+
+// Strukturfingeravtryck för flytta/skala-positioner. Räknas ut automatiskt ur
+// DOM:en, så ingen behöver "bumpa" något: ändrar du strukturen i en vy nollas
+// bara de visuella nudge-positionerna — text, kryss och data rörs aldrig.
+/** Strukturfingeravtryck över alla [data-lid]-element; avgör om sparade flytta/skala-positioner fortfarande passar DOM:en. */
+function layoutSig() {
+  let s = '';
+  document.querySelectorAll('[data-lid]').forEach(el => { s += el.tagName; });
+  let h = 0;
+  for (let i = 0; i < s.length; i++) { h = (h * 31 + s.charCodeAt(i)) | 0; }
+  return s.length + ':' + h;
 }
 let editMode = false;
 
@@ -956,9 +1082,66 @@ function download(name, content, type) {
   a.click();
 }
 
+// ====================== Snygga modaler (ersätter prompt/confirm/alert) ======
+// uiModal returnerar ett Promise. Texterna escapas. Stängs med Esc / klick utanför.
+function _esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
+/** Visar en modal och returnerar ett Promise: fältvärden, true/false eller null (vid avbrytt). Texter escapas. */
+function uiModal(opts) {
+  opts = opts || {};
+  const fields = opts.fields || [];
+  return new Promise(resolve => {
+    const overlay = document.createElement('div');
+    overlay.className = 'modal-overlay open';
+    const card = document.createElement('div');
+    card.className = 'modal-card';
+    let h = '';
+    if (opts.title) h += '<div class="modal-head">' + _esc(opts.title) + '</div>';
+    h += '<div class="modal-body">';
+    if (opts.message) h += '<div class="modal-msg">' + _esc(opts.message) + '</div>';
+    fields.forEach(f => {
+      h += '<div class="modal-field"><label>' + _esc(f.label) + '</label>'
+        + '<input data-k="' + _esc(f.key) + '" type="text" value="' + _esc(f.value || '') + '" placeholder="' + _esc(f.placeholder || '') + '"></div>';
+    });
+    h += '</div><div class="modal-foot">';
+    if (!opts.okOnly) h += '<button class="modal-btn ghost" data-act="cancel">' + _esc(opts.cancelText || 'Avbryt') + '</button>';
+    h += '<button class="modal-btn ' + (opts.danger ? 'danger' : 'primary') + '" data-act="ok">' + _esc(opts.okText || 'OK') + '</button>';
+    h += '</div>';
+    card.innerHTML = h;
+    overlay.appendChild(card);
+    document.body.appendChild(overlay);
+    const inputs = card.querySelectorAll('input[data-k]');
+    if (inputs[0]) setTimeout(() => { inputs[0].focus(); inputs[0].select(); }, 30);
+    const done = res => { overlay.remove(); document.removeEventListener('keydown', onKey, true); resolve(res); };
+    const values = () => { const v = {}; inputs.forEach(i => v[i.getAttribute('data-k')] = i.value.trim()); return v; };
+    const ok = () => done(fields.length ? values() : true);
+    const cancel = () => done(fields.length ? null : false);
+    card.querySelector('[data-act="ok"]').onclick = ok;
+    const cb = card.querySelector('[data-act="cancel"]'); if (cb) cb.onclick = cancel;
+    overlay.addEventListener('mousedown', e => { if (e.target === overlay) cancel(); });
+    function onKey(e) {
+      if (e.key === 'Escape') { e.preventDefault(); cancel(); }
+      else if (e.key === 'Enter' && fields.length <= 1) { e.preventDefault(); ok(); }
+    }
+    document.addEventListener('keydown', onKey, true);
+  });
+}
+/** Visar en enkel OK-modal (ersätter alert). */
+function uiAlert(message, title) { return uiModal({ title: title || '', message: message, okOnly: true }); }
+/** Visar en bekräftelse-modal; resolvar true vid OK, false vid avbryt (ersätter confirm). */
+function uiConfirm(message, opts) {
+  opts = opts || {};
+  return uiModal({ title: opts.title || 'Bekräfta', message: message, okText: opts.okText || 'OK', cancelText: opts.cancelText || 'Avbryt', danger: opts.danger });
+}
+/** Visar en modal med ett textfält; resolvar den ifyllda texten eller null (ersätter prompt). */
+async function uiPrompt(label, deflt, opts) {
+  opts = opts || {};
+  const r = await uiModal({ title: opts.title || '', okText: opts.okText || 'OK', fields: [{ key: 'v', label: label, value: deflt || '', placeholder: opts.placeholder || '' }] });
+  return r ? r.v : null;
+}
+
 // ====================== Mallar (templates) ======================
-function getTemplates() { try { return JSON.parse(localStorage.getItem('dyklogg_templates') || '{}'); } catch (e) { return {}; } }
-function setTemplates(o) { try { localStorage.setItem('dyklogg_templates', JSON.stringify(o)); } catch (e) {} }
+function getTemplates() { try { return JSON.parse(localStorage.getItem(K('templates')) || '{}'); } catch (e) { return {}; } }
+function setTemplates(o) { try { localStorage.setItem(K('templates'), JSON.stringify(o)); } catch (e) {} }
 function renderTemplateList() {
   const list = document.getElementById('tpl-list'); if (!list) return;
   const t = getTemplates(); const names = Object.keys(t);
@@ -973,47 +1156,59 @@ function renderTemplateList() {
     row.appendChild(b); row.appendChild(d); list.appendChild(row);
   });
 }
-function saveTemplate() {
-  const name = prompt('Namn på mallen (t.ex. "Standardteam" eller projektnamn):');
+/** Sparar nuvarande formulär som en namngiven mall. */
+async function saveTemplate() {
+  const name = await uiPrompt('Namn på mallen', '', { title: 'Spara som mall', okText: 'Spara mall', placeholder: 't.ex. Standardteam eller projektnamn' });
   if (!name || !name.trim()) return;
   const t = getTemplates(); t[name.trim()] = gatherAll(); setTemplates(t);
   renderTemplateList(); toast('✓ Mall sparad');
 }
+/** Tillämpar en sparad mall på formuläret. */
 function applyTemplate(n) {
   const t = getTemplates(); if (!t[n]) return;
   applyAll(JSON.parse(JSON.stringify(t[n])));
-  try { localStorage.setItem('dyklogg_autosave', JSON.stringify(gatherAll())); } catch (e) {}
+  try { localStorage.setItem(K('autosave'), JSON.stringify(gatherAll())); } catch (e) {}
   closeMenus(); toast('✓ Mall "' + n + '" använd');
 }
-function deleteTemplate(n) {
-  if (!confirm('Ta bort mallen "' + n + '"?')) return;
+/** Tar bort en sparad mall. */
+async function deleteTemplate(n) {
+  if (!await uiConfirm('Ta bort mallen "' + n + '"?', { title: 'Ta bort mall', okText: 'Ta bort', danger: true })) return;
   const t = getTemplates(); delete t[n]; setTemplates(t); renderTemplateList(); toast('Mall borttagen');
 }
 
 // ====================== Företagsanpassning (branding) ======================
+/** Sätter och sparar appens temafärg (CSS-variabeln --accent). */
 function setAccent(color) {
   document.documentElement.style.setProperty('--accent', color);
   const v = document.getElementById('accentval'); if (v) v.textContent = color;
   const inp = document.getElementById('accent-input'); if (inp && inp.value !== color) inp.value = color;
-  try { localStorage.setItem('dyklogg_accent', color); } catch (e) {}
+  try { localStorage.setItem(K('accent'), color); } catch (e) {}
 }
 function applyLogo(url) { document.querySelectorAll('img.company-logo').forEach(img => { img.src = url; }); }
+/** Läser in en vald bildfil som logga och sparar den lokalt. */
 function onLogoPicked(e) {
   const f = e.target.files && e.target.files[0]; if (!f) return;
   const fr = new FileReader();
   fr.onload = ev => {
     const url = ev.target.result;
-    try { localStorage.setItem('dyklogg_logo', url); applyLogo(url); toast('✓ Logga uppdaterad'); }
-    catch (err) { alert('Bilden är för stor att spara. Välj en mindre fil.'); }
+    try { localStorage.setItem(K('logo'), url); applyLogo(url); toast('✓ Logga uppdaterad'); }
+    catch (err) { uiAlert('Bilden är för stor att spara. Välj en mindre fil.', 'För stor bild'); }
   };
   fr.readAsDataURL(f);
 }
+/** Visar eller döljer den extra bläckfisk-loggan på dyklogg och dykplan. */
+function setOctopus(on) {
+  document.body.classList.toggle('show-octopus', !!on);
+  const chk = document.getElementById('octopus-chk'); if (chk) chk.checked = !!on;
+  try { localStorage.setItem(K('octopus'), on ? '1' : '0'); } catch (e) {}
+}
 function resetBranding() {
-  setAccent('#ff9900');
-  try { localStorage.removeItem('dyklogg_accent'); } catch (e) {}
+  setAccent(CONFIG.accent);
+  try { localStorage.removeItem(K('accent')); } catch (e) {}
   document.querySelectorAll('img.company-logo').forEach(img => { if (img.dataset.orig) img.src = img.dataset.orig; });
-  try { localStorage.removeItem('dyklogg_logo'); } catch (e) {}
+  try { localStorage.removeItem(K('logo')); } catch (e) {}
   const fi = document.getElementById('logo-input'); if (fi) fi.value = '';
+  setOctopus(false);                         // bläckfisken är av som standard
   toast('Återställt till standard');
 }
 (function initBranding() {
@@ -1022,17 +1217,77 @@ function resetBranding() {
     if (!img.dataset.orig) img.dataset.orig = img.getAttribute('src');
   });
   try {
-    const c = localStorage.getItem('dyklogg_accent'); if (c) setAccent(c);
-    const l = localStorage.getItem('dyklogg_logo'); if (l) applyLogo(l);
+    const c = localStorage.getItem(K('accent')); if (c) setAccent(c);
+    const l = localStorage.getItem(K('logo')); if (l) applyLogo(l);
+    setOctopus(localStorage.getItem(K('octopus')) === '1');   // av om inget sparat
   } catch (e) {}
   renderTemplateList();
 })();
 
+// ====================== Företagsprofil (export/import av all anpassning) ======
+// Samlar ALL anpassning (logga, färg, egna fält, mallar, arbetstyper, marginaler,
+// pappersval) i EN delbar fil. Tanken: ställ in en gång på en dator och dela
+// profilen med hela teamet så får alla exakt samma uppsättning. Den enskilda
+// dyk-datan (vad man skrivit i ett dyk) ligger kvar separat och rörs inte här.
+/** Exporterar all företagsanpassning (logga, färg, egna fält, mallar, arbetstyper, marginaler) till en delbar fil. */
+function exportProfile() {
+  const ls = k => { try { return localStorage.getItem(K(k)); } catch (e) { return null; } };
+  const profile = {
+    _type: 'dyklogg-foretagsprofil', _v: 1, savedAt: Date.now(),
+    accent: ls('accent') || CONFIG.accent,
+    logo: ls('logo') || null,
+    customfields: getCustomFields(),
+    templates: getTemplates(),
+    arbetstyper: atInstances.main.typer.slice(),
+    margins: { ml: ls('ml') || '4', mr: ls('mr') || '4', mid: ls('mid') || '4' },
+    paper: ls('paper') || 'A4',
+    printmode: ls('printmode') || 'off',
+    octopus: ls('octopus') === '1'
+  };
+  download('dyklogg-foretagsprofil.json', JSON.stringify(profile, null, 2), 'application/json');
+  closeMenus(); toast('✓ Företagsprofil sparad');
+}
+/** Öppnar en filväljare och läser in en företagsprofil. */
+function importProfile() {
+  const inp = document.createElement('input'); inp.type = 'file'; inp.accept = '.json,application/json';
+  inp.onchange = e => {
+    const fr = new FileReader();
+    fr.onload = ev => { try { applyProfile(JSON.parse(ev.target.result)); } catch (err) { uiAlert('Kunde inte läsa profilen: ' + err, 'Fel'); } };
+    fr.readAsText(e.target.files[0]);
+  };
+  inp.click();
+}
+/** Tillämpar en inläst företagsprofil på appen. */
+function applyProfile(p) {
+  if (!p || typeof p !== 'object') { uiAlert('Ogiltig företagsprofil.', 'Fel'); return; }
+  if (p.accent) setAccent(p.accent);
+  if (p.logo) { try { localStorage.setItem(K('logo'), p.logo); } catch (e) {} applyLogo(p.logo); }
+  if (Array.isArray(p.customfields)) { setCustomFields(p.customfields); renderCustomFields(); }
+  if (p.templates && typeof p.templates === 'object') {
+    const t = getTemplates(); Object.assign(t, p.templates); setTemplates(t); renderTemplateList();
+  }
+  if (Array.isArray(p.arbetstyper) && p.arbetstyper.length) {
+    ['main','b1','b2'].forEach(inst => { atInstances[inst].typer = p.arbetstyper.slice(); });
+    ['main','b1','b2'].forEach(renderGrid);
+  }
+  if (p.margins) {
+    const sync = (id, v) => { const el = document.getElementById(id); if (el && v != null) el.value = v; };
+    if (p.margins.ml != null) { setMargin('ml', p.margins.ml); sync('mleft', p.margins.ml); }
+    if (p.margins.mr != null) { setMargin('mr', p.margins.mr); sync('mright', p.margins.mr); }
+    if (p.margins.mid != null) { setMid(p.margins.mid); sync('midgap', p.margins.mid); }
+  }
+  if (p.paper) { setPaper(p.paper); const el = document.getElementById('papersize'); if (el) el.value = p.paper; }
+  if (p.printmode) setPrintMode(p.printmode);
+  if (p.octopus !== undefined) setOctopus(!!p.octopus);
+  try { localStorage.setItem(K('autosave'), JSON.stringify(gatherAll())); } catch (e) {}
+  closeMenus(); toast('✓ Företagsprofil laddad');
+}
+
 // ====================== Egna fält (custom fields) ======================
 // Definitions ({key,label}) are app-level (shared across all dives); the
 // values live per-dive as inputs with id "cf-<key>" (picked up by gatherAll).
-function getCustomFields() { try { return JSON.parse(localStorage.getItem('dyklogg_customfields') || '[]'); } catch (e) { return []; } }
-function setCustomFields(a) { try { localStorage.setItem('dyklogg_customfields', JSON.stringify(a)); } catch (e) {} }
+function getCustomFields() { try { return JSON.parse(localStorage.getItem(K('customfields')) || '[]'); } catch (e) { return []; } }
+function setCustomFields(a) { try { localStorage.setItem(K('customfields'), JSON.stringify(a)); } catch (e) {} }
 function renderCustomFields() {
   const fields = getCustomFields();
   const host = document.getElementById('cf-host');
@@ -1067,21 +1322,23 @@ function renderCustomFields() {
     }
   }
 }
-function addCustomField() {
-  const label = prompt('Namn på det egna fältet (t.ex. "Gasblandning", "Tanktryck"):');
+/** Lägger till ett eget fält i dykloggen via en modal. */
+async function addCustomField() {
+  const label = await uiPrompt('Namn på fältet', '', { title: 'Nytt eget fält', okText: 'Lägg till', placeholder: 't.ex. Gasblandning, Tanktryck' });
   if (!label || !label.trim()) return;
   const fields = getCustomFields();
   fields.push({ key: 'f' + Date.now(), label: label.trim() });
   setCustomFields(fields); renderCustomFields();
-  try { localStorage.setItem('dyklogg_autosave', JSON.stringify(gatherAll())); } catch (e) {}
+  try { localStorage.setItem(K('autosave'), JSON.stringify(gatherAll())); } catch (e) {}
   toast('✓ Eget fält tillagt');
 }
-function removeCustomField(key) {
+/** Tar bort ett eget fält (och dess värde i nuvarande dyk). */
+async function removeCustomField(key) {
   const f = getCustomFields().find(x => x.key === key);
-  if (!confirm('Ta bort fältet "' + (f ? f.label : '') + '"? Värdet i nuvarande dyk försvinner.')) return;
+  if (!await uiConfirm('Ta bort fältet "' + (f ? f.label : '') + '"? Värdet i nuvarande dyk försvinner.', { title: 'Ta bort fält', okText: 'Ta bort', danger: true })) return;
   setCustomFields(getCustomFields().filter(x => x.key !== key));
   renderCustomFields();
-  try { localStorage.setItem('dyklogg_autosave', JSON.stringify(gatherAll())); } catch (e) {}
+  try { localStorage.setItem(K('autosave'), JSON.stringify(gatherAll())); } catch (e) {}
   toast('Fält borttaget');
 }
 renderCustomFields();   // build the fields before autosave restore fills their values
@@ -1090,10 +1347,10 @@ renderCustomFields();   // build the fields before autosave restore fills their 
 // Multiple dives stored locally; each entry keeps list-metadata + the full
 // gatherAll() blob. currentDiveId marks which archived dive the working draft
 // corresponds to (so re-saving updates it instead of creating a duplicate).
-function getDives() { try { return JSON.parse(localStorage.getItem('dyklogg_dives') || '{}'); } catch (e) { return {}; } }
-function setDives(o) { try { localStorage.setItem('dyklogg_dives', JSON.stringify(o)); return true; } catch (e) { alert('Kunde inte spara – webbläsarens lagring kan vara full.'); return false; } }
+function getDives() { try { return JSON.parse(localStorage.getItem(K('dives')) || '{}'); } catch (e) { return {}; } }
+function setDives(o) { try { localStorage.setItem(K('dives'), JSON.stringify(o)); return true; } catch (e) { uiAlert('Kunde inte spara – webbläsarens lagring kan vara full.', 'Lagring full'); return false; } }
 let currentDiveId = null;
-try { currentDiveId = localStorage.getItem('dyklogg_current') || null; } catch (e) {}
+try { currentDiveId = localStorage.getItem(K('current')) || null; } catch (e) {}
 
 function diveMeta() {
   const v = id => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
@@ -1110,6 +1367,7 @@ function fmtWhen(ts) {
   const d = new Date(ts);
   return d.toLocaleDateString('sv-SE') + ' ' + d.toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit' });
 }
+/** Sparar eller uppdaterar det aktuella dyket i det lokala arkivet. */
 function archiveSave() {
   const dives = getDives();
   const id = currentDiveId || ('d' + Date.now());
@@ -1117,33 +1375,36 @@ function archiveSave() {
   const prev = dives[id] || {};
   dives[id] = { id: id, datum: m.datum, dyknr: m.dyknr, plats: m.plats, projectId: activeProjectId || prev.projectId || null, savedAt: Date.now(), data: gatherAll() };
   if (!setDives(dives)) return;
-  currentDiveId = id; try { localStorage.setItem('dyklogg_current', id); } catch (e) {}
+  currentDiveId = id; try { localStorage.setItem(K('current'), id); } catch (e) {}
   renderDiveList(); renderProjectList(); toast('✓ Dyk sparat i arkivet');
 }
-function newDive() {
-  if (!confirm('Starta ett nytt, tomt dyk?\nOsparade ändringar i det nuvarande går förlorade om du inte sparat det i arkivet.')) return;
+/** Tömmer formuläret och påbörjar ett nytt, tomt dyk. */
+async function newDive() {
+  if (!await uiConfirm('Starta ett nytt, tomt dyk?\nOsparade ändringar i det nuvarande går förlorade om du inte sparat det i arkivet.', { title: 'Nytt dyk', okText: 'Nytt dyk' })) return;
   document.querySelectorAll('input[type=text]').forEach(el => el.value = '');
   document.querySelectorAll('input[type=checkbox]').forEach(el => el.checked = false);
   ['main','b1','b2'].forEach(inst => { atInstances[inst].checked = {}; renderGrid(inst); });
   glSpans().forEach(sp => sp.classList.remove('gsel'));
   layoutTf = {}; document.querySelectorAll('[data-lid]').forEach(el => { el.style.transform = ''; });
   selectEl(null);
-  currentDiveId = null; try { localStorage.removeItem('dyklogg_current'); localStorage.setItem('dyklogg_autosave', JSON.stringify(gatherAll())); } catch (e) {}
+  currentDiveId = null; try { localStorage.removeItem(K('current')); localStorage.setItem(K('autosave'), JSON.stringify(gatherAll())); } catch (e) {}
   renderDiveList(); closeMenus(); toast('Nytt dyk påbörjat');
 }
+/** Laddar ett arkiverat dyk in i formuläret. */
 function loadDive(id) {
   const d = getDives()[id]; if (!d) return;
   applyAll(JSON.parse(JSON.stringify(d.data)));
   currentDiveId = id;
   if (d.projectId !== undefined) setActiveProject(d.projectId || '');
-  try { localStorage.setItem('dyklogg_current', id); localStorage.setItem('dyklogg_autosave', JSON.stringify(gatherAll())); } catch (e) {}
+  try { localStorage.setItem(K('current'), id); localStorage.setItem(K('autosave'), JSON.stringify(gatherAll())); } catch (e) {}
   renderDiveList(); closeMenus(); toast('✓ Dyk laddat');
 }
-function deleteDive(id) {
+/** Tar bort ett dyk ur arkivet. */
+async function deleteDive(id) {
   const dives = getDives(); if (!dives[id]) return;
-  if (!confirm('Ta bort detta dyk ur arkivet? Detta går inte att ångra.')) return;
+  if (!await uiConfirm('Ta bort detta dyk ur arkivet? Detta går inte att ångra.', { title: 'Ta bort dyk', okText: 'Ta bort', danger: true })) return;
   delete dives[id]; setDives(dives);
-  if (currentDiveId === id) { currentDiveId = null; try { localStorage.removeItem('dyklogg_current'); } catch (e) {} }
+  if (currentDiveId === id) { currentDiveId = null; try { localStorage.removeItem(K('current')); } catch (e) {} }
   renderDiveList(); toast('Dyk borttaget');
 }
 function renderDiveList() {
@@ -1168,45 +1429,60 @@ function renderDiveList() {
 }
 
 // ====================== Projekt / kund ======================
-function getProjects() { try { return JSON.parse(localStorage.getItem('dyklogg_projects') || '{}'); } catch (e) { return {}; } }
-function setProjects(o) { try { localStorage.setItem('dyklogg_projects', JSON.stringify(o)); return true; } catch (e) { alert('Kunde inte spara projektet.'); return false; } }
+function getProjects() { try { return JSON.parse(localStorage.getItem(K('projects')) || '{}'); } catch (e) { return {}; } }
+function setProjects(o) { try { localStorage.setItem(K('projects'), JSON.stringify(o)); return true; } catch (e) { uiAlert('Kunde inte spara projektet.', 'Fel'); return false; } }
 let activeProjectId = null;
-try { activeProjectId = localStorage.getItem('dyklogg_activeproject') || null; } catch (e) {}
+try { activeProjectId = localStorage.getItem(K('activeproject')) || null; } catch (e) {}
 
-function newProject() {
-  const name = prompt('Projektnamn:'); if (!name || !name.trim()) return;
-  const kund = prompt('Uppdragsgivare / kund (valfritt):') || '';
-  const plats = prompt('Plats / position (valfritt):') || '';
-  const projektnr = prompt('Projektnummer (valfritt):') || '';
+/** Skapar ett nytt projekt via en formulärmodal (namn, kund, plats, projektnr, projektledare, upprättad av). */
+async function newProject() {
+  const r = await uiModal({
+    title: 'Nytt projekt', okText: 'Skapa projekt',
+    fields: [
+      { key: 'name', label: 'Projektnamn', placeholder: 't.ex. Kajrenovering Hamnen' },
+      { key: 'kund', label: 'Uppdragsgivare / kund', placeholder: '(valfritt)' },
+      { key: 'plats', label: 'Plats / position', placeholder: '(valfritt)' },
+      { key: 'projektnr', label: 'Projektnummer', placeholder: '(valfritt)' },
+      { key: 'projektledare', label: 'Projektledare', placeholder: '(valfritt)' },
+      { key: 'upprattadav', label: 'Dykplan upprättad av', placeholder: '(valfritt)' }
+    ]
+  });
+  if (!r || !r.name) return;
   const projects = getProjects();
   const id = 'p' + Date.now();
-  projects[id] = { id: id, name: name.trim(), kund: kund.trim(), plats: plats.trim(), projektnr: projektnr.trim(), createdAt: Date.now() };
+  projects[id] = { id: id, name: r.name, kund: r.kund, plats: r.plats, projektnr: r.projektnr, projektledare: r.projektledare, upprattadav: r.upprattadav, createdAt: Date.now() };
   if (!setProjects(projects)) return;
   setActiveProject(id);
   renderProjectList();
   toast('✓ Projekt skapat');
 }
+/** Sätter aktivt projekt och uppdaterar listor/UI. */
 function setActiveProject(id) {
   activeProjectId = id || null;
-  try { if (activeProjectId) localStorage.setItem('dyklogg_activeproject', activeProjectId); else localStorage.removeItem('dyklogg_activeproject'); } catch (e) {}
+  try { if (activeProjectId) localStorage.setItem(K('activeproject'), activeProjectId); else localStorage.removeItem(K('activeproject')); } catch (e) {}
   const sel = document.getElementById('project-select'); if (sel) sel.value = activeProjectId || '';
   renderDiveList();
 }
+/** Fyller dykloggen och dykplanen med det aktiva projektets uppgifter på rätt fält. */
 function applyProjectInfo() {
   const p = getProjects()[activeProjectId];
   if (!p) { toast('Välj ett aktivt projekt först'); return; }
   const set = (id, val) => { const el = document.getElementById(id); if (el && val) el.value = val; };
+  // Dyklogg-rutan (arbetsplats/projekt)
   set('arbetsplats', p.name); set('b1-arbetsplats', p.name); set('b2-arbetsplats', p.name);
+  // Dykplanen – varje uppgift hamnar på sin rätta plats
   set('uppdragsgivare', p.kund);
   set('plats', p.plats);
   set('projektnummer', p.projektnr);
-  set('upprattat', p.kund ? '' : '');
-  try { localStorage.setItem('dyklogg_autosave', JSON.stringify(gatherAll())); } catch (e) {}
-  closeMenus(); toast('✓ Projektuppgifter ifyllda');
+  set('projektledare', p.projektledare);
+  set('upprattat', p.upprattadav);
+  try { localStorage.setItem(K('autosave'), JSON.stringify(gatherAll())); } catch (e) {}
+  closeMenus(); toast('✓ Projektuppgifter ifyllda i dykplanen');
 }
-function deleteProject(id) {
+/** Tar bort ett projekt; tillhörande dyk avtaggas men ligger kvar i arkivet. */
+async function deleteProject(id) {
   const projects = getProjects(); if (!projects[id]) return;
-  if (!confirm('Ta bort projektet "' + projects[id].name + '"?\nDyken ligger kvar i arkivet men avtaggas projektet.')) return;
+  if (!await uiConfirm('Ta bort projektet "' + projects[id].name + '"?\nDyken ligger kvar i arkivet men avtaggas projektet.', { title: 'Ta bort projekt', okText: 'Ta bort', danger: true })) return;
   delete projects[id]; setProjects(projects);
   const dives = getDives(); let changed = false;
   Object.values(dives).forEach(d => { if (d.projectId === id) { d.projectId = null; changed = true; } });
@@ -1244,6 +1520,7 @@ function renderProjectList() {
     row.appendChild(b); row.appendChild(rep); row.appendChild(del); list.appendChild(row);
   });
 }
+/** Öppnar en utskrivbar sammanställning av alla dyk i ett projekt. */
 function projectReport(id) {
   const p = getProjects()[id]; if (!p) return;
   const dives = Object.values(getDives()).filter(d => d.projectId === id)
@@ -1272,11 +1549,12 @@ function projectReport(id) {
     (rows || '<tr><td colspan="7" style="text-align:center;color:#888">Inga dyk i projektet ännu</td></tr>') +
     '</tbody></table><div class="foot">Genererad ' + new Date().toLocaleString('sv-SE') + '</div></body></html>';
   const w = window.open('', '_blank');
-  if (!w) { alert('Tillåt popup-fönster för att visa rapporten.'); return; }
+  if (!w) { uiAlert('Tillåt popup-fönster för att visa rapporten.', 'Popup blockerad'); return; }
   w.document.write(html); w.document.close();
 }
 
 // ====================== UDDF-export ======================
+/** Exporterar dyket till UDDF-format (dykprogram). */
 function exportUDDF() {
   closeMenus();
   const v = id => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
@@ -1302,6 +1580,7 @@ function exportUDDF() {
 }
 
 // ====================== Mejla sammanfattning ======================
+/** Öppnar ett mejlutkast med en textsammanfattning av dyket. */
 function emailLog() {
   closeMenus();
   const v = id => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
@@ -1330,18 +1609,23 @@ function fieldLabel(inp) {
   }
   return inp.id || '';
 }
+/** Exporterar ifyllda fält (dyklogg + dykplan) till en CSV-fil. */
 function exportCSV() {
   closeMenus();
   const rows = [['Fält', 'Värde']];
-  const root = document.getElementById('view-combined');
-  root.querySelectorAll('input[type=text], input[type=date]').forEach(inp => {
-    const v = (inp.value || '').trim(); if (!v) return;
-    rows.push([fieldLabel(inp), v]);
-  });
-  root.querySelectorAll('input[type=checkbox]').forEach(cb => {
-    if (!cb.checked) return;
-    const lab = cb.closest('label'); const t = lab ? lab.textContent.replace(/\s+/g, ' ').trim() : '';
-    if (t) rows.push([t, 'Ja']);
+  // Dyklogg-kolumnen + dykplanen, oavsett vilken layout som är aktiv (planen kan vara flyttad)
+  const roots = [document.querySelector('#view-combined .cl'), document.querySelector('#view-combined .cr') || _planEl];
+  roots.forEach(root => {
+    if (!root) return;
+    root.querySelectorAll('input[type=text], input[type=date]').forEach(inp => {
+      const v = (inp.value || '').trim(); if (!v) return;
+      rows.push([fieldLabel(inp), v]);
+    });
+    root.querySelectorAll('input[type=checkbox]').forEach(cb => {
+      if (!cb.checked) return;
+      const lab = cb.closest('label'); const t = lab ? lab.textContent.replace(/\s+/g, ' ').trim() : '';
+      if (t) rows.push([t, 'Ja']);
+    });
   });
   const gl = [...document.querySelectorAll('#view-combined .groupletters span.gsel')].map(s => s.textContent).join(' ');
   if (gl) rows.push(['Gruppbeteckning', gl]);
@@ -1352,22 +1636,127 @@ function exportCSV() {
 
 // --- View switching ---
 let currentView = 'combined';
+/** Växlar mellan vyerna combined/dyklog och håller Layout-menyn i synk. */
 function switchView(v) {
+  if (typeof resetLayout === 'function') resetLayout();   // städa ev. layout-baksida först
   currentView = v;
-  document.getElementById('view-combined').style.display = v==='combined' ? 'flex' : 'none';
-  document.getElementById('view-dyklog').style.display   = v==='dyklog'   ? 'flex' : 'none';
-  document.getElementById('tab-combined').classList.toggle('active', v==='combined');
-  document.getElementById('tab-dyklog').classList.toggle('active', v==='dyklog');
+  const vc = document.getElementById('view-combined'); if (vc) vc.style.display = v==='combined' ? 'flex' : 'none';
+  const vd = document.getElementById('view-dyklog');   if (vd) vd.style.display   = v==='dyklog'   ? 'flex' : 'none';
+  // Håll Layout-menyn i synk (vyn ÄR en layout)
+  activeLayout = (v === 'combined') ? 'logg-plan' : '2x';
+  if (typeof updateLayoutUI === 'function') updateLayoutUI();
 }
+
+// ====================== Layout-lägen (fram-/baksida) ======================
+// Väljer vad som hamnar på arket. Vi FLYTTAR den riktiga dykplanen (.cr) dit
+// den ska – aldrig kopierar – så inga dubbla id:n och all ifylld data följer med.
+// Baksida (#layout-extra) visas under framsidan på skärmen och skrivs ut på eget ark.
+let activeLayout = 'logg-plan';
+const _planEl = document.querySelector('#view-combined .cr');
+const _planHome = _planEl ? _planEl.parentNode : null;
+const _planClass = _planEl ? _planEl.className : '';
+const _planStyle = _planEl ? (_planEl.getAttribute('style') || '') : '';
+const _layoutExtra = document.createElement('div');
+_layoutExtra.id = 'layout-extra';
+(function () { const dv = document.getElementById('view-dyklog'); if (dv) dv.after(_layoutExtra); })();
+
+/** Återställer en ev. flyttad dykplan till sin plats i Logg+Plan-arket. */
+function resetLayout() {
+  if (_planEl && _planHome && _planEl.parentNode !== _planHome) {
+    _planEl.className = _planClass;
+    if (_planStyle) _planEl.setAttribute('style', _planStyle); else _planEl.removeAttribute('style');
+    _planHome.appendChild(_planEl);                 // tillbaka till Logg+Plan-arket (sist = efter .cl)
+  }
+  _layoutExtra.style.display = 'none';
+  _layoutExtra.innerHTML = '';
+}
+// Flyttar in den riktiga dykplanen i ett eget ark (baksida eller hel dykplan).
+function _planPage(cls, labelText) {
+  const page = document.createElement('div');
+  page.className = 'page layout-page ' + cls;
+  _planEl.className = '';                            // släpp .cr/.col (halv bredd) → full bredd
+  _planEl.style.cssText = 'display:flex;flex-direction:column;gap:6px;width:100%';
+  page.appendChild(_planEl);
+  _layoutExtra.innerHTML = '';
+  if (labelText) {
+    const label = document.createElement('div');
+    label.className = 'layout-extra-label';
+    label.textContent = labelText;
+    _layoutExtra.appendChild(label);
+  }
+  _layoutExtra.appendChild(page);
+  _layoutExtra.style.display = 'block';
+}
+// Bygger en STATISK kopia av framsidan (2× Dyklogg) som baksida. Id och
+// data-lid strippas så inga dubbletter uppstår; värdena speglas live via
+// syncCopyBack() medan man skriver.
+function _copyBackPage() {
+  const src = document.getElementById('view-dyklog');
+  if (!src || !src.firstElementChild) return;
+  const page = src.firstElementChild.cloneNode(true);   // .page
+  page.removeAttribute('id');
+  page.classList.add('layout-page', 'layout-copy-page');
+  page.querySelectorAll('[id]').forEach(e => e.removeAttribute('id'));
+  page.querySelectorAll('[data-lid]').forEach(e => e.removeAttribute('data-lid'));
+  const label = document.createElement('div');
+  label.className = 'layout-extra-label';
+  label.textContent = '⤵ Baksida – kopia av framsidan';
+  _layoutExtra.innerHTML = '';
+  _layoutExtra.appendChild(label);
+  _layoutExtra.appendChild(page);
+  _layoutExtra.style.display = 'block';
+  syncCopyBack();
+}
+/** Speglar framsidans värden till kopie-baksidan (om en sådan visas). */
+function syncCopyBack() {
+  const clone = _layoutExtra.querySelector('.layout-copy-page');
+  const src = document.getElementById('view-dyklog');
+  if (!src || !clone) return;
+  const s = src.querySelectorAll('input, select, textarea');
+  const d = clone.querySelectorAll('input, select, textarea');
+  s.forEach((el, i) => {
+    const t = d[i]; if (!t) return;
+    if (el.type === 'checkbox' || el.type === 'radio') t.checked = el.checked; else t.value = el.value;
+  });
+}
+/** Aktiverar ett layout-läge. Layout är ENDA stället för fram/baksida. */
+function setLayout(name) {
+  resetLayout();
+  setPrintMode('off');                              // Layout sköter baksidor; gamla "Baksida"-valet är borta
+  if (name === 'logg-plan') { switchView('combined'); }
+  else if (name === '2x') { switchView('dyklog'); }
+  else if (name === '2x-copy') { switchView('dyklog'); _copyBackPage(); }
+  else if (name === '2x-plan') { switchView('dyklog'); _planPage('layout-back', '⤵ Baksida – Dykplan (stående)'); }
+  else if (name === 'hel-plan') {
+    document.getElementById('view-combined').style.display = 'none';
+    document.getElementById('view-dyklog').style.display = 'none';
+    currentView = 'combined';
+    _planPage('layout-plan');                       // stående A4, ingen baksida-etikett
+  }
+  activeLayout = name;
+  updateLayoutUI();
+  try { localStorage.setItem(K('layout'), name); } catch (e) {}
+  closeMenus();
+}
+/** Uppdaterar Layout-knappens etikett och markerar det aktiva valet. */
+function updateLayoutUI() {
+  const names = { 'logg-plan': 'Logg + Plan', '2x': '2× Dyklogg', '2x-copy': '2× dubbelsidig', '2x-plan': '2× + Dykplan', 'hel-plan': 'Hel Dykplan' };
+  const lbl = document.getElementById('layout-label');
+  if (lbl) lbl.textContent = names[activeLayout] || 'Layout';
+  document.querySelectorAll('.layout-opt').forEach(b => b.classList.toggle('sel', b.getAttribute('data-lay') === activeLayout));
+}
+// Spegla framsidan till kopie-baksidan medan man skriver.
+document.addEventListener('input', syncCopyBack);
+document.addEventListener('change', syncCopyBack);
 
 // --- Paper size for print (default A4 = two A5 halves side by side) ---
 function setPaper(v) {
   document.getElementById('page-style').textContent = '@page{size:' + v + ' landscape;margin:0}';
-  try { localStorage.setItem('dyklogg_paper', v); } catch(e) {}
+  try { localStorage.setItem(K('paper'), v); } catch(e) {}
 }
 (function() {
   let v = 'A4';
-  try { v = localStorage.getItem('dyklogg_paper') || 'A4'; } catch(e) {}
+  try { v = localStorage.getItem(K('paper')) || 'A4'; } catch(e) {}
   const sel = document.getElementById('papersize');
   if (sel) sel.value = v;
   setPaper(v);
@@ -1378,11 +1767,11 @@ function setMid(v) {
   document.documentElement.style.setProperty('--mid', v + 'mm');
   const out = document.getElementById('midval');
   if (out) out.textContent = v + ' mm';
-  try { localStorage.setItem('dyklogg_mid', v); } catch(e) {}
+  try { localStorage.setItem(K('mid'), v); } catch(e) {}
 }
 (function() {
   let v = '4';
-  try { v = localStorage.getItem('dyklogg_mid') || '4'; } catch(e) {}
+  try { v = localStorage.getItem(K('mid')) || '4'; } catch(e) {}
   const sl = document.getElementById('midgap');
   if (sl) sl.value = v;
   setMid(v);
@@ -1393,12 +1782,12 @@ function setMargin(side, v) {
   document.documentElement.style.setProperty('--' + side, v + 'mm');
   const out = document.getElementById((side === 'ml' ? 'mleft' : 'mright') + 'val');
   if (out) out.textContent = v + ' mm';
-  try { localStorage.setItem('dyklogg_' + side, v); } catch(e) {}
+  try { localStorage.setItem(K(side), v); } catch(e) {}
 }
 (function() {
   [['ml','mleft'],['mr','mright']].forEach(([side,id]) => {
     let v = '4';
-    try { v = localStorage.getItem('dyklogg_' + side) || '4'; } catch(e) {}
+    try { v = localStorage.getItem(K(side)) || '4'; } catch(e) {}
     const sl = document.getElementById(id);
     if (sl) sl.value = v;
     setMargin(side, v);
@@ -1432,7 +1821,7 @@ function setDuplicate(on) {
   dupOn = !!on;
   const cb = document.getElementById('dupchk');
   if (cb) cb.checked = dupOn;
-  try { localStorage.setItem('dyklogg_dup', dupOn ? '1' : '0'); } catch(e) {}
+  try { localStorage.setItem(K('dup'), dupOn ? '1' : '0'); } catch(e) {}
   if (dupOn) mirrorB1toB2();
 }
 (function() {
@@ -1448,11 +1837,12 @@ function setDuplicate(on) {
 //   'copy'      : back side = identical copy of the active view
 //   'logs-plan' : front = 2 Dyklogg (Dyklog-vyn), back = hel Dykplan (liggande, full bredd)
 let printMode = 'off';
+/** Sätter dubbelsidigt utskriftsläge (av/kopia/2 Dyklogg + hel Dykplan). */
 function setPrintMode(v) {
   printMode = v || 'off';
   const sel = document.getElementById('duplexsel');
   if (sel) sel.value = printMode;
-  try { localStorage.setItem('dyklogg_printmode', printMode); } catch(e) {}
+  try { localStorage.setItem(K('printmode'), printMode); } catch(e) {}
 }
 function copyFieldValues(src, clone) {
   const s = src.querySelectorAll('input, textarea, select');
@@ -1471,6 +1861,7 @@ function removePrintExtras() {
   document.querySelectorAll('[data-duplex="1"]').forEach(el => el.remove());
   document.body.classList.remove('print-custom');
 }
+/** Bygger ev. baksidor inför utskrift utifrån valt utskriftsläge. */
 function buildPrintExtras() {
   removePrintExtras();
   if (printMode === 'off') return;
@@ -1501,8 +1892,8 @@ function buildPrintExtras() {
       c1.style.display = 'flex';
       document.body.appendChild(c1);
     }
-    // Page 2: a whole Dykplan, full landscape width
-    const plan = document.querySelector('#view-combined .cr');
+    // Page 2: a whole Dykplan, full landscape width (planen kan vara flyttad av en layout)
+    const plan = document.querySelector('#view-combined .cr') || _planEl;
     if (plan) {
       const planClone = plan.cloneNode(true);
       copyFieldValues(plan, planClone);
@@ -1521,10 +1912,12 @@ window.addEventListener('beforeprint', buildPrintExtras);
 window.addEventListener('afterprint', removePrintExtras);
 
 // --- Arbetstyp instances for dyklog tab ---
+// Tre oberoende upps\u00e4ttningar (huvudvyn + de tv\u00e5 dyklogg-bladen). Alla utg\u00e5r
+// fr\u00e5n samma standardlista (CONFIG.arbetstyper) men kan redigeras var f\u00f6r sig.
 const atInstances = {
-  main: { typer: ['Besiktning','Betongarbete','Demontage','Gjutning','HCL','Inspektion','Montage','M\u00e4tning','Sk\u00e4rning/Brocco','Svetsning','Tv\u00e4tta','Vattenbl\u00e4string'], checked: {} },
-  b1:   { typer: ['Besiktning','Betongarbete','Demontage','Gjutning','HCL','Inspektion','Montage','M\u00e4tning','Sk\u00e4rning/Brocco','Svetsning','Tv\u00e4tta','Vattenbl\u00e4string'], checked: {} },
-  b2:   { typer: ['Besiktning','Betongarbete','Demontage','Gjutning','HCL','Inspektion','Montage','M\u00e4tning','Sk\u00e4rning/Brocco','Svetsning','Tv\u00e4tta','Vattenbl\u00e4string'], checked: {} }
+  main: { typer: CONFIG.arbetstyper.slice(), checked: {} },
+  b1:   { typer: CONFIG.arbetstyper.slice(), checked: {} },
+  b2:   { typer: CONFIG.arbetstyper.slice(), checked: {} }
 };
 
 function renderGrid(inst) {
@@ -1532,7 +1925,10 @@ function renderGrid(inst) {
   const obj = atInstances[inst];
   const grid = document.getElementById(gridId);
   if (!grid) return;
-  grid.querySelectorAll('input[type=checkbox]').forEach((cb,i) => { obj.checked[i] = cb.checked; });
+  // Fånga ev. direkta klick i rutnätet – men bara om det är i synk med listan
+  // (annars skulle en borttagning i modalen skrivas över med gamla positioner).
+  const gridCbs = grid.querySelectorAll('input[type=checkbox]');
+  if (gridCbs.length === obj.typer.length) gridCbs.forEach((cb, i) => { obj.checked[i] = cb.checked; });
   grid.innerHTML = '';
   obj.typer.forEach((text, i) => {
     const label = document.createElement('label');
@@ -1554,7 +1950,7 @@ function openAtModal(inst) {
   inst = inst || 'main';
   activeModalInst = inst;
   renderAtModalListFor(inst);
-  document.getElementById('at-overlay').style.display = 'flex';
+  document.getElementById('at-overlay').classList.add('open');
 }
 function closeAtModal() {
   const inst = activeModalInst;
@@ -1562,7 +1958,7 @@ function closeAtModal() {
   document.getElementById('at-modal-list').querySelectorAll('input[type=text]').forEach((inp, i) => {
     if (inp.value.trim()) obj.typer[i] = inp.value.trim();
   });
-  document.getElementById('at-overlay').style.display = 'none';
+  document.getElementById('at-overlay').classList.remove('open');
   renderGrid(inst);
 }
 function renderAtModalListFor(inst) {
@@ -1570,14 +1966,18 @@ function renderAtModalListFor(inst) {
   const list = document.getElementById('at-modal-list');
   list.innerHTML = '';
   obj.typer.forEach((text, i) => {
-    const row = document.createElement('div'); row.style.cssText = 'display:flex;align-items:center;gap:8px';
+    const row = document.createElement('div'); row.className = 'at-row';
     const inp = document.createElement('input'); inp.type='text'; inp.value=text;
-    inp.style.cssText = 'flex:1;border:1px solid #ccc;border-radius:2px;padding:5px 7px;font-size:12px;outline:none;font-family:inherit';
-    inp.addEventListener('focus', () => inp.style.borderColor='var(--accent)');
-    inp.addEventListener('blur', () => { inp.style.borderColor='#ccc'; obj.typer[i]=inp.value.trim()||text; });
-    const del = document.createElement('button'); del.textContent='\u00d7';
-    del.style.cssText='background:#d33;color:#fff;border:none;border-radius:2px;width:26px;height:26px;font-size:16px;font-weight:700;cursor:pointer;flex-shrink:0;line-height:1';
-    del.addEventListener('click', () => { obj.typer.splice(i,1); delete obj.checked[i]; renderAtModalListFor(inst); });
+    inp.addEventListener('blur', () => { obj.typer[i]=inp.value.trim()||text; });
+    const del = document.createElement('button'); del.className = 'at-del'; del.textContent='\u00d7'; del.title='Ta bort';
+    del.addEventListener('click', () => {
+      obj.typer.splice(i, 1);
+      // Index-baserade kryss m\u00e5ste skifta ner s\u00e5 r\u00e4tt rutor f\u00f6rblir ikryssade
+      const nc = {};
+      Object.keys(obj.checked).forEach(k => { const idx = +k; if (idx < i) nc[idx] = obj.checked[k]; else if (idx > i) nc[idx - 1] = obj.checked[k]; });
+      obj.checked = nc;
+      renderAtModalListFor(inst);
+    });
     row.appendChild(inp); row.appendChild(del); list.appendChild(row);
   });
 }
@@ -1592,12 +1992,12 @@ document.getElementById('at-overlay').addEventListener('click', function(e){ if(
 
 // --- Clickable gruppbeteckning letters (A–Z) ---
 // Spans have no id; their selected state is tracked positionally as _gl<index>.
-function glSpans() { return Array.from(document.querySelectorAll('.groupletters span')); }
+function glSpans() { return Array.from(document.querySelectorAll('.groupletters span')).filter(sp => !sp.closest('.layout-copy-page')); }
 glSpans().forEach(sp => {
   sp.addEventListener('click', () => {
     sp.classList.toggle('gsel');
     if (dupOn) mirrorB1toB2();
-    try { localStorage.setItem('dyklogg_autosave', JSON.stringify(gatherAll())); } catch(e) {}
+    try { localStorage.setItem(K('autosave'), JSON.stringify(gatherAll())); } catch(e) {}
   });
 });
 
@@ -1606,8 +2006,10 @@ function toggleEdit() {
   editMode = !editMode;
   document.querySelectorAll('.et').forEach(el => { el.contentEditable = editMode ? 'true' : 'false'; });
   const btn = document.getElementById('edit-btn');
-  btn.textContent = editMode ? '\u2705 Klar med redigering' : '\u270e Redigera text';
+  // Ikon-knapp: r\u00f6r INTE inneh\u00e5llet (det raderar SVG-ikonen). Bara l\u00e4ge + tooltip.
   btn.classList.toggle('active', editMode);
+  btn.title = editMode ? 'Klar med redigering' : 'Redigera text';
+  btn.setAttribute('aria-pressed', editMode ? 'true' : 'false');
   document.body.classList.toggle('editing', editMode);
 }
 
@@ -1616,7 +2018,8 @@ function toggleEdit() {
 // =====================================================================
 // Each movable element gets a stable position-based data-lid (assigned in
 // document order across both views). Transforms are stored by lid as
-// {x,y,s} and persisted with the rest of the form (version-gated by LTV).
+// {x,y,s} and persisted with the rest of the form (re-applied only when the
+// layout fingerprint, layoutSig(), still matches — see applyAll).
 let moveMode = false;
 let selEl = null;
 let layoutTf = {};                 // lid -> {x, y, s}
@@ -1677,7 +2080,7 @@ function positionBox() {
 
 let _layoutSavedTimer = null;
 function saveLayoutSoon() {
-  try { localStorage.setItem('dyklogg_autosave', JSON.stringify(gatherAll())); } catch (e) {}
+  try { localStorage.setItem(K('autosave'), JSON.stringify(gatherAll())); } catch (e) {}
   // Debounced confirmation so rapid drags don't spam the toast
   clearTimeout(_layoutSavedTimer);
   _layoutSavedTimer = setTimeout(() => toast('✓ Position sparad'), 500);
@@ -1809,8 +2212,10 @@ window.addEventListener('resize', positionBox);
 function toggleMove() {
   moveMode = !moveMode;
   const btn = document.getElementById('move-btn');
-  btn.textContent = moveMode ? '✅ Klar med flytt' : '✩ Flytta / Skala';
+  // Ikon-knapp: behåll ikonen, byt bara läge + tooltip.
   btn.classList.toggle('active', moveMode);
+  btn.title = moveMode ? 'Klar med flytt / skala' : 'Flytta / Skala';
+  btn.setAttribute('aria-pressed', moveMode ? 'true' : 'false');
   document.body.classList.toggle('moving', moveMode);
   if (!moveMode) {
     if (hovEl) { hovEl.classList.remove('lhover'); hovEl = null; }
@@ -1818,27 +2223,84 @@ function toggleMove() {
   }
 }
 
-// --- Editable label text helpers ---
+// =====================================================================
+//  STABILA NYCKLAR  — text-etiketter, kryssrutor och gruppbokstäver
+// =====================================================================
+// Varje sådant element får en NAMNGIVEN nyckel (sparad i el.dataset.k) som
+// bygger på elementets innehåll, inte dess position i sidan. Därför kan du
+// flytta, lägga till och ta bort rader i formuläret utan att sparad data
+// hamnar fel — och utan att behöva röra några versionsnummer.
+function _slug(s) { return (s || '').replace(/\s+/g, ' ').trim().slice(0, 40); }
+function _dedup(base, seen) { const n = seen[base] = (seen[base] || 0) + 1; return n > 1 ? base + '#' + n : base; }
+
+// Tilldelar de stabila nycklarna en gång när sidan laddats.
+/** Tilldelar stabila, innehållsbaserade nycklar (dataset.k) till etiketter, kryssrutor och gruppbokstäver. */
+function assignDataKeys() {
+  const seenEt = {};
+  document.querySelectorAll('.et').forEach(el => {
+    if (el.dataset.k0 === undefined) el.dataset.k0 = el.innerHTML;   // kom ihåg standardtexten
+    el.dataset.k = _dedup(_slug(el.dataset.k0), seenEt);
+  });
+  const seenCb = {};
+  getNonIdCheckboxes().forEach(cb => {
+    const lab = cb.closest('label');
+    cb.dataset.k = _dedup(_slug(lab ? lab.textContent : 'kryss'), seenCb);
+  });
+  document.querySelectorAll('.groupletters').forEach((g, ci) => {
+    g.querySelectorAll('span').forEach(sp => { sp.dataset.k = 'gl' + ci + '_' + _slug(sp.textContent); });
+  });
+}
+
+// --- Editable label text (sparas under "et.<nyckel>") ---
 function getEditableTexts() {
   const d = {};
-  document.querySelectorAll('.et').forEach((el, i) => { d['_et' + i] = el.innerHTML; });
+  document.querySelectorAll('.et').forEach(el => { d['et.' + el.dataset.k] = el.innerHTML; });
   return d;
 }
 function setEditableTexts(d) {
-  document.querySelectorAll('.et').forEach((el, i) => { if (d['_et' + i] !== undefined) el.innerHTML = d['_et' + i]; });
+  document.querySelectorAll('.et').forEach(el => { const v = d['et.' + el.dataset.k]; if (v !== undefined) el.innerHTML = v; });
 }
 
-// Non-ID checkboxes (utrustning, åtgärder etc) — excludes atgrid which is handled separately
+// Kryssrutor utan id (utrustning, åtgärder m.m.) — atgrid hanteras separat.
 function getNonIdCheckboxes() {
-  return Array.from(document.querySelectorAll('input[type=checkbox]:not([id])')).filter(cb => !cb.closest('#atgrid') && !cb.closest('#atgrid-b1') && !cb.closest('#atgrid-b2'));
+  return Array.from(document.querySelectorAll('input[type=checkbox]:not([id])')).filter(cb => !cb.closest('#atgrid') && !cb.closest('#atgrid-b1') && !cb.closest('#atgrid-b2') && !cb.closest('.layout-copy-page'));
+}
+assignDataKeys();   // ge alla element sina stabila nycklar direkt
+
+// Migrerar en GAMMAL sparfil (positionsnycklar) till de nya namngivna
+// nycklarna. Körs överst i applyAll. Gör inget med filer i nytt format.
+/** Översätter en gammal sparfil med positionsnycklar till de nya namngivna nycklarna. */
+function migrateLegacy(d) {
+  const hasOld = Object.keys(d).some(k => /^_(et|cb|gl)\d+$/.test(k)) || d._etv !== undefined || d._schema !== undefined;
+  if (!hasOld) return;
+  const gv = legacyGroupVersions(d);
+  // .et och kryssrutor migreras bara om den gamla versionen matchar baslinjen
+  // (annars slängdes datan förr ändå — vi behåller exakt samma beteende).
+  if (gv.et === LEGACY_ETV) {
+    document.querySelectorAll('.et').forEach((el, i) => {
+      if (d['_et' + i] !== undefined && d['et.' + el.dataset.k] === undefined) d['et.' + el.dataset.k] = d['_et' + i];
+    });
+  }
+  if (gv.cb === LEGACY_CBV) {
+    getNonIdCheckboxes().forEach((cb, i) => {
+      if (d['_cb' + i] !== undefined && d['cb.' + cb.dataset.k] === undefined) d['cb.' + cb.dataset.k] = d['_cb' + i];
+    });
+  }
+  // Gruppbokstäver hade aldrig någon versionsgrind — migrera alltid per index.
+  glSpans().forEach((sp, i) => {
+    if (d['_gl' + i] !== undefined && d[sp.dataset.k] === undefined) d[sp.dataset.k] = d['_gl' + i];
+  });
+  // Behåll sparade flytta/skala-positioner om den gamla layout-versionen stämde.
+  if (d._layout && d._lsig === undefined && d._ltv === LEGACY_LTV) d._lsig = layoutSig();
 }
 
+/** Samlar hela formulärets tillstånd till ett objekt (för spara/autospar/export). */
 function gatherAll() {
   const d = {};
   document.querySelectorAll('input[type=text][id], input[type=date][id], input[type=checkbox][id]').forEach(el => {
     d[el.id] = el.type === 'checkbox' ? el.checked : el.value;
   });
-  getNonIdCheckboxes().forEach((cb, i) => { d['_cb' + i] = cb.checked; });
+  getNonIdCheckboxes().forEach(cb => { d['cb.' + cb.dataset.k] = cb.checked; });
   // Sync all atgrid checked states
   ['main','b1','b2'].forEach(inst => {
     const gridId = inst==='main' ? 'atgrid' : 'atgrid-'+inst;
@@ -1850,24 +2312,20 @@ function gatherAll() {
     b1:   { typer: atInstances.b1.typer,   checked: atInstances.b1.checked },
     b2:   { typer: atInstances.b2.typer,   checked: atInstances.b2.checked }
   });
-  glSpans().forEach((sp, i) => { d['_gl' + i] = sp.classList.contains('gsel'); });
+  glSpans().forEach(sp => { d[sp.dataset.k] = sp.classList.contains('gsel'); });
   Object.assign(d, getEditableTexts());
   d._layout = JSON.stringify(layoutTf);
-  d._etv = ETV; d._cbv = CBV; d._atv = ATV; d._ltv = LTV;
+  d._lsig = layoutSig();   // strukturfingeravtryck för flytta/skala-positionerna
   return d;
 }
 
+/** Återställer formuläret från ett insamlat tillstånd, med migrering av äldre sparformat. */
 function applyAll(d) {
-  // Drop only the position-based groups whose layout changed since this data was saved, so
-  // unrelated saved values (checkboxes, arbetstyp, untouched labels) are preserved.
-  const gv = groupVersions(d);
-  if (gv.et !== ETV) Object.keys(d).forEach(k => { if (/^_et\d+$/.test(k)) delete d[k]; });
-  if (gv.cb !== CBV) Object.keys(d).forEach(k => { if (/^_cb\d+$/.test(k)) delete d[k]; });
-  if (gv.at !== ATV) { delete d._atInstances; delete d._arbetstyper; delete d._atChecked; }
+  migrateLegacy(d);   // översätt ev. gammalt positionsformat till namngivna nycklar
   document.querySelectorAll('input[type=text][id], input[type=date][id], input[type=checkbox][id]').forEach(el => {
     if (d[el.id] !== undefined) el.type === 'checkbox' ? el.checked = d[el.id] : el.value = d[el.id];
   });
-  getNonIdCheckboxes().forEach((cb, i) => { if (d['_cb' + i] !== undefined) cb.checked = d['_cb' + i]; });
+  getNonIdCheckboxes().forEach(cb => { const v = d['cb.' + cb.dataset.k]; if (v !== undefined) cb.checked = v; });
   if (d._atInstances) {
     const saved = JSON.parse(d._atInstances);
     ['main','b1','b2'].forEach(inst => {
@@ -1878,15 +2336,17 @@ function applyAll(d) {
   if (d._arbetstyper && !d._atInstances) atInstances.main.typer = JSON.parse(d._arbetstyper);
   if (d._atChecked   && !d._atInstances) atInstances.main.checked = JSON.parse(d._atChecked);
   ['main','b1','b2'].forEach(inst => renderGrid(inst));
-  glSpans().forEach((sp, i) => { if (d['_gl' + i] !== undefined) sp.classList.toggle('gsel', !!d['_gl' + i]); });
+  glSpans().forEach(sp => { const v = d[sp.dataset.k]; if (v !== undefined) sp.classList.toggle('gsel', !!v); });
   setEditableTexts(d);
-  // Restore move/scale transforms only if the DOM structure matches (LTV)
+  // Återställ flytta/skala-positioner bara om strukturen är densamma som när
+  // de sparades (jämför fingeravtrycket). Annars börjar de om från standard.
   document.querySelectorAll('[data-lid]').forEach(el => { el.style.transform = ''; });
-  layoutTf = (d._layout && d._ltv === LTV) ? (function () { try { return JSON.parse(d._layout); } catch (e) { return {}; } })() : {};
+  layoutTf = (d._layout && d._lsig === layoutSig()) ? (function () { try { return JSON.parse(d._layout); } catch (e) { return {}; } })() : {};
   applyAllTf();
   if (typeof positionBox === 'function') positionBox();
 }
 
+/** Visar en kort bekräftelse-notis längst ner på skärmen. */
 function toast(msg) {
   const t = document.createElement('div');
   t.textContent = msg;
@@ -1897,10 +2357,10 @@ function toast(msg) {
 
 // Autosave to localStorage on any input change
 document.addEventListener('input', () => {
-  try { localStorage.setItem('dyklogg_autosave', JSON.stringify(gatherAll())); } catch(e) {}
+  try { localStorage.setItem(K('autosave'), JSON.stringify(gatherAll())); } catch(e) {}
 });
 document.addEventListener('change', () => {
-  try { localStorage.setItem('dyklogg_autosave', JSON.stringify(gatherAll())); } catch(e) {}
+  try { localStorage.setItem(K('autosave'), JSON.stringify(gatherAll())); } catch(e) {}
 });
 
 // Build a filename from the dive's date + dive number, e.g. dyklogg_2026-06-02_nr3.json
@@ -1914,6 +2374,7 @@ function buildFileName() {
   if (dyknr) name += '_nr' + clean(dyknr);
   return name + '.json';
 }
+/** Sparar hela dyket till en JSON-fil. */
 function saveJSON() {
   const d = gatherAll();
   const a = document.createElement('a');
@@ -1923,6 +2384,7 @@ function saveJSON() {
   toast('\u2713 Sparad!');
 }
 
+/** Laddar ett dyk från en vald JSON-fil. */
 function loadJSON() {
   const inp = document.createElement('input'); inp.type = 'file'; inp.accept = '.json';
   inp.onchange = e => {
@@ -1931,15 +2393,16 @@ function loadJSON() {
       try {
         applyAll(JSON.parse(ev.target.result));
         toast('\u2713 Laddad!');
-      } catch(err) { alert('Fel vid laddning: ' + err); }
+      } catch(err) { uiAlert('Fel vid laddning: ' + err, 'Kunde inte ladda'); }
     };
     fr.readAsText(e.target.files[0]);
   };
   inp.click();
 }
 
-function clearAll() {
-  if (!confirm('Rensa hela formul\u00e4ret?')) return;
+/** Rensar hela formuläret efter bekräftelse. */
+async function clearAll() {
+  if (!await uiConfirm('Rensa hela formul\u00e4ret? Detta t\u00f6mmer alla f\u00e4lt i det aktuella dyket.', { title: 'Rensa formul\u00e4ret', okText: 'Rensa', danger: true })) return;
   document.querySelectorAll('input[type=text]').forEach(el => el.value = '');
   document.querySelectorAll('input[type=checkbox]').forEach(el => el.checked = false);
   ['main','b1','b2'].forEach(inst=>{ atInstances[inst].checked = {}; renderGrid(inst); });
@@ -1948,7 +2411,7 @@ function clearAll() {
   document.querySelectorAll('[data-lid]').forEach(el => { el.style.transform = ''; });
   selectEl(null);
   currentDiveId = null;
-  try { localStorage.removeItem('dyklogg_autosave'); localStorage.removeItem('dyklogg_current'); } catch(e) {}
+  try { localStorage.removeItem(K('autosave')); localStorage.removeItem(K('current')); } catch(e) {}
   if (typeof renderDiveList === 'function') renderDiveList();
   toast('Rensat');
 }
@@ -1956,7 +2419,7 @@ function clearAll() {
 // Restore autosave on page load
 (function() {
   try {
-    const saved = localStorage.getItem('dyklogg_autosave');
+    const saved = localStorage.getItem(K('autosave'));
     if (saved) applyAll(JSON.parse(saved));
     else ['main','b1','b2'].forEach(inst=>renderGrid(inst));
   } catch(e) { ['main','b1','b2'].forEach(inst=>renderGrid(inst)); }
@@ -1965,21 +2428,27 @@ function clearAll() {
 // Restore duplicate mode after data + grids are in place
 (function() {
   let on = '0';
-  try { on = localStorage.getItem('dyklogg_dup') || '0'; } catch(e) {}
+  try { on = localStorage.getItem(K('dup')) || '0'; } catch(e) {}
   if (on === '1') setDuplicate(true);
 })();
 // Restore double-sided print mode (with migration from the old boolean toggle)
 (function() {
   let v = 'off';
   try {
-    v = localStorage.getItem('dyklogg_printmode')
-        || (localStorage.getItem('dyklogg_duplex') === '1' ? 'copy' : 'off');
+    v = localStorage.getItem(K('printmode'))
+        || (localStorage.getItem(K('duplex')) === '1' ? 'copy' : 'off');
   } catch(e) {}
   setPrintMode(v);
 })();
 // Render the dive archive + project lists once everything is initialised
 renderProjectList();
 renderDiveList();
+// Återställ valt layout-läge (default: Logg + Plan)
+(function() {
+  let v = 'logg-plan';
+  try { v = localStorage.getItem(K('layout')) || 'logg-plan'; } catch (e) {}
+  setLayout(v);
+})();
 </script>
 </body>
 </html>

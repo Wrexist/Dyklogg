@@ -1,0 +1,5 @@
+# Node-beroenden (för testet i test/)
+node_modules/
+package-lock.json
+test/package.json
+test/package-lock.json
