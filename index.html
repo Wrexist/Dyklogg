@@ -1704,8 +1704,10 @@ function toggleEdit() {
   editMode = !editMode;
   document.querySelectorAll('.et').forEach(el => { el.contentEditable = editMode ? 'true' : 'false'; });
   const btn = document.getElementById('edit-btn');
-  btn.textContent = editMode ? '\u2705 Klar med redigering' : '\u270e Redigera text';
+  // Ikon-knapp: r\u00f6r INTE inneh\u00e5llet (det raderar SVG-ikonen). Bara l\u00e4ge + tooltip.
   btn.classList.toggle('active', editMode);
+  btn.title = editMode ? 'Klar med redigering' : 'Redigera text';
+  btn.setAttribute('aria-pressed', editMode ? 'true' : 'false');
   document.body.classList.toggle('editing', editMode);
 }
 
@@ -1908,8 +1910,10 @@ window.addEventListener('resize', positionBox);
 function toggleMove() {
   moveMode = !moveMode;
   const btn = document.getElementById('move-btn');
-  btn.textContent = moveMode ? '✅ Klar med flytt' : '✩ Flytta / Skala';
+  // Ikon-knapp: behåll ikonen, byt bara läge + tooltip.
   btn.classList.toggle('active', moveMode);
+  btn.title = moveMode ? 'Klar med flytt / skala' : 'Flytta / Skala';
+  btn.setAttribute('aria-pressed', moveMode ? 'true' : 'false');
   document.body.classList.toggle('moving', moveMode);
   if (!moveMode) {
     if (hovEl) { hovEl.classList.remove('lhover'); hovEl = null; }
