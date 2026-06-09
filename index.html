@@ -245,12 +245,13 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
 .at-del{background:#f4e4e2;color:#c0392b;border:none;border-radius:8px;width:32px;height:34px;font-size:18px;font-weight:700;cursor:pointer;flex-shrink:0;line-height:1;transition:background .14s,color .14s}
 .at-del:hover{background:#c0392b;color:#fff}
 
-/* Layout-lägen: baksidan (Dykplan) visas under framsidan på skärmen */
+/* Layout-lägen: baksidan visas under framsidan på skärmen */
 #layout-extra{display:none}
 #layout-extra .layout-page{margin:14px auto;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.12);position:relative}
-#layout-extra .layout-back{width:820px;padding:14px}
-#layout-extra .layout-plan{width:1160px;padding:14px}
-.layout-extra-label{width:1160px;max-width:92vw;margin:20px auto 0;color:#666;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px}
+#layout-extra .layout-back{width:820px;padding:14px}   /* stående Dykplan-baksida */
+#layout-extra .layout-plan{width:820px;padding:14px}   /* hel Dykplan, stående A4 */
+#layout-extra .layout-copy-page{pointer-events:none}   /* statisk kopia av framsidan */
+.layout-extra-label{width:92%;max-width:1100px;margin:20px auto 0;color:#666;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px}
 
 @media print{
   .lbox,.lhover{display:none!important;outline:none!important}
@@ -278,10 +279,11 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
   body.print-custom #view-dyklog{display:none!important}
   /* Full Dykplan back page printed in portrait (stående) */
   .ppage{page:pp}
-  /* Layout-lägen: baksida på eget ark (stående), hel dykplan liggande */
+  /* Layout-lägen: Dykplan-baksida + hel Dykplan = stående eget ark; kopia = liggande eget ark */
   .layout-extra-label{display:none!important}
   #layout-extra .layout-back{break-before:page;page-break-before:always;width:100%!important;page:pp}
-  #layout-extra .layout-plan{width:100%!important}
+  #layout-extra .layout-plan{width:100%!important;page:pp}
+  #layout-extra .layout-copy-page{break-before:page;page-break-before:always;width:100%!important}
 @page{size:A4 landscape;margin:0}
 @page pp{size:A4 portrait;margin:0}
 </style>
@@ -307,11 +309,12 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
     <button class="btn" onclick="toggleMenu('menu-layout')"><svg class="ic"><use href="#i-layout"/></svg> <span id="layout-label">Layout</span> <svg class="chev"><use href="#i-chev"/></svg></button>
     <div class="menu-panel" style="min-width:288px">
       <h4>Layout</h4>
-      <button class="btn layout-opt" data-lay="logg-plan" onclick="setLayout('logg-plan')">1 Dyklogg + 1 Dykplan <small>standard</small></button>
-      <button class="btn layout-opt" data-lay="2x" onclick="setLayout('2x')">2&#215; Dyklogg</button>
-      <button class="btn layout-opt" data-lay="2x-plan" onclick="setLayout('2x-plan')">2&#215; Dyklogg + Dykplan p&#229; baksidan</button>
-      <button class="btn layout-opt" data-lay="hel-plan" onclick="setLayout('hel-plan')">Hel Dykplan (liggande)</button>
-      <p class="menu-note">V&#228;ljer vad som hamnar p&#229; sidan. Har layouten en baksida visas den under framsidan h&#228;r p&#229; sk&#228;rmen, och skrivs ut p&#229; ett eget ark.</p>
+      <button class="btn layout-opt" data-lay="logg-plan" onclick="setLayout('logg-plan')">1 Dyklogg + 1 Dykplan <small>enkelsidig</small></button>
+      <button class="btn layout-opt" data-lay="2x" onclick="setLayout('2x')">2&#215; Dyklogg <small>enkelsidig</small></button>
+      <button class="btn layout-opt" data-lay="2x-copy" onclick="setLayout('2x-copy')">2&#215; Dyklogg dubbelsidig <small>kopia p&#229; baksidan</small></button>
+      <button class="btn layout-opt" data-lay="2x-plan" onclick="setLayout('2x-plan')">2&#215; Dyklogg + Dykplan <small>dykplan p&#229; baksidan</small></button>
+      <button class="btn layout-opt" data-lay="hel-plan" onclick="setLayout('hel-plan')">Hel Dykplan <small>st&#229;ende A4</small></button>
+      <p class="menu-note">H&#228;r v&#228;ljer du allt om fram- och baksida. Har layouten en baksida visas den under framsidan p&#229; sk&#228;rmen och skrivs ut p&#229; ett eget ark.</p>
     </div>
   </div>
 
@@ -408,14 +411,7 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
           <option value="A3">A3 (st&#246;rre)</option>
         </select>
       </div>
-      <div class="mrow">
-        <span class="ml">Baksida (dubbelsidig)</span>
-        <select id="duplexsel" onchange="setPrintMode(this.value)">
-          <option value="off">Av (enkelsidig)</option>
-          <option value="copy">Kopia (samma som fram)</option>
-          <option value="logs-plan">2 Dyklogg + hel Dykplan</option>
-        </select>
-      </div>
+      <p class="menu-note">Baksida &amp; dubbelsidigt v&#228;ljer du nu enkelt under <b>Layout</b> uppe till v&#228;nster.</p>
       <div class="menu-divider"></div>
       <label class="mchk"><input type="checkbox" id="dupchk" onchange="setDuplicate(this.checked)"> <span>Dubblett<small>Skriv p&#229; v&#228;nster halva &#8211; kopieras till h&#246;ger</small></span></label>
     </div>
@@ -1644,33 +1640,68 @@ function resetLayout() {
   _layoutExtra.style.display = 'none';
   _layoutExtra.innerHTML = '';
 }
-function _planPage(cls) {
+// Flyttar in den riktiga dykplanen i ett eget ark (baksida eller hel dykplan).
+function _planPage(cls, labelText) {
   const page = document.createElement('div');
   page.className = 'page layout-page ' + cls;
   _planEl.className = '';                            // släpp .cr/.col (halv bredd) → full bredd
   _planEl.style.cssText = 'display:flex;flex-direction:column;gap:6px;width:100%';
   page.appendChild(_planEl);
   _layoutExtra.innerHTML = '';
-  if (cls === 'layout-back') {
+  if (labelText) {
     const label = document.createElement('div');
     label.className = 'layout-extra-label';
-    label.textContent = '⤵ Baksida – Dykplan';
+    label.textContent = labelText;
     _layoutExtra.appendChild(label);
   }
   _layoutExtra.appendChild(page);
   _layoutExtra.style.display = 'block';
 }
-/** Aktiverar ett layout-läge: Logg+Plan, 2× Dyklogg, 2× + Dykplan på baksidan, eller Hel Dykplan. */
+// Bygger en STATISK kopia av framsidan (2× Dyklogg) som baksida. Id och
+// data-lid strippas så inga dubbletter uppstår; värdena speglas live via
+// syncCopyBack() medan man skriver.
+function _copyBackPage() {
+  const src = document.getElementById('view-dyklog');
+  if (!src || !src.firstElementChild) return;
+  const page = src.firstElementChild.cloneNode(true);   // .page
+  page.removeAttribute('id');
+  page.classList.add('layout-page', 'layout-copy-page');
+  page.querySelectorAll('[id]').forEach(e => e.removeAttribute('id'));
+  page.querySelectorAll('[data-lid]').forEach(e => e.removeAttribute('data-lid'));
+  const label = document.createElement('div');
+  label.className = 'layout-extra-label';
+  label.textContent = '⤵ Baksida – kopia av framsidan';
+  _layoutExtra.innerHTML = '';
+  _layoutExtra.appendChild(label);
+  _layoutExtra.appendChild(page);
+  _layoutExtra.style.display = 'block';
+  syncCopyBack();
+}
+/** Speglar framsidans värden till kopie-baksidan (om en sådan visas). */
+function syncCopyBack() {
+  const clone = _layoutExtra.querySelector('.layout-copy-page');
+  const src = document.getElementById('view-dyklog');
+  if (!src || !clone) return;
+  const s = src.querySelectorAll('input, select, textarea');
+  const d = clone.querySelectorAll('input, select, textarea');
+  s.forEach((el, i) => {
+    const t = d[i]; if (!t) return;
+    if (el.type === 'checkbox' || el.type === 'radio') t.checked = el.checked; else t.value = el.value;
+  });
+}
+/** Aktiverar ett layout-läge. Layout är ENDA stället för fram/baksida. */
 function setLayout(name) {
   resetLayout();
+  setPrintMode('off');                              // Layout sköter baksidor; gamla "Baksida"-valet är borta
   if (name === 'logg-plan') { switchView('combined'); }
   else if (name === '2x') { switchView('dyklog'); }
-  else if (name === '2x-plan') { switchView('dyklog'); _planPage('layout-back'); }
+  else if (name === '2x-copy') { switchView('dyklog'); _copyBackPage(); }
+  else if (name === '2x-plan') { switchView('dyklog'); _planPage('layout-back', '⤵ Baksida – Dykplan (stående)'); }
   else if (name === 'hel-plan') {
     document.getElementById('view-combined').style.display = 'none';
     document.getElementById('view-dyklog').style.display = 'none';
     currentView = 'combined';
-    _planPage('layout-plan');
+    _planPage('layout-plan');                       // stående A4, ingen baksida-etikett
   }
   activeLayout = name;
   updateLayoutUI();
@@ -1679,11 +1710,14 @@ function setLayout(name) {
 }
 /** Uppdaterar Layout-knappens etikett och markerar det aktiva valet. */
 function updateLayoutUI() {
-  const names = { 'logg-plan': 'Logg + Plan', '2x': '2× Dyklogg', '2x-plan': '2× + Dykplan', 'hel-plan': 'Hel Dykplan' };
+  const names = { 'logg-plan': 'Logg + Plan', '2x': '2× Dyklogg', '2x-copy': '2× dubbelsidig', '2x-plan': '2× + Dykplan', 'hel-plan': 'Hel Dykplan' };
   const lbl = document.getElementById('layout-label');
   if (lbl) lbl.textContent = names[activeLayout] || 'Layout';
   document.querySelectorAll('.layout-opt').forEach(b => b.classList.toggle('sel', b.getAttribute('data-lay') === activeLayout));
 }
+// Spegla framsidan till kopie-baksidan medan man skriver.
+document.addEventListener('input', syncCopyBack);
+document.addEventListener('change', syncCopyBack);
 
 // --- Paper size for print (default A4 = two A5 halves side by side) ---
 function setPaper(v) {
@@ -1861,7 +1895,10 @@ function renderGrid(inst) {
   const obj = atInstances[inst];
   const grid = document.getElementById(gridId);
   if (!grid) return;
-  grid.querySelectorAll('input[type=checkbox]').forEach((cb,i) => { obj.checked[i] = cb.checked; });
+  // Fånga ev. direkta klick i rutnätet – men bara om det är i synk med listan
+  // (annars skulle en borttagning i modalen skrivas över med gamla positioner).
+  const gridCbs = grid.querySelectorAll('input[type=checkbox]');
+  if (gridCbs.length === obj.typer.length) gridCbs.forEach((cb, i) => { obj.checked[i] = cb.checked; });
   grid.innerHTML = '';
   obj.typer.forEach((text, i) => {
     const label = document.createElement('label');
@@ -1903,7 +1940,14 @@ function renderAtModalListFor(inst) {
     const inp = document.createElement('input'); inp.type='text'; inp.value=text;
     inp.addEventListener('blur', () => { obj.typer[i]=inp.value.trim()||text; });
     const del = document.createElement('button'); del.className = 'at-del'; del.textContent='\u00d7'; del.title='Ta bort';
-    del.addEventListener('click', () => { obj.typer.splice(i,1); delete obj.checked[i]; renderAtModalListFor(inst); });
+    del.addEventListener('click', () => {
+      obj.typer.splice(i, 1);
+      // Index-baserade kryss m\u00e5ste skifta ner s\u00e5 r\u00e4tt rutor f\u00f6rblir ikryssade
+      const nc = {};
+      Object.keys(obj.checked).forEach(k => { const idx = +k; if (idx < i) nc[idx] = obj.checked[k]; else if (idx > i) nc[idx - 1] = obj.checked[k]; });
+      obj.checked = nc;
+      renderAtModalListFor(inst);
+    });
     row.appendChild(inp); row.appendChild(del); list.appendChild(row);
   });
 }
@@ -1918,7 +1962,7 @@ document.getElementById('at-overlay').addEventListener('click', function(e){ if(
 
 // --- Clickable gruppbeteckning letters (A–Z) ---
 // Spans have no id; their selected state is tracked positionally as _gl<index>.
-function glSpans() { return Array.from(document.querySelectorAll('.groupletters span')); }
+function glSpans() { return Array.from(document.querySelectorAll('.groupletters span')).filter(sp => !sp.closest('.layout-copy-page')); }
 glSpans().forEach(sp => {
   sp.addEventListener('click', () => {
     sp.classList.toggle('gsel');
@@ -2189,7 +2233,7 @@ function setEditableTexts(d) {
 
 // Kryssrutor utan id (utrustning, åtgärder m.m.) — atgrid hanteras separat.
 function getNonIdCheckboxes() {
-  return Array.from(document.querySelectorAll('input[type=checkbox]:not([id])')).filter(cb => !cb.closest('#atgrid') && !cb.closest('#atgrid-b1') && !cb.closest('#atgrid-b2'));
+  return Array.from(document.querySelectorAll('input[type=checkbox]:not([id])')).filter(cb => !cb.closest('#atgrid') && !cb.closest('#atgrid-b1') && !cb.closest('#atgrid-b2') && !cb.closest('.layout-copy-page'));
 }
 assignDataKeys();   // ge alla element sina stabila nycklar direkt
 
