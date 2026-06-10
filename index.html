@@ -2505,10 +2505,11 @@ async function clearAll() {
 // Render the dive archive + project lists once everything is initialised
 renderProjectList();
 renderDiveList();
-// Återställ valt layout-läge (default: Logg + Plan)
+// Återställ valt layout-läge. Standard vid första besök: 2× Dyklogg + Dykplan
+// på baksidan. Har användaren bytt läge tidigare respekteras det valet.
 (function() {
-  let v = 'logg-plan';
-  try { v = localStorage.getItem(K('layout')) || 'logg-plan'; } catch (e) {}
+  let v = '2x-plan';
+  try { v = localStorage.getItem(K('layout')) || '2x-plan'; } catch (e) {}
   setLayout(v);
 })();
 </script>
