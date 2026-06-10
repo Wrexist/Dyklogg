@@ -42,7 +42,12 @@ function ok(name, got, want) {
     console.log('\n' + label);
     for (const [lay, landscape, want] of cases) {
       await p.evaluate(l => setLayout(l), lay);
-      await p.waitForTimeout(100);
+      // Vänta tills layouten faktiskt är aktiv (markerat val i menyn) i stället
+      // för en fast timeout – stabilare på långsamma system.
+      await p.waitForFunction(
+        l => { const s = document.querySelector('.layout-opt.sel'); return s && s.getAttribute('data-lay') === l; },
+        lay, { timeout: 5000 }
+      );
       const pdf = await p.pdf({ format: 'A4', landscape, printBackground: true, preferCSSPageSize: true });
       ok(lay, pdfPages(pdf), want);
     }
@@ -63,4 +68,4 @@ function ok(name, got, want) {
   await b.close();
   console.log('\n================  ' + pass + ' OK, ' + fail + ' FAIL  ================');
   process.exit(fail ? 1 : 0);
-})().catch(e => { console.error('FEL:', e.message.split('\n')[0]); process.exit(1); });
+})().catch(e => { console.error('FEL:', e.stack || e.message); process.exit(1); });
