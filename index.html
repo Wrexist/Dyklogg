@@ -314,8 +314,8 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
   #layout-extra .layout-back .riskt, #layout-extra .layout-plan .riskt{line-height:1.2}
   #layout-extra .layout-back .logo, #layout-extra .layout-plan .logo{height:34px!important}
   #layout-extra .layout-back .sec, #layout-extra .layout-plan .sec{break-inside:avoid}
-@page{size:A4 landscape;margin:0}
-@page pp{size:A4 portrait;margin:0}
+@page{size:A4 landscape;margin:5mm}
+@page pp{size:A4 portrait;margin:5mm}
 </style>
 <style id="page-style"></style>
 </head>
@@ -445,6 +445,7 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
       <p class="menu-note">Baksida &amp; dubbelsidigt v&#228;ljer du nu enkelt under <b>Layout</b> uppe till v&#228;nster.</p>
       <div class="menu-divider"></div>
       <label class="mchk"><input type="checkbox" id="dupchk" onchange="setDuplicate(this.checked)"> <span>Dubblett<small>Skriv p&#229; v&#228;nster halva &#8211; kopieras till h&#246;ger</small></span></label>
+      <p class="menu-note">Skriver skrivaren inte ut? V&#228;lj <b>Spara som PDF</b> och skriv ut PDF:en, eller s&#228;tt <b>Marginaler: Standard</b> i utskriftsdialogen (inte &#8220;Inga&#8221;).</p>
     </div>
   </div>
 
@@ -1772,13 +1773,20 @@ document.addEventListener('change', syncCopyBack);
 let _paper = 'A4';
 try { _paper = localStorage.getItem(K('paper')) || 'A4'; } catch (e) {}
 
+// Säker utskriftsmarginal (mm). MÅSTE vara > 0: en kantlös (margin:0) sida ber
+// skrivaren skriva ut ända ut i kanten, vilket bläckstråleskrivare (t.ex.
+// Brother MFC-J6940DW) ofta vägrar och rapporterar som "Fel" i utskriftskön.
+// 5 mm ligger väl inom utskriftsområdet på i princip alla bläck-/laserskrivare.
+// Innehållet har dessutom sin egen inre marginal, så texten flyttas knappt.
+const PRINT_MARGIN_MM = 5;
+
 /** Skriver @page-regeln för utskrift. Webbläsare kan inte blanda stående och
  *  liggande i samma jobb, så hela jobbet får EN orientering: Hel Dykplan =
  *  stående (ensamt ark), alla andra lägen = liggande. */
 function applyPageStyle() {
   const orient = (typeof activeLayout !== 'undefined' && activeLayout === 'hel-plan') ? 'portrait' : 'landscape';
   const ps = document.getElementById('page-style');
-  if (ps) ps.textContent = '@page{size:' + _paper + ' ' + orient + ';margin:0}';
+  if (ps) ps.textContent = '@page{size:' + _paper + ' ' + orient + ';margin:' + PRINT_MARGIN_MM + 'mm}';
 }
 /** Sätter och sparar pappersformat (A4/A3) och uppdaterar utskriftsreglerna. */
 function setPaper(v) {
@@ -1802,7 +1810,11 @@ function updatePrintFit() {
   });
   const mm = 96 / 25.4;                                   // CSS-px per millimeter
   const dims = _paper === 'A3' ? [297, 420] : [210, 297]; // [kortsida, långsida] i mm
-  const sheetH = ((activeLayout === 'hel-plan') ? dims[1] : dims[0]) * mm;
+  // Dra bort den säkra @page-marginalen (topp + botten) så krymp-till-ark utgår
+  // från det faktiska utskriftsområdet, inte hela arket. Annars dimensioneras
+  // innehållet för hela arket men skrivs ut i en mindre ruta och spiller över
+  // på ett extra ark.
+  const sheetH = (((activeLayout === 'hel-plan') ? dims[1] : dims[0]) - 2 * PRINT_MARGIN_MM) * mm;
   // extraPx ≈ skillnaden mellan sidans print-padding och skärm-padding
   // 0.96 = säkerhetsmarginal: skärm-mätningen skiljer sig något från
   // print-layouten (padding, kolumnbredd), så vi tar i lite extra.
