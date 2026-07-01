@@ -1541,7 +1541,9 @@ function projectReport(id) {
   const p = getProjects()[id]; if (!p) return;
   const dives = Object.values(getDives()).filter(d => d.projectId === id)
     .sort((a, b) => (a.datum || '').localeCompare(b.datum || '') || (a.savedAt || 0) - (b.savedAt || 0));
-  const g = (d, k) => (d.data && d.data[k]) ? String(d.data[k]) : '';
+  // Fältet kan finnas dubbelt i den sparade datan: huvudvyns id ("maxdjup") eller
+  // b1-bladets ("b1-maxdjup"), beroende på vilken layout som var aktiv när dyket sparades.
+  const g = (d, k) => (d.data && (d.data[k] || d.data['b1-' + k])) ? String(d.data[k] || d.data['b1-' + k]) : '';
   const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const rows = dives.map(d => '<tr><td>' + esc(d.dyknr || g(d, 'dyknr')) + '</td><td>' + esc(d.datum || g(d, 'datum')) +
     '</td><td>' + esc(g(d, 'maxdjup')) + '</td><td>' + esc(g(d, 'bottentid')) + '</td><td>' + esc(g(d, 'time-in')) +
@@ -1573,9 +1575,12 @@ function projectReport(id) {
 /** Exporterar dyket till UDDF-format (dykprogram). */
 function exportUDDF() {
   closeMenus();
-  const v = id => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
+  const raw = id => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
+  // Fältet kan finnas dubbelt: huvudvyns id ("maxdjup") eller b1-bladets ("b1-maxdjup"),
+  // beroende på aktiv layout (t.ex. standardläget 2× Dyklogg + Dykplan använder b1-/b2-).
+  const v = id => raw(id) || raw('b1-' + id);
   const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-  const datum = v('datum') || v('b1-datum');
+  const datum = v('datum');
   const dt = /^\d{4}-\d{2}-\d{2}$/.test(datum) ? datum + 'T' + (v('time-in') || '00:00') + ':00' : new Date().toISOString();
   const depth = (parseFloat((v('maxdjup') || '0').replace(',', '.')) || 0).toString();
   const tempC = parseFloat((v('temp') || '').replace(',', '.'));
@@ -1599,10 +1604,13 @@ function exportUDDF() {
 /** Öppnar ett mejlutkast med en textsammanfattning av dyket. */
 function emailLog() {
   closeMenus();
-  const v = id => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
+  const raw = id => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
+  // Fältet kan finnas dubbelt: huvudvyns id ("maxdjup") eller b1-bladets ("b1-maxdjup"),
+  // beroende på aktiv layout (t.ex. standardläget 2× Dyklogg + Dykplan använder b1-/b2-).
+  const v = id => raw(id) || raw('b1-' + id);
   const L = [];
   const add = (label, val) => { if (val) L.push(label + ': ' + val); };
-  add('Datum', v('datum') || v('b1-datum'));
+  add('Datum', v('datum'));
   add('Dyk nr', v('dyknr'));
   add('Arbetsplats', v('arbetsplats'));
   add('Arbetsmoment', v('arbetsmoment'));
@@ -1629,8 +1637,13 @@ function fieldLabel(inp) {
 function exportCSV() {
   closeMenus();
   const rows = [['Fält', 'Värde']];
-  // Dyklogg-kolumnen + dykplanen, oavsett vilken layout som är aktiv (planen kan vara flyttad)
-  const roots = [document.querySelector('#view-combined .cl'), document.querySelector('#view-combined .cr') || _planEl];
+  // Dyklogg-kolumnen: huvudvyns fält om ifyllda, annars b1-bladet (2× Dyklogg-layouten,
+  // standardläget vid första besök) – + dykplanen, oavsett vilken layout som är aktiv
+  // (planen kan vara flyttad).
+  const mainCl = document.querySelector('#view-combined .cl');
+  const hasMainData = mainCl && [...mainCl.querySelectorAll('input[type=text], input[type=date]')].some(i => i.value.trim());
+  const clRoot = hasMainData ? mainCl : document.querySelector('#view-dyklog .cl');
+  const roots = [clRoot, document.querySelector('#view-combined .cr') || _planEl];
   roots.forEach(root => {
     if (!root) return;
     root.querySelectorAll('input[type=text], input[type=date]').forEach(inp => {
@@ -1643,7 +1656,7 @@ function exportCSV() {
       if (t) rows.push([t, 'Ja']);
     });
   });
-  const gl = [...document.querySelectorAll('#view-combined .groupletters span.gsel')].map(s => s.textContent).join(' ');
+  const gl = clRoot ? [...clRoot.querySelectorAll('.groupletters span.gsel')].map(s => s.textContent).join(' ') : '';
   if (gl) rows.push(['Gruppbeteckning', gl]);
   const csv = '﻿' + rows.map(r => r.map(c => '"' + String(c).replace(/"/g, '""') + '"').join(';')).join('\r\n');
   download(buildFileName().replace(/\.json$/, '') + '.csv', csv, 'text/csv;charset=utf-8');
