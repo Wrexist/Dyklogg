@@ -314,8 +314,8 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
   #layout-extra .layout-back .riskt, #layout-extra .layout-plan .riskt{line-height:1.2}
   #layout-extra .layout-back .logo, #layout-extra .layout-plan .logo{height:34px!important}
   #layout-extra .layout-back .sec, #layout-extra .layout-plan .sec{break-inside:avoid}
-@page{size:A4 landscape;margin:5mm}
-@page pp{size:A4 portrait;margin:5mm}
+@page{size:A4 landscape;margin:3mm}
+@page pp{size:A4 portrait;margin:3mm}
 </style>
 <style id="page-style"></style>
 </head>
@@ -1776,9 +1776,10 @@ try { _paper = localStorage.getItem(K('paper')) || 'A4'; } catch (e) {}
 // Säker utskriftsmarginal (mm). MÅSTE vara > 0: en kantlös (margin:0) sida ber
 // skrivaren skriva ut ända ut i kanten, vilket bläckstråleskrivare (t.ex.
 // Brother MFC-J6940DW) ofta vägrar och rapporterar som "Fel" i utskriftskön.
-// 5 mm ligger väl inom utskriftsområdet på i princip alla bläck-/laserskrivare.
-// Innehållet har dessutom sin egen inre marginal, så texten flyttas knappt.
-const PRINT_MARGIN_MM = 5;
+// 3 mm är minsta säkra värdet: > 0 undviker kantlöst och ligger ändå inom
+// utskriftsområdet. Innehållet har dessutom sin egen inre marginal (padding),
+// så den synliga marginalen kommer mest därifrån – texten flyttas knappt.
+const PRINT_MARGIN_MM = 3;
 
 /** Skriver @page-regeln för utskrift. Webbläsare kan inte blanda stående och
  *  liggande i samma jobb, så hela jobbet får EN orientering: Hel Dykplan =
