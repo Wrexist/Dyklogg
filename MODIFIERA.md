@@ -11,6 +11,9 @@ Hela appen ligger i **en fil**: `index.html`. Den innehåller tre delar:
 | **HTML** (formuläret) | mitten, mellan `<body>` och `<script>` | själva blanketten du fyller i |
 | **JS** (logik) | nederst, i `<script>` | spara/ladda, export, anpassning |
 
+Sidan **Nödguide** (en egen, helt fritt anpassningsbar affisch) har ett eget
+avsnitt sist i skriptet — se avsnitt 11.
+
 Allra först i `<script>` finns ett **`CONFIG`-block**. Nästan allt du vill ändra
 snabbt rör du där. Du behöver aldrig längre "höja versionsnummer" – det är borta.
 
@@ -166,6 +169,14 @@ npm install jsdom      # bara första gången
 node persistens.test.js
 ```
 
+Nödguiden har ett eget test som kör hela sidan i en riktig webbläsare:
+
+```bash
+cd test
+npm install playwright && npx playwright install chromium   # första gången
+node nodguide.test.js       # förväntat: 45 OK, 0 FAIL
+```
+
 (Se även `test/README.md` för samma instruktioner.)
 
 Du ska se `28 OK, 0 FAIL`. Får du `FAIL` har något i sparlogiken gått sönder –
@@ -174,6 +185,68 @@ Du ska se `28 OK, 0 FAIL`. Får du `FAIL` har något i sparlogiken gått sönder
 **Snabbtest för hand:** öppna `index.html` i en webbläsare, fyll i några fält,
 ladda om sidan (F5). Allt du skrev ska finnas kvar. Klicka **💾 Spara**, **🗑 Rensa**,
 sen **📂 Ladda** och välj filen – allt ska komma tillbaka.
+
+---
+
+## 11. Nödguiden — den fritt anpassningsbara sidan
+
+**Nödguide** är en egen sida i appen (knappen **Nödguide** i verktygsfältet, eller
+**Layout → Nödguide**). Den är en färdig nöd- & hjälpguide i två A4-sidor
+(liggande) som användaren kan bygga om helt själv — utan att koda.
+
+### Så här funkar den för användaren
+
+| Vad | Hur |
+|-----|-----|
+| Markera ett block | Klicka på det |
+| Markera flera | Shift+klick, eller dra en ram på tom yta |
+| Flytta | Dra blocket, eller använd piltangenterna (Shift = större steg) |
+| Skala | Dra i något av de åtta handtagen |
+| Ändra text | **Dubbelklicka på texten** och skriv direkt på arket |
+| Ändra allt annat | Panelen till höger (rader, ikoner, färger, storlek, position) |
+| Nytt block | **+ Lägg till block** (kort, checklista, rubrik, banderoll, steg, panel, text, bild, linje) |
+| Rutnät | Knapparna **Rutnät**, **Fäst** och **Stödlinjer** + rutstorlek 1–10 mm |
+| Ångra | Ctrl+Z / Ctrl+Y (eller knapparna i raden) |
+| Ren vy | Knappen **Redigera** stänger av redigeringsläget — då ser sidan ut precis som utskriften |
+| Dela | **Spara fil / Ladda fil** (egen `.json`), eller via **företagsprofilen** |
+
+Kryssrutorna och ifyllnadsfälten (rutan "Viktig information") fungerar alltid,
+även när redigeringsläget är avstängt, och sparas automatiskt.
+
+### Så här ändrar du standardguiden permanent
+
+Allt standardinnehåll byggs i funktionen **`gDefaultDoc()`** i `<script>`
+(sök efter `function gDefaultDoc`). Varje block läggs till med `add({...})`:
+
+```js
+add({ page: 0, type: 'card', variant: 'light', x: 3, y: 41, w: 88, h: 44, fs: 1.15,
+      num: '1', icon: 'list', title: 'INNAN DYKET',
+      items: [C('Dykplan genomgången'), C('Riskbedömning klar')] });
+```
+
+- `page` – 0 = första sidan, 1 = andra sidan
+- `x, y, w, h` – **millimeter** på arket (ritbar yta: 291 × 204 mm = A4 liggande
+  minus utskriftsmarginalen). Det du ser på skärmen är exakt det som skrivs ut.
+- `type` – `card`, `header`, `banner`, `panel`, `steps`, `text`, `image`, `divider`
+- `variant` – `light`, `soft`, `dark`, `accent` (temafärgen), `danger`, `ghost`
+- `fs` – textstorlek som multiplikator (1 = normal)
+- `icon` – nyckel ur `G_ICONS` (drygt 50 ikoner, se listan i koden)
+- `items` – raderna, byggda med hjälparna `C()` kryss, `BU()` punkt, `D()` streck,
+  `S()` underrubrik, `KV()` "rad → åtgärd", `IR()` ikon + rubrik + text, `F()` ifyllnadsfält
+
+Vill du lägga till en **egen ikon** lägger du en rad i `G_ICONS`:
+
+```js
+minikon: { n: 'Mitt namn', d: '<circle cx="12" cy="12" r="8"/>' },
+```
+(`d` är innehållet i en `<svg viewBox="0 0 24 24">` — ritas med linjer.)
+
+> Användarens egna ändringar ligger i webbläsaren (`localStorage`) och skrivs
+> **inte** över när du ändrar `gDefaultDoc()`. Först när användaren klickar
+> **Standard / Återställ standardguiden** byggs guiden om från koden.
+
+Färgerna följer appens temafärg automatiskt (`var(--accent)`), så byter du
+orange mot något annat under **Anpassa** följer nödguiden med.
 
 ---
 

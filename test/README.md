@@ -35,3 +35,19 @@ Förväntat resultat: `10 OK, 0 FAIL`.
 
 Har du redan en Chrome/Chromium installerad:
 `CHROME_PATH=/sökväg/till/chrome node utskrift.test.js`
+
+## Nödguide-test (`nodguide.test.js`)
+
+Kör hela **Nödguide**-sidan i en riktig webbläsare och kontrollerar att
+markera/flytta/skala, redigera text, rutnät & fästning, sidor, ångra/gör om,
+sparning och utskrift fungerar – och att guiden inte påverkar de vanliga
+layout-lägena.
+
+```bash
+cd test
+npm install playwright          # första gången
+npx playwright install chromium # första gången
+node nodguide.test.js
+```
+
+Förväntat resultat: `45 OK, 0 FAIL`.

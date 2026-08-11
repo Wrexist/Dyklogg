@@ -256,6 +256,190 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
 #layout-extra .layout-copy-page{pointer-events:none}   /* statisk kopia av framsidan */
 .layout-extra-label{width:92%;max-width:1100px;margin:20px auto 0;color:#666;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px}
 
+/* ==========================================================================
+   NÖDGUIDE — egen sida/flik med fri, flyttbar layout (WYSIWYG A4-liggande).
+   Allt är uppbyggt i millimeter så att skärmen visar exakt det som skrivs ut.
+   Editor-delarna (verktygsfält, panel, handtag) döljs automatiskt vid utskrift.
+   ========================================================================== */
+#view-guide{display:none;width:100%}
+.g-wrap{display:flex;align-items:flex-start;width:100%}
+.g-main{flex:1;min-width:0;display:flex;flex-direction:column}
+
+/* --- Verktygsfältet för guiden --- */
+.g-bar{position:sticky;top:var(--tbh,50px);z-index:70;background:linear-gradient(180deg,#2c2c34,#1d1d24);color:#e8e8ef;display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:7px 12px;box-shadow:0 3px 12px rgba(0,0,0,.22)}
+.g-bar .gb{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.07);color:#e7e7ee;border:none;border-radius:7px;padding:6px 10px;font-size:11.5px;font-weight:700;cursor:pointer;font-family:inherit;line-height:1;white-space:nowrap;transition:background .13s,color .13s}
+.g-bar .gb:hover{background:rgba(255,255,255,.17);color:#fff}
+.g-bar .gb.on,.g-bar .gb.primary{background:var(--accent);color:#191919}
+.g-bar .gb.primary:hover{filter:brightness(1.07);color:#191919}
+.g-bar .gb .ic{width:14px;height:14px}
+.g-bar .gsep{width:1px;height:22px;background:rgba(255,255,255,.14);margin:0 3px}
+.g-bar select{background:#33333c;color:#e7e7ee;border:1px solid rgba(255,255,255,.14);border-radius:7px;padding:5px 6px;font-size:11.5px;font-weight:700;font-family:inherit;cursor:pointer}
+.g-bar .glab{font-size:10.5px;font-weight:800;opacity:.6;text-transform:uppercase;letter-spacing:.6px;margin-left:2px}
+.g-zoomval{min-width:38px;text-align:center;font-size:11.5px;font-weight:800;opacity:.85}
+.g-tabs{display:flex;gap:3px;align-items:center}
+.g-tab{background:rgba(255,255,255,.07);border:none;color:#c9c9d4;border-radius:7px;padding:6px 11px;font-size:11.5px;font-weight:800;cursor:pointer;font-family:inherit}
+.g-tab:hover{background:rgba(255,255,255,.17);color:#fff}
+.g-tab.on{background:var(--accent);color:#191919}
+
+/* Popover: lägg till block */
+.g-pop{position:absolute;top:calc(100% + 7px);left:0;background:#fff;color:#26262b;border-radius:12px;box-shadow:0 14px 38px rgba(0,0,0,.32);padding:11px;min-width:232px;z-index:140;display:none;flex-direction:column;gap:4px}
+.g-pop.open{display:flex}
+.g-pop h4{font-size:10.5px;text-transform:uppercase;letter-spacing:.7px;color:#9a9aa5;font-weight:800;margin:2px 0 3px}
+.g-pop button{display:flex;align-items:center;gap:8px;background:#f4f4f7;border:none;border-radius:8px;padding:8px 10px;font-size:12.5px;font-weight:700;color:#33333a;cursor:pointer;font-family:inherit;text-align:left}
+.g-pop button:hover{background:var(--accent);color:#191919}
+.g-pop button .gi{width:16px;height:16px;flex-shrink:0}
+.g-popwrap{position:relative;display:inline-flex}
+
+/* --- Arbetsytan --- */
+.g-scroll{padding:16px 12px 60px;overflow-x:auto}
+#g-pages{transform-origin:top left;width:291mm}
+.g-pagewrap{margin:0 auto 18px;width:291mm}
+.g-plabel{font-size:10px;font-weight:800;letter-spacing:1.1px;text-transform:uppercase;color:#75757f;margin:0 0 5px 1px;display:flex;align-items:center;gap:8px}
+.g-page{position:relative;width:291mm;height:204mm;background-color:#fff;box-shadow:0 3px 16px rgba(0,0,0,.22);overflow:hidden}
+.g-page.grid{background-image:linear-gradient(to right,rgba(20,20,40,.10) .2mm,transparent .2mm),linear-gradient(to bottom,rgba(20,20,40,.10) .2mm,transparent .2mm);background-size:var(--gs,5mm) var(--gs,5mm)}
+.g-page.grid.g10{background-image:linear-gradient(to right,rgba(20,20,40,.16) .25mm,transparent .25mm),linear-gradient(to bottom,rgba(20,20,40,.16) .25mm,transparent .25mm),linear-gradient(to right,rgba(20,20,40,.08) .2mm,transparent .2mm),linear-gradient(to bottom,rgba(20,20,40,.08) .2mm,transparent .2mm);background-size:calc(var(--gs,5mm)*5) calc(var(--gs,5mm)*5),calc(var(--gs,5mm)*5) calc(var(--gs,5mm)*5),var(--gs,5mm) var(--gs,5mm),var(--gs,5mm) var(--gs,5mm)}
+
+/* --- Block (gemensamt) --- */
+.g-blk{position:absolute;--bg:#fff;--fg:#15161c;--bd:#cfcfda;--fs:1;--pad:1.8mm;--rad:1.4mm;background:var(--bg);color:var(--fg);border:.35mm solid var(--bd);border-radius:var(--rad);padding:var(--pad);display:flex;flex-direction:column;overflow:hidden;font-family:'Helvetica Neue',Arial,Helvetica,sans-serif}
+.g-blk.v-dark{--bg:#15161c;--fg:#ffffff;--bd:#15161c}
+.g-blk.v-accent{--bg:var(--accent);--fg:#191919;--bd:var(--accent)}
+.g-blk.v-danger{--bg:#c1281a;--fg:#ffffff;--bd:#c1281a}
+.g-blk.v-soft{--bg:#f5f5f9;--fg:#15161c;--bd:#e0e0e9}
+.g-blk.v-ghost{--bg:transparent;--fg:#15161c;--bd:transparent}
+
+.g-head{display:flex;align-items:center;gap:1.3mm;font-weight:800;text-transform:uppercase;letter-spacing:.02em;font-size:calc(3.1mm*var(--fs));line-height:1.15;padding-bottom:.9mm;margin-bottom:1.1mm;border-bottom:.45mm solid var(--accent);flex-shrink:0}
+.g-head .g-num{background:var(--accent);color:#191919;font-weight:900;border-radius:.8mm;padding:.15mm 1.2mm;font-size:calc(2.9mm*var(--fs));flex-shrink:0}
+.g-head .gi{width:calc(4.2mm*var(--fs));height:calc(4.2mm*var(--fs));flex-shrink:0}
+.g-head .ttl{flex:1;min-width:0}
+
+.g-body{flex:1;min-height:0;column-gap:3.5mm}
+.g-it{display:flex;align-items:flex-start;gap:1.2mm;font-size:calc(2.55mm*var(--fs));line-height:1.22;margin-bottom:.55mm;break-inside:avoid}
+.g-it .bu{color:var(--accent);font-weight:900;line-height:1.15;flex-shrink:0}
+.g-it .tx{flex:1;min-width:0}
+.g-it .gi{width:calc(3.4mm*var(--fs));height:calc(3.4mm*var(--fs));flex-shrink:0;margin-top:.15mm}
+.g-box{width:2.6mm;height:2.6mm;border:.3mm solid currentColor;border-radius:.4mm;flex-shrink:0;margin-top:.35mm;position:relative;cursor:pointer}
+.g-box.on::after{content:'';position:absolute;left:.7mm;top:.1mm;width:.8mm;height:1.6mm;border:solid currentColor;border-width:0 .35mm .35mm 0;transform:rotate(42deg)}
+.g-sub{color:var(--accent);font-weight:900;text-transform:uppercase;letter-spacing:.04em;font-size:calc(2.5mm*var(--fs));line-height:1.2;margin:1.4mm 0 .6mm;break-inside:avoid;break-after:avoid}
+.g-body>.g-sub:first-child{margin-top:0}
+.g-kv .a{font-weight:800;flex:0 0 40%;min-width:0}
+.g-kv .b{flex:1;min-width:0;opacity:.82}
+.g-ir{gap:1.6mm}
+.g-ir .gi{width:calc(4.8mm*var(--fs));height:calc(4.8mm*var(--fs));margin-top:.3mm}
+.g-ir .t{font-weight:900;display:block;text-transform:uppercase;letter-spacing:.02em}
+.g-ir .d{opacity:.85;display:block}
+.g-fl{align-items:baseline}
+.g-fl .a{font-weight:800;white-space:nowrap}
+.g-fi{flex:1;min-width:3mm;border:none;border-bottom:.3mm dotted #8a8a95;background:transparent;font-family:inherit;font-size:inherit;color:inherit;outline:none;padding:0 .5mm}
+.g-fi:focus{border-bottom-color:var(--accent);background:rgba(255,153,0,.10)}
+
+/* Steg-block */
+.g-steps{display:flex;gap:1.4mm;flex:1;min-height:0}
+.g-step{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;text-align:center;gap:.5mm;border:.3mm solid #e0e0e9;border-radius:1.2mm;padding:1.2mm .6mm;background:rgba(255,255,255,.9);color:#15161c}
+.g-step .gi{width:calc(7mm*var(--fs));height:calc(7mm*var(--fs));stroke-width:1.6}
+.g-step .n{width:calc(5.2mm*var(--fs));height:calc(5.2mm*var(--fs));border-radius:50%;background:var(--accent);color:#191919;font-weight:900;font-size:calc(3mm*var(--fs));display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.g-step .a{font-weight:900;text-transform:uppercase;font-size:calc(2.5mm*var(--fs));line-height:1.12}
+.g-step .b{font-size:calc(2.25mm*var(--fs));opacity:.72;line-height:1.12}
+
+/* Rubrik-, banderoll-, panel-, text-, bild- och linjeblock */
+.g-hd{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.4mm;text-align:center}
+.g-hd .t{font-size:calc(8.5mm*var(--fs));font-weight:900;letter-spacing:.03em;line-height:1}
+.g-hd .s{background:var(--accent);color:#191919;font-weight:900;font-size:calc(3.6mm*var(--fs));letter-spacing:.09em;padding:.7mm 3mm;border-radius:1mm}
+.g-bn{flex:1;display:flex;align-items:center;justify-content:center;gap:2.5mm;font-weight:900;text-transform:uppercase;letter-spacing:.05em;font-size:calc(3.4mm*var(--fs));text-align:center;line-height:1.12}
+.g-bn .gi{width:calc(5mm*var(--fs));height:calc(5mm*var(--fs));stroke-width:2.1;flex-shrink:0}
+.g-blk.t-panel{padding:0}
+.g-pn{flex:1;display:flex;flex-direction:column;min-height:0}
+.g-pn .g-pt{font-weight:900;text-transform:uppercase;letter-spacing:.05em;font-size:calc(3.2mm*var(--fs));padding:1.3mm 2mm;border-bottom:.45mm solid var(--accent)}
+.g-tx{flex:1;white-space:pre-wrap;font-size:calc(2.8mm*var(--fs));line-height:1.32}
+.g-blk.t-divider,.g-blk.t-image{padding:0;border:none;background:transparent}
+.g-dv{flex:1;background:var(--accent);border-radius:.5mm}
+.g-im{flex:1;min-height:0;width:100%;object-fit:contain}
+.g-imph{flex:1;display:flex;align-items:center;justify-content:center;border:.35mm dashed #b6b6c2;border-radius:1.2mm;color:#8a8a95;font-size:2.6mm;font-weight:700}
+
+/* --- Redigeringsläge --- */
+body.g-edit .g-blk{cursor:move}
+body.g-edit .g-blk.locked{cursor:default}
+body.g-edit .g-blk:hover{box-shadow:0 0 0 .3mm rgba(255,153,0,.55)}
+body.g-edit .g-blk.sel,body.g-edit .g-blk.sel:hover{box-shadow:0 0 0 .45mm var(--accent)}
+.g-blk.of::after{content:'\26A0';position:absolute;right:.5mm;bottom:.1mm;color:#c1281a;font-size:2.8mm;font-weight:900;pointer-events:none}
+body:not(.g-edit) .g-blk.of::after{display:none}
+.g-selbox{position:absolute;border:.4mm solid var(--accent);pointer-events:none;z-index:50;box-sizing:border-box}
+.g-selbox .h{position:absolute;width:2.6mm;height:2.6mm;background:#fff;border:.45mm solid var(--accent);border-radius:.5mm;pointer-events:auto;box-sizing:border-box}
+.g-selbox .h-nw{left:-1.4mm;top:-1.4mm;cursor:nwse-resize}
+.g-selbox .h-n{left:calc(50% - 1.3mm);top:-1.4mm;cursor:ns-resize}
+.g-selbox .h-ne{right:-1.4mm;top:-1.4mm;cursor:nesw-resize}
+.g-selbox .h-e{right:-1.4mm;top:calc(50% - 1.3mm);cursor:ew-resize}
+.g-selbox .h-se{right:-1.4mm;bottom:-1.4mm;cursor:nwse-resize}
+.g-selbox .h-s{left:calc(50% - 1.3mm);bottom:-1.4mm;cursor:ns-resize}
+.g-selbox .h-sw{left:-1.4mm;bottom:-1.4mm;cursor:nesw-resize}
+.g-selbox .h-w{left:-1.4mm;top:calc(50% - 1.3mm);cursor:ew-resize}
+.g-selbox .g-tools{position:absolute;left:-.4mm;top:-6.4mm;display:flex;gap:.7mm;pointer-events:auto;white-space:nowrap}
+.g-selbox .g-tools button{background:var(--accent);color:#191919;border:none;border-radius:.8mm;font-size:2.5mm;font-weight:800;padding:.7mm 1.4mm;cursor:pointer;font-family:inherit;line-height:1.25}
+.g-selbox .g-tools button:hover{filter:brightness(1.1)}
+.g-selbox .g-size{position:absolute;right:0;bottom:-5.4mm;background:#15161c;color:#fff;border-radius:.8mm;font-size:2.3mm;font-weight:700;padding:.5mm 1.2mm;white-space:nowrap}
+.g-guide{position:absolute;background:var(--accent);z-index:60;pointer-events:none}
+.g-marq{position:absolute;border:.3mm dashed var(--accent);background:rgba(255,153,0,.14);z-index:55;pointer-events:none}
+[contenteditable=true].g-ed{outline:.45mm solid #2a6aad;outline-offset:.2mm;background:rgba(42,106,173,.10);border-radius:.4mm;cursor:text}
+
+/* --- Inspektörspanelen --- */
+.g-side{position:relative;width:306px;flex:0 0 306px;background:#fff;border-left:1px solid #e2e2ea;position:sticky;top:var(--tbh,50px);max-height:calc(100vh - var(--tbh,50px));overflow-y:auto;padding:13px 14px 50px;font-size:12px;color:#2a2a31}
+body.g-side-off .g-side{display:none}
+.g-side-x{display:none;position:absolute;right:10px;top:10px;background:#f0f0f4;border:none;border-radius:7px;width:26px;height:26px;font-size:15px;line-height:1;cursor:pointer;color:#55555f;font-family:inherit}
+.g-side-x:hover{background:#e0e0e8}
+.g-side h4{font-size:10.5px;text-transform:uppercase;letter-spacing:.7px;color:#9a9aa5;font-weight:800;margin:14px 0 7px}
+.g-side h4:first-child{margin-top:0}
+.g-side .g-empty{font-size:12px;color:#9a9aa5;line-height:1.5}
+.g-side .g-divider{height:1px;background:#ededf1;margin:12px 0}
+.gf{display:flex;flex-direction:column;gap:4px;margin-bottom:9px}
+.gf>label{font-size:10.5px;font-weight:800;color:#8a8a95;text-transform:uppercase;letter-spacing:.4px}
+.gf input[type=text],.gf input[type=number],.gf select,.gf textarea{font-family:inherit;font-size:12px;padding:7px 8px;border:1px solid #dcdce3;border-radius:7px;background:#fafafb;color:#26262b;outline:none;width:100%;box-sizing:border-box}
+.gf textarea{resize:vertical;min-height:64px;line-height:1.4}
+.gf input:focus,.gf select:focus,.gf textarea:focus{border-color:var(--accent);background:#fff}
+.gf input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer}
+.gf input[type=color]{width:100%;height:28px;padding:2px;border:1px solid #dcdce3;border-radius:7px;background:#fff;cursor:pointer}
+.grow{display:flex;gap:7px}
+.grow>*{flex:1;min-width:0}
+.gchk{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:#33333a;cursor:pointer;margin-bottom:8px}
+.gchk input{width:15px;height:15px;accent-color:var(--accent);cursor:pointer}
+.gbtn{display:inline-flex;align-items:center;justify-content:center;gap:6px;background:#f0f0f4;border:none;border-radius:8px;padding:8px 10px;font-size:12px;font-weight:700;color:#33333a;cursor:pointer;font-family:inherit;width:100%;margin-bottom:6px}
+.gbtn:hover{background:#e4e4ec}
+.gbtn.primary{background:var(--accent);color:#191919}
+.gbtn.primary:hover{filter:brightness(1.07)}
+.gbtn.danger{color:#c0392b;background:#f8eae8}
+.gbtn.danger:hover{background:#c0392b;color:#fff}
+.gbtn.sm{width:auto;flex:1;padding:7px 4px;font-size:11.5px}
+.gitem{display:flex;gap:4px;align-items:center;margin-bottom:5px}
+.gitem select{width:58px;flex:0 0 58px;font-size:11px;padding:5px 2px;border:1px solid #dcdce3;border-radius:6px;background:#fafafb;font-family:inherit;color:#26262b}
+.gitem .gtx{display:flex;flex-direction:column;gap:3px;flex:1;min-width:0}
+.gitem input[type=text]{width:100%;font-size:11.5px;padding:5px 6px;border:1px solid #dcdce3;border-radius:6px;background:#fafafb;font-family:inherit;color:#26262b;outline:none;box-sizing:border-box}
+.gitem input[type=text]:focus{border-color:var(--accent);background:#fff}
+.gitem .gmini{background:#f0f0f4;border:none;border-radius:6px;width:22px;height:26px;cursor:pointer;font-size:12px;color:#55555f;flex-shrink:0;font-family:inherit;line-height:1}
+.gitem .gmini:hover{background:#dedee6}
+.gitem .gmini.del:hover{background:#c0392b;color:#fff}
+.gitem .gic{width:28px;flex:0 0 28px;height:26px;background:#f0f0f4;border:none;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0}
+.gitem .gic:hover{background:#dedee6}
+.gitem .gic .gi{width:15px;height:15px;stroke:#44444c}
+.gcol{display:flex;flex-direction:column;gap:3px;margin-bottom:9px}
+.gcol .grow{align-items:center}
+.gnote{font-size:10.5px;color:#9a9aa5;line-height:1.45;margin:0 0 9px}
+.gkbd{font-size:10.5px;color:#8a8a95;line-height:1.7}
+.gkbd b{display:inline-block;background:#f0f0f4;border-radius:4px;padding:1px 5px;font-size:10px;color:#44444c;font-weight:800}
+
+/* Ikonväljaren */
+.g-icons{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;padding:4px 22px 8px;overflow-y:auto}
+.g-icons button{background:#f4f4f7;border:none;border-radius:8px;aspect-ratio:1;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0}
+.g-icons button:hover{background:var(--accent)}
+.g-icons button.on{background:var(--accent);box-shadow:0 0 0 2px #191919 inset}
+.g-icons .gi{width:20px;height:20px;stroke:#26262b}
+
+/* Ikonernas grundstil */
+.gi{fill:none;stroke:currentColor;stroke-width:1.85;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+
+@media (max-width:1180px){
+  .g-side{position:fixed;right:0;top:var(--tbh,50px);z-index:120;box-shadow:-8px 0 26px rgba(0,0,0,.2)}
+  .g-side-x{display:block}
+  .g-side h4:first-child{padding-right:30px}
+}
+
 @media print{
   .lbox,.lhover{display:none!important;outline:none!important}
   body{background:#fff}
@@ -314,6 +498,19 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
   #layout-extra .layout-back .riskt, #layout-extra .layout-plan .riskt{line-height:1.2}
   #layout-extra .layout-back .logo, #layout-extra .layout-plan .logo{height:34px!important}
   #layout-extra .layout-back .sec, #layout-extra .layout-plan .sec{break-inside:avoid}
+  /* --- Nödguiden: skriv ut exakt det som visas, ett ark per sida --- */
+  .g-bar,.g-side,.g-plabel,.g-selbox,.g-guide,.g-marq,.g-pop{display:none!important}
+  body.guide-on #view-combined,body.guide-on #view-dyklog,body.guide-on #layout-extra{display:none!important}
+  body.guide-on #view-guide{display:block!important}
+  .g-scroll{padding:0!important;overflow:visible!important}
+  #g-pages{transform:none!important;height:auto!important;margin-bottom:0!important}
+  .g-wrap{display:block!important}
+  .g-pagewrap{margin:0!important;width:auto!important;break-after:page;page-break-after:always}
+  .g-pagewrap:last-child{break-after:auto;page-break-after:auto}
+  .g-page{box-shadow:none!important;background-image:none!important;overflow:hidden}
+  .g-blk{box-shadow:none!important}
+  .g-blk.of::after{display:none!important}
+  .g-fi{border-bottom-color:#8a8a95!important;background:transparent!important}
 @page{size:A4 landscape;margin:3mm}
 @page pp{size:A4 portrait;margin:3mm}
 </style>
@@ -329,6 +526,7 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
 <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 13a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></symbol>
 <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="14 3 14 9 20 9"/></symbol>
 <symbol id="i-chev" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></symbol>
+<symbol id="i-life" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.8"/><line x1="5.6" y1="5.6" x2="9.3" y2="9.3"/><line x1="14.7" y1="14.7" x2="18.4" y2="18.4"/><line x1="18.4" y1="5.6" x2="14.7" y2="9.3"/><line x1="9.3" y1="14.7" x2="5.6" y2="18.4"/></symbol>
 <symbol id="i-layout" viewBox="0 0 24 24"><polygon points="12 3 21 8 12 13 3 8 12 3"/><polyline points="3 13 12 18 21 13"/></symbol>
 </defs></svg>
 
@@ -344,6 +542,8 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
       <button class="btn layout-opt" data-lay="2x-copy" onclick="setLayout('2x-copy')">2&#215; Dyklogg dubbelsidig <small>kopia p&#229; baksidan</small></button>
       <button class="btn layout-opt" data-lay="2x-plan" onclick="setLayout('2x-plan')">2&#215; Dyklogg + Dykplan <small>dykplan p&#229; baksidan</small></button>
       <button class="btn layout-opt" data-lay="hel-plan" onclick="setLayout('hel-plan')">Hel Dykplan <small>st&#229;ende A4</small></button>
+      <div class="menu-divider"></div>
+      <button class="btn layout-opt" data-lay="nodguide" onclick="setLayout('nodguide')">N&#246;dguide <small>2 sidor, helt anpassningsbar</small></button>
       <p class="menu-note">H&#228;r v&#228;ljer du allt om fram- och baksida. Har layouten en baksida visas den under framsidan p&#229; sk&#228;rmen och skrivs ut p&#229; ett eget ark.</p>
     </div>
   </div>
@@ -411,6 +611,10 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
   <!-- L&#228;gen (ikon-knappar) -->
   <button class="btn icon" id="edit-btn" title="Redigera text" aria-label="Redigera text" onclick="toggleEdit()"><svg class="ic"><use href="#i-pencil"/></svg></button>
   <button class="btn icon" id="move-btn" title="Flytta / Skala" aria-label="Flytta / Skala" onclick="toggleMove()"><svg class="ic"><use href="#i-move"/></svg></button>
+
+  <div class="tb-sep"></div>
+
+  <button class="btn" id="guide-btn" title="N&#246;dguide &#8211; anpassningsbar n&#246;d- &amp; hj&#228;lpguide" onclick="setLayout('nodguide')"><svg class="ic"><use href="#i-life"/></svg> N&#246;dguide</button>
 
   <div class="tb-spacer"></div>
 
@@ -1002,6 +1206,81 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
 </div></div>
 
 
+<!-- ==========================================================================
+     NÖDGUIDE — egen sida med fritt flyttbara block (se guide-koden i <script>)
+     ========================================================================== -->
+<div id="view-guide">
+  <div class="g-wrap">
+    <div class="g-main">
+
+      <div class="g-bar">
+        <div class="g-tabs" id="g-tabs"></div>
+        <button class="gb" title="L&#228;gg till en ny sida" onclick="gAddPage()">+ Sida</button>
+
+        <div class="gsep"></div>
+
+        <div class="g-popwrap">
+          <button class="gb primary" id="g-add-btn" title="L&#228;gg till ett nytt block" onclick="gTogglePop(event)">+ Block</button>
+          <div class="g-pop" id="g-add-pop"></div>
+        </div>
+
+        <button class="gb on" id="g-edit-btn" onclick="gSetEdit(!gEdit)">&#9998; Redigera</button>
+
+        <div class="gsep"></div>
+
+        <button class="gb on" id="g-grid-btn" onclick="gSetGrid('show')" title="Visa rutn&#228;t">&#9638; Rutn&#228;t</button>
+        <button class="gb on" id="g-snap-btn" onclick="gSetGrid('snap')" title="F&#228;st block mot rutn&#228;tet">&#10023; F&#228;st</button>
+        <select id="g-gridsize" onchange="gSetGridSize(this.value)" title="Rutn&#228;tets storlek">
+          <option value="1">1 mm</option>
+          <option value="2">2 mm</option>
+          <option value="2.5">2,5 mm</option>
+          <option value="5">5 mm</option>
+          <option value="10">10 mm</option>
+        </select>
+        <button class="gb on" id="g-guides-btn" onclick="gSetGrid('guides')" title="St&#246;dlinjer som f&#228;ster mot andra block">&#8942; St&#246;dlinjer</button>
+
+        <div class="gsep"></div>
+
+        <button class="gb" onclick="gZoomStep(-1)" title="Zooma ut">&#8722;</button>
+        <span class="g-zoomval" id="g-zoomval">100%</span>
+        <button class="gb" onclick="gZoomStep(1)" title="Zooma in">+</button>
+        <button class="gb" onclick="gZoomFit()" title="Anpassa till f&#246;nstret">Anpassa</button>
+
+        <div class="gsep"></div>
+
+        <button class="gb" id="g-undo-btn" onclick="gUndo()" title="&#197;ngra (Ctrl+Z)">&#8630; &#197;ngra</button>
+        <button class="gb" id="g-redo-btn" onclick="gRedo()" title="G&#246;r om (Ctrl+Y)">&#8631; G&#246;r om</button>
+
+        <div class="tb-spacer" style="flex:1 1 8px"></div>
+
+        <button class="gb" onclick="gExport()" title="Spara guiden som fil">&#8681; Spara</button>
+        <button class="gb" onclick="gImport()" title="Ladda en guide fr&#229;n fil">&#8679; Ladda</button>
+        <button class="gb" onclick="gResetDoc()" title="&#197;terst&#228;ll till standardguiden">&#10227; Standard</button>
+        <button class="gb" id="g-side-btn" onclick="gToggleSide()" title="Visa/d&#246;lj inst&#228;llningspanelen">&#9776; Panel</button>
+      </div>
+
+      <div class="g-scroll" id="g-scroll"><div id="g-pages"></div></div>
+    </div>
+
+    <aside class="g-side" id="g-side">
+      <button class="g-side-x" onclick="gToggleSide()" title="D&#246;lj panelen" aria-label="D&#246;lj panelen">&times;</button>
+      <div id="g-side-body"></div>
+    </aside>
+  </div>
+</div>
+
+<!-- Ikonv&#228;ljare f&#246;r n&#246;dguiden -->
+<div id="g-icon-overlay" class="modal-overlay">
+  <div class="modal-card at-card">
+    <div class="modal-head" style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+      <span>V&#228;lj ikon</span>
+      <button class="at-x" onclick="gCloseIcons()" aria-label="St&#228;ng">&times;</button>
+    </div>
+    <div class="g-icons" id="g-icon-list"></div>
+    <div class="modal-foot"><button class="modal-btn ghost" style="flex:1" onclick="gPickIcon('none')">Ingen ikon</button></div>
+  </div>
+</div>
+
 <!-- Arbetstyp modal -->
 <div id="at-overlay" class="modal-overlay">
   <div class="modal-card at-card">
@@ -1257,7 +1536,8 @@ function exportProfile() {
     margins: { ml: ls('ml') || '4', mr: ls('mr') || '4', mid: ls('mid') || '4' },
     paper: ls('paper') || 'A4',
     printmode: ls('printmode') || 'off',
-    octopus: ls('octopus') === '1'
+    octopus: ls('octopus') === '1',
+    guide: (typeof GDOC !== 'undefined' && GDOC) ? GDOC : null
   };
   download('dyklogg-foretagsprofil.json', JSON.stringify(profile, null, 2), 'application/json');
   closeMenus(); toast('✓ Företagsprofil sparad');
@@ -1294,6 +1574,7 @@ function applyProfile(p) {
   if (p.paper) { setPaper(p.paper); const el = document.getElementById('papersize'); if (el) el.value = p.paper; }
   if (p.printmode) setPrintMode(p.printmode);
   if (p.octopus !== undefined) setOctopus(!!p.octopus);
+  if (p.guide && Array.isArray(p.guide.blocks) && typeof gApplyDoc === 'function') gApplyDoc(p.guide);
   try { localStorage.setItem(K('autosave'), JSON.stringify(gatherAll())); } catch (e) {}
   closeMenus(); toast('✓ Företagsprofil laddad');
 }
@@ -1397,7 +1678,7 @@ function archiveSave() {
 /** Tömmer formuläret och påbörjar ett nytt, tomt dyk. */
 async function newDive() {
   if (!await uiConfirm('Starta ett nytt, tomt dyk?\nOsparade ändringar i det nuvarande går förlorade om du inte sparat det i arkivet.', { title: 'Nytt dyk', okText: 'Nytt dyk' })) return;
-  document.querySelectorAll('input[type=text]').forEach(el => el.value = '');
+  document.querySelectorAll('input[type=text]').forEach(el => { if (!el.closest('#view-guide')) el.value = ''; });
   document.querySelectorAll('input[type=checkbox]').forEach(el => el.checked = false);
   ['main','b1','b2'].forEach(inst => { atInstances[inst].checked = {}; renderGrid(inst); });
   glSpans().forEach(sp => sp.classList.remove('gsel'));
@@ -1668,6 +1949,7 @@ let currentView = 'combined';
 /** Växlar mellan vyerna combined/dyklog och håller Layout-menyn i synk. */
 function switchView(v) {
   if (typeof resetLayout === 'function') resetLayout();   // städa ev. layout-baksida först
+  if (typeof gShow === 'function') gShow(false);          // nödguiden är en egen vy
   currentView = v;
   const vc = document.getElementById('view-combined'); if (vc) vc.style.display = v==='combined' ? 'flex' : 'none';
   const vd = document.getElementById('view-dyklog');   if (vd) vd.style.display   = v==='dyklog'   ? 'flex' : 'none';
@@ -1752,7 +2034,16 @@ function syncCopyBack() {
 function setLayout(name) {
   resetLayout();
   setPrintMode('off');                              // Layout sköter baksidor; gamla "Baksida"-valet är borta
-  if (name === 'logg-plan') { switchView('combined'); }
+  if (name === 'nodguide') {
+    // Nödguiden är en helt egen vy (eget dokument med fritt placerade block).
+    const vc = document.getElementById('view-combined'); if (vc) vc.style.display = 'none';
+    const vd = document.getElementById('view-dyklog');   if (vd) vd.style.display = 'none';
+    if (typeof editMode !== 'undefined' && editMode) toggleEdit();   // appens text- och flyttlägen
+    if (typeof moveMode !== 'undefined' && moveMode) toggleMove();   // gäller inte guiden
+    currentView = 'guide';
+    if (typeof gShow === 'function') gShow(true);
+  }
+  else if (name === 'logg-plan') { switchView('combined'); }
   else if (name === '2x') { switchView('dyklog'); }
   else if (name === '2x-copy') { switchView('dyklog'); _copyBackPage(); }
   else if (name === '2x-plan') { switchView('dyklog'); _planPage('layout-back', '⤵ Baksida – Dykplan (stående)'); }
@@ -1771,7 +2062,7 @@ function setLayout(name) {
 }
 /** Uppdaterar Layout-knappens etikett och markerar det aktiva valet. */
 function updateLayoutUI() {
-  const names = { 'logg-plan': 'Logg + Plan', '2x': '2× Dyklogg', '2x-copy': '2× dubbelsidig', '2x-plan': '2× + Dykplan', 'hel-plan': 'Hel Dykplan' };
+  const names = { 'logg-plan': 'Logg + Plan', '2x': '2× Dyklogg', '2x-copy': '2× dubbelsidig', '2x-plan': '2× + Dykplan', 'hel-plan': 'Hel Dykplan', 'nodguide': 'Nödguide' };
   const lbl = document.getElementById('layout-label');
   if (lbl) lbl.textContent = names[activeLayout] || 'Layout';
   document.querySelectorAll('.layout-opt').forEach(b => b.classList.toggle('sel', b.getAttribute('data-lay') === activeLayout));
@@ -1798,9 +2089,13 @@ const PRINT_MARGIN_MM = 3;
  *  liggande i samma jobb, så hela jobbet får EN orientering: Hel Dykplan =
  *  stående (ensamt ark), alla andra lägen = liggande. */
 function applyPageStyle() {
+  const guide = (typeof activeLayout !== 'undefined' && activeLayout === 'nodguide');
   const orient = (typeof activeLayout !== 'undefined' && activeLayout === 'hel-plan') ? 'portrait' : 'landscape';
+  // Nödguiden är ritad i millimeter för A4 liggande – då styr den pappersvalet
+  // själv, annars skulle blocken hamna i ett hörn på ett A3-ark.
+  const size = guide ? 'A4' : _paper;
   const ps = document.getElementById('page-style');
-  if (ps) ps.textContent = '@page{size:' + _paper + ' ' + orient + ';margin:' + PRINT_MARGIN_MM + 'mm}';
+  if (ps) ps.textContent = '@page{size:' + size + ' ' + orient + ';margin:' + PRINT_MARGIN_MM + 'mm}';
 }
 /** Sätter och sparar pappersformat (A4/A3) och uppdaterar utskriftsreglerna. */
 function setPaper(v) {
@@ -2447,6 +2742,1349 @@ function toast(msg) {
   setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 400); }, 1800);
 }
 
+/* ============================================================================
+ *  NÖDGUIDE — en egen sida (flik) med fritt flyttbara block
+ *  ---------------------------------------------------------------------------
+ *  Allt ritas i MILLIMETER direkt på ett A4-liggande ark, så skärmen visar
+ *  exakt det som kommer ut ur skrivaren. Guiden är ett eget "dokument"
+ *  (GDOC) som sparas i localStorage under nyckeln K('guide') och kan
+ *  exporteras/importeras som fil samt följa med företagsprofilen.
+ *
+ *  Vill du ändra standardguiden permanent? Se gDefaultDoc() längst ner i
+ *  det här avsnittet — den bygger hela standardaffischen block för block.
+ * ========================================================================== */
+
+/* Arkets ritbara yta i mm: A4 liggande (297×210) minus utskriftsmarginalen. */
+const G_PAGE = { w: 297 - 2 * PRINT_MARGIN_MM, h: 210 - 2 * PRINT_MARGIN_MM };
+
+/* --- Ikonbibliotek (24×24, ritas med linjer så de skalar snyggt) ---------- */
+const G_ICONS = {
+  none:      { n: 'Ingen',            d: '' },
+  lungs:     { n: 'Luft / gas',       d: '<path d="M12 3v9"/><path d="M10 21c-2.6 0-4-1.5-4-4 0-3.2 1-5.7 2.3-7.6.7-1.1 1.7-.6 1.7.6V21z"/><path d="M14 21c2.6 0 4-1.5 4-4 0-3.2-1-5.7-2.3-7.6-.7-1.1-1.7-.6-1.7.6V21z"/>' },
+  chain:     { n: 'Fastnad',          d: '<path d="M10 13.5a3.5 3.5 0 0 1 0-5l2-2a3.5 3.5 0 0 1 5 5l-1 1"/><path d="M14 10.5a3.5 3.5 0 0 1 0 5l-2 2a3.5 3.5 0 0 1-5-5l1-1"/>' },
+  wrench:    { n: 'Utrustning',       d: '<path d="M15.2 3.4a4.6 4.6 0 0 0-5.6 6l-6 6a2.1 2.1 0 0 0 3 3l6-6a4.6 4.6 0 0 0 6-5.6l-2.8 2.8-2.6-.7-.7-2.6 2.7-2.9z"/>' },
+  radio:     { n: 'Radio',            d: '<rect x="7" y="8" width="9" height="13" rx="1.6"/><line x1="16.5" y1="3.5" x2="13" y2="8"/><line x1="9.5" y1="12" x2="13.5" y2="12"/><line x1="9.5" y1="15" x2="13.5" y2="15"/><path d="M18.5 5.5a5.5 5.5 0 0 1 3 3"/>' },
+  eye:       { n: 'Sikt',             d: '<path d="M2 12s3.7-6 10-6 10 6 10 6-3.7 6-10 6-10-6-10-6z"/><circle cx="12" cy="12" r="2.6"/>' },
+  ship:      { n: 'Fartyg',           d: '<path d="M3.5 17l1.4-4.6h14.2L20.5 17"/><path d="M3 17c1.9 0 1.9 2.2 3.8 2.2S8.7 17 10.5 17s1.9 2.2 3.8 2.2S16.1 17 18 17s1.9 2.2 3 2.2"/><path d="M8 12.4V7.2h8v5.2"/><line x1="12" y1="7.2" x2="12" y2="3.4"/>' },
+  bolt:      { n: 'Ström / el',       d: '<polygon points="13 2.5 4.5 14 10.8 14 10 21.5 19.5 9.5 13 9.5"/>' },
+  cross:     { n: 'Sjukvård',         d: '<rect x="3" y="3" width="18" height="18" rx="3.4"/><line x1="12" y1="7.6" x2="12" y2="16.4"/><line x1="7.6" y1="12" x2="16.4" y2="12"/>' },
+  diver:     { n: 'Dykare',           d: '<circle cx="12" cy="4.6" r="2.3"/><path d="M12 6.9V15"/><path d="M7.8 10.3L12 8.8l4.2 1.5"/><path d="M9.2 21l2.8-6 2.8 6"/>' },
+  wave:      { n: 'Vatten / ström',   d: '<path d="M2 8.5c2.5 0 2.5 2.2 5 2.2s2.5-2.2 5-2.2 2.5 2.2 5 2.2 2.5-2.2 5-2.2"/><path d="M2 14.5c2.5 0 2.5 2.2 5 2.2s2.5-2.2 5-2.2 2.5 2.2 5 2.2 2.5-2.2 5-2.2"/>' },
+  snow:      { n: 'Kyla',             d: '<line x1="12" y1="2.5" x2="12" y2="21.5"/><line x1="3.8" y1="7.2" x2="20.2" y2="16.8"/><line x1="3.8" y1="16.8" x2="20.2" y2="7.2"/><polyline points="9.2 4.6 12 6.6 14.8 4.6"/><polyline points="9.2 19.4 12 17.4 14.8 19.4"/>' },
+  fire:      { n: 'Brand',            d: '<path d="M12 21.5c3.9 0 6.4-2.7 6.4-6.2 0-4.6-4.3-6.6-3.5-11.8-2.6 1-4.2 3.1-4.2 5.6 0 1.6-1 2.2-1.8 1.4-.6-.6-.8-1.6-.8-2.4-1.5 2-2.5 4.2-2.5 7.2 0 3.7 2.6 6.2 6.4 6.2z"/>' },
+  hazard:    { n: 'Förorening',       d: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="8.8" r="2.3"/><circle cx="8.6" cy="14.4" r="2.3"/><circle cx="15.4" cy="14.4" r="2.3"/>' },
+  panic:     { n: 'Panik',            d: '<path d="M12 3a7 7 0 0 0-4 12.8V19a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-3.2A7 7 0 0 0 12 3z"/><path d="M10.5 9.9a1.6 1.6 0 1 1 2.3 1.5c-.5.3-.8.8-.8 1.4"/><circle cx="12" cy="15.4" r=".75" fill="currentColor" stroke="none"/>' },
+  warn:      { n: 'Varning',          d: '<path d="M12 3.4L21.6 20.2H2.4L12 3.4z"/><line x1="12" y1="9.8" x2="12" y2="14.4"/><circle cx="12" cy="17.2" r=".8" fill="currentColor" stroke="none"/>' },
+  vortex:    { n: 'Insug / sug',      d: '<path d="M13.6 12a1.6 1.6 0 1 1-3.2 0c0-2 1.9-3.6 4-3.6s4.3 1.9 4.3 4.5-2.3 4.9-5.2 4.9-5.9-2.5-5.9-5.8S9.6 6 13.6 6"/>' },
+  stop:      { n: 'Stopp',            d: '<polygon points="8.3 3 15.7 3 21 8.3 21 15.7 15.7 21 8.3 21 3 15.7 3 8.3"/>' },
+  shield:    { n: 'Säkra',            d: '<path d="M12 3l7.2 3v5.6c0 4.4-3 8.1-7.2 9.8-4.2-1.7-7.2-5.4-7.2-9.8V6L12 3z"/>' },
+  headset:   { n: 'Dykarskötare',     d: '<path d="M5 14v-2.2a7 7 0 0 1 14 0V14"/><rect x="2.6" y="13.4" width="4.2" height="6.2" rx="1.7"/><rect x="17.2" y="13.4" width="4.2" height="6.2" rx="1.7"/><path d="M19.3 19.6v.4a2.4 2.4 0 0 1-2.4 2.4h-3"/>' },
+  helmet:    { n: 'Dykledare',        d: '<path d="M3.6 17.6a8.4 8.4 0 0 1 16.8 0z"/><path d="M9 9.3V5.5A1.5 1.5 0 0 1 10.5 4h3A1.5 1.5 0 0 1 15 5.5v3.8"/><line x1="2.2" y1="20.2" x2="21.8" y2="20.2"/>' },
+  phone:     { n: 'Telefon',          d: '<path d="M6.4 3h3.2l1.6 4-2.2 1.6a12.2 12.2 0 0 0 6.4 6.4L17 12.8l4 1.6v3.1a2.5 2.5 0 0 1-2.7 2.5C10.4 19.3 4.7 13.6 4 5.7A2.5 2.5 0 0 1 6.4 3z"/>' },
+  ambulance: { n: 'Ambulans',         d: '<path d="M2 17V8h11v9"/><path d="M13 11.2h4l4 3.4V17"/><circle cx="7" cy="18.4" r="1.9"/><circle cx="17.4" cy="18.4" r="1.9"/><line x1="7.4" y1="10.4" x2="7.4" y2="14"/><line x1="5.6" y1="12.2" x2="9.2" y2="12.2"/>' },
+  hospital:  { n: 'Sjukhus',          d: '<path d="M4 21V7.4L12 3l8 4.4V21"/><line x1="12" y1="9.6" x2="12" y2="15.4"/><line x1="9.1" y1="12.5" x2="14.9" y2="12.5"/>' },
+  chamber:   { n: 'Tryckkammare',     d: '<rect x="3" y="6.6" width="18" height="10.4" rx="5.2"/><line x1="8.2" y1="6.8" x2="8.2" y2="16.8"/><circle cx="16" cy="11.8" r="1.7"/><line x1="3" y1="19.8" x2="21" y2="19.8"/>' },
+  o2:        { n: 'Syrgas',           d: '<rect x="8" y="6" width="8" height="15" rx="3"/><path d="M10.4 6V4.4h3.2V6"/><line x1="10.2" y1="10.2" x2="13.8" y2="10.2"/><line x1="12" y1="3" x2="12" y2="4.4"/>' },
+  aid:       { n: 'Första hjälpen',   d: '<rect x="2.5" y="7" width="19" height="13" rx="2.6"/><path d="M9 7V5.2A1.6 1.6 0 0 1 10.6 3.6h2.8A1.6 1.6 0 0 1 15 5.2V7"/><line x1="12" y1="10.6" x2="12" y2="16.4"/><line x1="9.1" y1="13.5" x2="14.9" y2="13.5"/>' },
+  aed:       { n: 'HLR / AED',        d: '<path d="M20.6 8.8a4.5 4.5 0 0 0-7.7-2.7L12 7.1l-.9-1a4.5 4.5 0 0 0-7.7 2.7c0 4.4 6.3 8.1 8.6 10.4 2.3-2.3 8.6-6 8.6-10.4z"/><polyline points="6.4 11.8 9.6 11.8 11 9.4 13.2 14.4 14.6 11.8 17.6 11.8"/>' },
+  stretcher: { n: 'Bår',              d: '<rect x="4.2" y="9.4" width="15.6" height="5" rx="1.6"/><circle cx="7.6" cy="18" r="1.8"/><circle cx="16.4" cy="18" r="1.8"/><line x1="2" y1="9.4" x2="2" y2="14.4"/><line x1="22" y1="9.4" x2="22" y2="14.4"/>' },
+  lamp:      { n: 'Lampa',            d: '<path d="M9 3h6v3.8l2 2V20a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V8.8l2-2V3z"/><line x1="10.4" y1="12.4" x2="13.6" y2="12.4"/>' },
+  knife:     { n: 'Kniv',             d: '<path d="M4 20.2l6.4-6.4"/><path d="M10.4 13.8l6.2-9.6 3.2 3.2-9.4 6.4z"/>' },
+  scissors:  { n: 'Kabelsax',         d: '<circle cx="6.2" cy="17.8" r="2.4"/><circle cx="17.8" cy="17.8" r="2.4"/><line x1="7.9" y1="16.1" x2="18" y2="4"/><line x1="16.1" y1="16.1" x2="6" y2="4"/>' },
+  camera:    { n: 'Kamera',           d: '<rect x="2.5" y="7" width="19" height="13" rx="2.6"/><circle cx="12" cy="13.5" r="3.6"/><path d="M8.4 7l1.4-2.6h4.4L15.6 7"/>' },
+  tool:      { n: 'Verktyg',          d: '<path d="M14.6 3.4a4.6 4.6 0 0 1 5.8 5.8L18 6.8l-2.6.7-.7 2.6 2.4 2.4a4.6 4.6 0 0 1-5.8-5.8"/><path d="M11.3 9.7L3.7 17.3a2 2 0 1 0 2.8 2.8l7.6-7.6"/>' },
+  anchor:    { n: 'Anläggning',       d: '<circle cx="12" cy="4.4" r="2"/><line x1="12" y1="6.4" x2="12" y2="21"/><line x1="8" y1="9.4" x2="16" y2="9.4"/><path d="M4 13.6c0 4.1 3.6 7.4 8 7.4s8-3.3 8-7.4"/>' },
+  pin:       { n: 'Plats',            d: '<path d="M12 21.5s7-6.4 7-11.3a7 7 0 1 0-14 0c0 4.9 7 11.3 7 11.3z"/><circle cx="12" cy="10" r="2.6"/>' },
+  clock:     { n: 'Tid',              d: '<circle cx="12" cy="12" r="9"/><polyline points="12 6.4 12 12 16 14.2"/>' },
+  doc:       { n: 'Dokument',         d: '<path d="M14 3H6.4A2 2 0 0 0 4.4 5v14a2 2 0 0 0 2 2h11.2a2 2 0 0 0 2-2V8.6z"/><polyline points="14 3 14 8.6 19.6 8.6"/>' },
+  list:      { n: 'Checklista',       d: '<rect x="4" y="3" width="16" height="18" rx="2.2"/><polyline points="7.4 9 8.9 10.5 11.9 7.5"/><line x1="13.6" y1="9" x2="17" y2="9"/><polyline points="7.4 15.6 8.9 17.1 11.9 14.1"/><line x1="13.6" y1="15.6" x2="17" y2="15.6"/>' },
+  arrowup:   { n: 'Ta upp',           d: '<line x1="12" y1="21" x2="12" y2="4.4"/><polyline points="5.8 10.6 12 4.4 18.2 10.6"/>' },
+  check:     { n: 'Klart',            d: '<polyline points="4 12.6 9.4 18 20 6"/>' },
+  rope:      { n: 'Livlina',          d: '<path d="M3 19.5c4.5 0 4.5-15 9-15s4.5 15 9 15"/>' },
+  winch:     { n: 'Vinsch',           d: '<rect x="2.6" y="6.4" width="12" height="8" rx="2"/><line x1="14.6" y1="10.4" x2="19" y2="10.4"/><path d="M19 10.4v4.2a2.6 2.6 0 0 1-5.2 0"/>' },
+  ring:      { n: 'Flotte / boj',     d: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.8"/>' },
+  gas:       { n: 'Reservgas',        d: '<rect x="7" y="6.6" width="10" height="14.4" rx="2.4"/><path d="M10 6.6V4.6h4v2"/><line x1="12" y1="2.6" x2="12" y2="4.6"/><line x1="9.4" y1="11" x2="14.6" y2="11"/>' },
+  users:     { n: 'Besättning',       d: '<circle cx="9" cy="7.8" r="3"/><path d="M3.2 20a5.8 5.8 0 0 1 11.6 0"/><path d="M16.2 5.4a3 3 0 0 1 0 5"/><path d="M17 14.6a5.8 5.8 0 0 1 3.8 5.4"/>' },
+  user:      { n: 'Person',           d: '<circle cx="12" cy="7.8" r="3.4"/><path d="M5 20.4a7 7 0 0 1 14 0"/>' },
+  drop:      { n: 'Vatten',           d: '<path d="M12 3s6 6.7 6 10.6a6 6 0 0 1-12 0C6 9.7 12 3 12 3z"/>' },
+  plug:      { n: 'Kraft / pump',     d: '<line x1="9" y1="3" x2="9" y2="8"/><line x1="15" y1="3" x2="15" y2="8"/><path d="M6 8h12v3.2a6 6 0 0 1-12 0V8z"/><line x1="12" y1="17.2" x2="12" y2="21"/>' },
+  info:      { n: 'Information',      d: '<circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16.6"/><circle cx="12" cy="7.8" r=".85" fill="currentColor" stroke="none"/>' },
+  rescue:    { n: 'Räddningstjänst',  d: '<circle cx="12" cy="12" r="9"/><path d="M12 6.2l1.9 3.3h-3.8L12 6.2z"/><path d="M8.4 16.4l-1.9-3.3 3.8-.1-1.9 3.4z"/><path d="M15.6 16.4l1.9-3.3-3.8-.1 1.9 3.4z"/>' },
+  flag:      { n: 'Flagga',           d: '<line x1="5.5" y1="21" x2="5.5" y2="3"/><path d="M5.5 4h11l-2.2 3.6L16.5 11h-11z"/>' }
+};
+const G_ICON_KEYS = Object.keys(G_ICONS);
+
+/** Returnerar SVG-koden för en ikon (tom sträng om ingen/okänd). */
+function gIcon(key, cls) {
+  const ic = G_ICONS[key];
+  if (!ic || !ic.d) return '';
+  return '<svg class="gi' + (cls ? ' ' + cls : '') + '" viewBox="0 0 24 24" aria-hidden="true">' + ic.d + '</svg>';
+}
+
+/* --- Tillstånd ----------------------------------------------------------- */
+let GDOC = null;          // hela guide-dokumentet
+let gSel = [];            // markerade block-id
+let gEdit = true;         // redigeringsläge på/av
+let gZoom = 1;            // skärmzoom (påverkar aldrig utskrift)
+let gPage = 0;            // "aktiv" sida (nya block hamnar här)
+let gHist = [], gHistI = -1;
+let gClip = null;         // urklipp för kopiera/klistra in
+let gIconCb = null;       // callback för ikonväljaren
+let gSaveT = null, gHistT = null;
+let gZoomAuto = true;      // sant tills användaren själv zoomat
+
+const gR = v => Math.round(v * 100) / 100;
+const gUid = () => 'b' + Math.random().toString(36).slice(2, 8) + (gUid._n = (gUid._n || 0) + 1);
+
+/** Antal skärm-pixlar per millimeter (följer zoomen). */
+function gMM() {
+  const p = document.querySelector('.g-page');
+  const w = p ? p.getBoundingClientRect().width : 0;
+  return w > 0 ? w / G_PAGE.w : (96 / 25.4) * gZoom;
+}
+function gFind(id) { return GDOC.blocks.filter(b => b.id === id)[0] || null; }
+function gPrimary() { return gSel.length ? gFind(gSel[gSel.length - 1]) : null; }
+function gGetPath(o, p) { return p.split('.').reduce((t, k) => (t == null ? t : t[k]), o); }
+function gSetPath(o, p, v) {
+  const a = p.split('.'); let t = o;
+  for (let i = 0; i < a.length - 1; i++) t = t[a[i]];
+  t[a[a.length - 1]] = v;
+}
+
+/* --- Sparning, ångra/gör om ---------------------------------------------- */
+function gSave() {
+  try { localStorage.setItem(K('guide'), JSON.stringify(GDOC)); } catch (e) {}
+}
+function gSaveSoon() { clearTimeout(gSaveT); gSaveT = setTimeout(gSave, 250); }
+/** Sparar + lägger en ångra-punkt (klumpar ihop snabba ändringar). */
+function gCommit(now) {
+  gSaveSoon();
+  clearTimeout(gHistT);
+  if (now) gHistPush(); else gHistT = setTimeout(gHistPush, 500);
+}
+function gHistPush() {
+  const snap = JSON.stringify(GDOC);
+  if (gHistI >= 0 && gHist[gHistI] === snap) return;
+  gHist = gHist.slice(0, gHistI + 1);
+  gHist.push(snap);
+  if (gHist.length > 60) gHist.shift();
+  gHistI = gHist.length - 1;
+  gHistUI();
+}
+function gHistUI() {
+  const u = document.getElementById('g-undo-btn'), r = document.getElementById('g-redo-btn');
+  if (u) u.style.opacity = gHistI > 0 ? '1' : '.4';
+  if (r) r.style.opacity = gHistI < gHist.length - 1 ? '1' : '.4';
+}
+function gUndo() {
+  clearTimeout(gHistT);
+  if (gHistI <= 0) return;
+  gHistI--;
+  GDOC = JSON.parse(gHist[gHistI]);
+  gSel = gSel.filter(id => gFind(id));
+  gSave(); gRender(); gInspector(); gHistUI(); toast('↶ Ångrade');
+}
+function gRedo() {
+  if (gHistI >= gHist.length - 1) return;
+  gHistI++;
+  GDOC = JSON.parse(gHist[gHistI]);
+  gSel = gSel.filter(id => gFind(id));
+  gSave(); gRender(); gInspector(); gHistUI(); toast('↷ Gjorde om');
+}
+
+/* --- Rendering ------------------------------------------------------------ */
+/** Ritar om hela guiden (alla sidor och block). */
+function gRender() {
+  const host = document.getElementById('g-pages');
+  if (!host || !GDOC) return;
+  host.innerHTML = '';
+  GDOC.pages.forEach((p, pi) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'g-pagewrap';
+    const lab = document.createElement('div');
+    lab.className = 'g-plabel';
+    lab.textContent = 'Sida ' + (pi + 1) + ' — A4 liggande (' + G_PAGE.w + '×' + G_PAGE.h + ' mm)';
+    const pg = document.createElement('div');
+    pg.className = 'g-page' + (GDOC.grid.show ? ' grid' + (GDOC.grid.size <= 2.5 ? ' g10' : '') : '');
+    pg.dataset.pi = pi;
+    pg.style.setProperty('--gs', GDOC.grid.size + 'mm');
+    pg.style.backgroundColor = p.bg || '#ffffff';
+    GDOC.blocks
+      .map((b, i) => ({ b: b, i: i }))
+      .filter(o => o.b.page === pi)
+      .sort((a, b) => ((a.b.z || 0) - (b.b.z || 0)) || (a.i - b.i))
+      .forEach(o => pg.appendChild(gBlockEl(o.b)));
+    wrap.appendChild(lab); wrap.appendChild(pg); host.appendChild(wrap);
+  });
+  gApplyZoom();
+  gMarkOverflowAll();
+  gPaintSel();
+  gPageTabs();
+}
+
+/** Bygger DOM-elementet för ett block. */
+function gBlockEl(b) {
+  const el = document.createElement('div');
+  el.className = 'g-blk t-' + b.type + ' v-' + (b.variant || 'light') + (b.locked ? ' locked' : '');
+  el.dataset.id = b.id;
+  el.style.left = b.x + 'mm'; el.style.top = b.y + 'mm';
+  el.style.width = b.w + 'mm'; el.style.height = b.h + 'mm';
+  el.style.setProperty('--fs', b.fs || 1);
+  if (b.bg) el.style.setProperty('--bg', b.bg);
+  if (b.fg) el.style.setProperty('--fg', b.fg);
+  if (b.bd) el.style.setProperty('--bd', b.bd);
+  if (b.pad != null) el.style.setProperty('--pad', b.pad + 'mm');
+  if (b.radius != null) el.style.setProperty('--rad', b.radius + 'mm');
+  el.innerHTML = gBlockHTML(b);
+  return el;
+}
+
+function gHeadHTML(b) {
+  if (b.noHead) return '';
+  return '<div class="g-head">' +
+    (b.num ? '<span class="g-num">' + _esc(b.num) + '</span>' : '') +
+    (b.icon && b.icon !== 'none' ? gIcon(b.icon) : '') +
+    '<span class="ttl" data-t="title">' + _esc(b.title || '') + '</span></div>';
+}
+
+function gItemHTML(it, i) {
+  const a = '<span class="tx" data-t="items.' + i + '.a">' + _esc(it.a || '') + '</span>';
+  const ic = it.icon && it.icon !== 'none' ? gIcon(it.icon) : '';
+  switch (it.t) {
+    case 's': return '<div class="g-sub" data-t="items.' + i + '.a">' + _esc(it.a || '') + '</div>';
+    case 'c': return '<div class="g-it"><span class="g-box' + (it.on ? ' on' : '') + '" data-ck="' + i + '"></span>' + a + '</div>';
+    case 'd': return '<div class="g-it"><span class="bu">–</span>' + a + '</div>';
+    case 'p': return '<div class="g-it">' + ic + a + '</div>';
+    case 'k': return '<div class="g-it g-kv">' + ic +
+      '<span class="a" data-t="items.' + i + '.a">' + _esc(it.a || '') + '</span>' +
+      '<span class="b" data-t="items.' + i + '.b">' + _esc(it.b || '') + '</span></div>';
+    case 'i': return '<div class="g-it g-ir">' + ic + '<span class="tx">' +
+      '<span class="t" data-t="items.' + i + '.a">' + _esc(it.a || '') + '</span>' +
+      '<span class="d" data-t="items.' + i + '.b">' + _esc(it.b || '') + '</span></span></div>';
+    case 'f': return '<div class="g-it g-fl"><span class="a" data-t="items.' + i + '.a">' + _esc(it.a || '') + '</span>' +
+      '<input class="g-fi" type="text" data-fv="' + i + '" value="' + _esc(it.v || '') + '"></div>';
+    default: return '<div class="g-it"><span class="bu">•</span>' + a + '</div>';
+  }
+}
+
+function gBodyHTML(b) {
+  const cols = b.cols > 1 ? ' style="column-count:' + b.cols + '"' : '';
+  return '<div class="g-body"' + cols + '>' + (b.items || []).map(gItemHTML).join('') + '</div>';
+}
+
+function gBlockHTML(b) {
+  switch (b.type) {
+    case 'header':
+      return '<div class="g-hd"><span class="t" data-t="title">' + _esc(b.title || '') + '</span>' +
+        (b.sub ? '<span class="s" data-t="sub">' + _esc(b.sub) + '</span>' : '') + '</div>';
+    case 'banner': {
+      const ic = b.icon && b.icon !== 'none' ? gIcon(b.icon) : '';
+      return '<div class="g-bn">' + ic + '<span data-t="title">' + _esc(b.title || '') + '</span>' + ic + '</div>';
+    }
+    case 'panel':
+      return '<div class="g-pn">' + (b.title ? '<div class="g-pt" data-t="title">' + _esc(b.title) + '</div>' : '') + '</div>';
+    case 'steps':
+      return gHeadHTML(b) + '<div class="g-steps">' + (b.steps || []).map((s, i) =>
+        '<div class="g-step">' + (s.icon && s.icon !== 'none' ? gIcon(s.icon) : '') +
+        '<span class="n">' + (i + 1) + '</span>' +
+        '<span class="a" data-t="steps.' + i + '.a">' + _esc(s.a || '') + '</span>' +
+        '<span class="b" data-t="steps.' + i + '.b">' + _esc(s.b || '') + '</span></div>').join('') + '</div>';
+    case 'text':
+      return '<div class="g-tx" data-t="title" data-multi="1">' + _esc(b.title || '') + '</div>';
+    case 'divider':
+      return '<div class="g-dv"></div>';
+    case 'image':
+      return b.src ? '<img class="g-im" src="' + _esc(b.src) + '" alt="">'
+                   : '<div class="g-imph">Ingen bild vald — välj i panelen</div>';
+    default:
+      return gHeadHTML(b) + gBodyHTML(b);
+  }
+}
+
+/** Markerar block vars innehåll inte får plats (visas bara i redigeringsläge). */
+function gMarkOverflow(el) {
+  if (!el) return;
+  el.classList.toggle('of', el.scrollHeight > el.clientHeight + 2);
+}
+function gMarkOverflowAll() { document.querySelectorAll('#g-pages .g-blk').forEach(gMarkOverflow); }
+
+/** Ritar om ETT block (snabbare än gRender vid små ändringar). */
+function gRedraw(b) {
+  const old = document.querySelector('#g-pages .g-blk[data-id="' + b.id + '"]');
+  if (!old) { gRender(); return; }
+  const el = gBlockEl(b);
+  if (gSel.indexOf(b.id) >= 0) el.classList.add('sel');
+  old.replaceWith(el);
+  gMarkOverflow(el);
+  gPaintSel();
+}
+
+/* --- Sid-flikar och zoom -------------------------------------------------- */
+function gPageTabs() {
+  const host = document.getElementById('g-tabs');
+  if (!host) return;
+  host.innerHTML = GDOC.pages.map((p, i) =>
+    '<button class="g-tab' + (i === gPage ? ' on' : '') + '" onclick="gGoPage(' + i + ')">Sida ' + (i + 1) + '</button>').join('');
+}
+function gGoPage(i) {
+  gPage = i;
+  gPageTabs();
+  const pg = document.querySelector('#g-pages .g-page[data-pi="' + i + '"]');
+  if (pg && pg.scrollIntoView) pg.scrollIntoView({ block: 'start', behavior: 'smooth' });
+}
+function gApplyZoom() {
+  const host = document.getElementById('g-pages');
+  if (!host) return;
+  host.style.transform = 'scale(' + gZoom + ')';
+  // Kompensera höjden så att sidan går att scrolla korrekt när den är skalad
+  // (transform ändrar inte elementets layout-storlek).
+  const nat = GDOC.pages.length * (G_PAGE.h + 30);            // mm inkl. etikett/mellanrum
+  host.style.height = nat + 'mm';
+  host.style.marginBottom = ((gZoom - 1) * nat) + 'mm';
+  // Centrera arket när det får plats, annars vänsterställ (så inget hamnar
+  // utanför scrollytan när man zoomar in).
+  const sc = document.getElementById('g-scroll');
+  const pw = G_PAGE.w * (96 / 25.4) * gZoom;
+  const cw = sc ? sc.clientWidth - 24 : pw;
+  host.style.marginLeft = Math.max(0, Math.round((cw - pw) / 2)) + 'px';
+  const out = document.getElementById('g-zoomval');
+  if (out) out.textContent = Math.round(gZoom * 100) + '%';
+  try { localStorage.setItem(K('guide_zoom'), String(gZoom)); } catch (e) {}
+}
+function gZoomStep(dir) {
+  gZoomAuto = false;
+  gZoom = Math.min(2, Math.max(0.25, gR(gZoom + dir * 0.1)));
+  gApplyZoom(); gPaintSel();
+}
+function gZoomFit() {
+  gZoomAuto = false;
+  const sc = document.getElementById('g-scroll');
+  const w = sc ? sc.clientWidth - 30 : 0;
+  const natural = G_PAGE.w * (96 / 25.4);
+  gZoom = w > 60 ? Math.min(2, Math.max(0.25, gR(w / natural))) : 1;
+  gApplyZoom(); gPaintSel();
+}
+
+/* --- Markering och handtag ------------------------------------------------ */
+function gSelect(ids, add) {
+  gSel = add ? gSel.slice() : [];
+  (Array.isArray(ids) ? ids : [ids]).filter(Boolean).forEach(id => {
+    const i = gSel.indexOf(id);
+    if (i >= 0) gSel.splice(i, 1);
+    gSel.push(id);
+  });
+  gPaintSel(); gInspector();
+}
+function gPaintSel() {
+  document.querySelectorAll('#g-pages .g-blk').forEach(el => el.classList.toggle('sel', gSel.indexOf(el.dataset.id) >= 0));
+  document.querySelectorAll('.g-selbox').forEach(el => el.remove());
+  const b = gPrimary();
+  if (!b || !gEdit) return;
+  const pg = document.querySelector('#g-pages .g-page[data-pi="' + b.page + '"]');
+  if (!pg) return;
+  const box = document.createElement('div');
+  box.className = 'g-selbox';
+  box.style.left = b.x + 'mm'; box.style.top = b.y + 'mm';
+  box.style.width = b.w + 'mm'; box.style.height = b.h + 'mm';
+  box.innerHTML =
+    (b.locked ? '' : ['nw', 'n', 'ne', 'e', 'se', 's', 'sw', 'w'].map(h => '<span class="h h-' + h + '" data-h="' + h + '"></span>').join('')) +
+    '<span class="g-tools">' +
+      '<button type="button" onclick="gDuplicate()" title="Duplicera (Ctrl+D)">⧉</button>' +
+      '<button type="button" onclick="gZOrder(1)" title="Flytta framåt">↑</button>' +
+      '<button type="button" onclick="gZOrder(-1)" title="Flytta bakåt">↓</button>' +
+      '<button type="button" onclick="gToggleLock()" title="Lås / lås upp">' + (b.locked ? '⚿' : '⚿') + '</button>' +
+      '<button type="button" onclick="gDelete()" title="Ta bort (Delete)">✕</button>' +
+    '</span>' +
+    '<span class="g-size">' + gR(b.w) + ' × ' + gR(b.h) + ' mm</span>';
+  pg.appendChild(box);
+}
+
+/* --- Fästning mot rutnät och andra block ---------------------------------- */
+function gSnapMove(b, nx, ny) {
+  const g = GDOC.grid, thr = 1.6, lines = [];
+  let x = nx, y = ny;
+  if (g.snap) { x = Math.round(x / g.size) * g.size; y = Math.round(y / g.size) * g.size; }
+  if (g.guides) {
+    const xs = [0, G_PAGE.w / 2, G_PAGE.w], ys = [0, G_PAGE.h / 2, G_PAGE.h];
+    GDOC.blocks.forEach(o => {
+      if (o.page !== b.page || gSel.indexOf(o.id) >= 0) return;
+      xs.push(o.x, o.x + o.w / 2, o.x + o.w); ys.push(o.y, o.y + o.h / 2, o.y + o.h);
+    });
+    let bx = null, by = null;
+    [[x, 0], [x + b.w / 2, b.w / 2], [x + b.w, b.w]].forEach(p => xs.forEach(t => {
+      const d = Math.abs(p[0] - t); if (d <= thr && (!bx || d < bx.d)) bx = { d: d, v: t - p[1], line: t };
+    }));
+    [[y, 0], [y + b.h / 2, b.h / 2], [y + b.h, b.h]].forEach(p => ys.forEach(t => {
+      const d = Math.abs(p[0] - t); if (d <= thr && (!by || d < by.d)) by = { d: d, v: t - p[1], line: t };
+    }));
+    if (bx) { x = bx.v; lines.push({ v: true, p: bx.line }); }
+    if (by) { y = by.v; lines.push({ v: false, p: by.line }); }
+  }
+  return { x: gR(x), y: gR(y), lines: lines };
+}
+function gSnapVal(v) {
+  const g = GDOC.grid;
+  return gR(g.snap ? Math.round(v / g.size) * g.size : v);
+}
+function gDrawGuides(page, lines) {
+  page.querySelectorAll('.g-guide').forEach(e => e.remove());
+  (lines || []).forEach(l => {
+    const d = document.createElement('div');
+    d.className = 'g-guide';
+    if (l.v) { d.style.cssText = 'left:' + l.p + 'mm;top:0;width:.25mm;height:100%'; }
+    else { d.style.cssText = 'top:' + l.p + 'mm;left:0;height:.25mm;width:100%'; }
+    page.appendChild(d);
+  });
+}
+
+/* --- Flytta / skala / markera med ram ------------------------------------- */
+function gPointerDown(e) {
+  if (!GDOC) return;
+  const page = e.target.closest('.g-page');
+  if (!page) return;
+
+  // Kryssrutor och ifyllnadsfält fungerar alltid (även utanför redigeringsläget)
+  const ck = e.target.closest('[data-ck]');
+  if (ck) {
+    const blkEl = ck.closest('.g-blk'); const b = gFind(blkEl.dataset.id);
+    const it = b.items[+ck.dataset.ck];
+    it.on = !it.on; ck.classList.toggle('on', !!it.on);
+    gCommit(true);
+    return;
+  }
+  if (e.target.closest('input, textarea, [contenteditable="true"]')) return;
+  if (!gEdit) return;
+
+  const handle = e.target.closest('.g-selbox .h');
+  if (handle) { gStartResize(e, page, handle.dataset.h); return; }
+  if (e.target.closest('.g-tools')) return;
+
+  const blkEl = e.target.closest('.g-blk');
+  if (!blkEl) {                                   // tom yta → markera med ram
+    gPage = +page.dataset.pi; gPageTabs();
+    gStartMarquee(e, page);
+    return;
+  }
+  const b = gFind(blkEl.dataset.id);
+  if (!b) return;
+  gPage = b.page; gPageTabs();
+  if (e.shiftKey) { gSelect(b.id, true); return; }
+  if (gSel.indexOf(b.id) < 0) gSelect(b.id);
+  if (b.locked) return;
+  gStartDrag(e, page);
+}
+
+function gStartDrag(e, page) {
+  const mm = gMM();
+  const sx = e.clientX, sy = e.clientY;
+  const prim = gPrimary();
+  const movers = gSel.map(gFind).filter(b => b && !b.locked && b.page === prim.page);
+  if (!movers.length) return;
+  const orig = movers.map(b => ({ b: b, x: b.x, y: b.y }));
+  const p0 = { x: prim.x, y: prim.y };
+  let moved = false;
+  e.preventDefault();
+
+  const move = ev => {
+    const dx = (ev.clientX - sx) / mm, dy = (ev.clientY - sy) / mm;
+    if (!moved && Math.abs(ev.clientX - sx) < 2 && Math.abs(ev.clientY - sy) < 2) return;
+    moved = true;
+    let nx = p0.x + dx, ny = p0.y + dy;
+    if (ev.shiftKey) { if (Math.abs(dx) > Math.abs(dy)) ny = p0.y; else nx = p0.x; }
+    const s = gSnapMove(prim, nx, ny);
+    const ddx = s.x - p0.x, ddy = s.y - p0.y;
+    orig.forEach(o => {
+      o.b.x = gR(o.x + ddx); o.b.y = gR(o.y + ddy);
+      const el = page.querySelector('.g-blk[data-id="' + o.b.id + '"]');
+      if (el) { el.style.left = o.b.x + 'mm'; el.style.top = o.b.y + 'mm'; }
+    });
+    const box = page.querySelector('.g-selbox');
+    if (box) { box.style.left = prim.x + 'mm'; box.style.top = prim.y + 'mm'; }
+    gDrawGuides(page, s.lines);
+  };
+  const up = () => {
+    document.removeEventListener('pointermove', move);
+    document.removeEventListener('pointerup', up);
+    page.querySelectorAll('.g-guide').forEach(el => el.remove());
+    if (moved) { gCommit(true); gInspector(); }
+  };
+  document.addEventListener('pointermove', move);
+  document.addEventListener('pointerup', up);
+}
+
+function gStartResize(e, page, h) {
+  const b = gPrimary(); if (!b || b.locked) return;
+  const mm = gMM(), sx = e.clientX, sy = e.clientY;
+  const o = { x: b.x, y: b.y, w: b.w, h: b.h };
+  const MIN = 6;
+  e.preventDefault(); e.stopPropagation();
+  const move = ev => {
+    const dx = (ev.clientX - sx) / mm, dy = (ev.clientY - sy) / mm;
+    let x = o.x, y = o.y, w = o.w, ht = o.h;
+    if (h.indexOf('e') >= 0) w = gSnapVal(o.x + o.w + dx) - o.x;
+    if (h.indexOf('s') >= 0) ht = gSnapVal(o.y + o.h + dy) - o.y;
+    if (h.indexOf('w') >= 0) { x = gSnapVal(o.x + dx); w = o.x + o.w - x; }
+    if (h.indexOf('n') >= 0) { y = gSnapVal(o.y + dy); ht = o.y + o.h - y; }
+    if (w < MIN) { if (h.indexOf('w') >= 0) x = o.x + o.w - MIN; w = MIN; }
+    if (ht < MIN) { if (h.indexOf('n') >= 0) y = o.y + o.h - MIN; ht = MIN; }
+    b.x = gR(x); b.y = gR(y); b.w = gR(w); b.h = gR(ht);
+    const el = page.querySelector('.g-blk[data-id="' + b.id + '"]');
+    if (el) { el.style.left = b.x + 'mm'; el.style.top = b.y + 'mm'; el.style.width = b.w + 'mm'; el.style.height = b.h + 'mm'; gMarkOverflow(el); }
+    const box = page.querySelector('.g-selbox');
+    if (box) {
+      box.style.left = b.x + 'mm'; box.style.top = b.y + 'mm';
+      box.style.width = b.w + 'mm'; box.style.height = b.h + 'mm';
+      const sz = box.querySelector('.g-size'); if (sz) sz.textContent = gR(b.w) + ' × ' + gR(b.h) + ' mm';
+    }
+  };
+  const up = () => {
+    document.removeEventListener('pointermove', move);
+    document.removeEventListener('pointerup', up);
+    gCommit(true); gInspector();
+  };
+  document.addEventListener('pointermove', move);
+  document.addEventListener('pointerup', up);
+}
+
+function gStartMarquee(e, page) {
+  const mm = gMM(), r = page.getBoundingClientRect();
+  const x0 = (e.clientX - r.left) / mm, y0 = (e.clientY - r.top) / mm;
+  const box = document.createElement('div');
+  box.className = 'g-marq';
+  page.appendChild(box);
+  let did = false;
+  const move = ev => {
+    const x1 = (ev.clientX - r.left) / mm, y1 = (ev.clientY - r.top) / mm;
+    const x = Math.min(x0, x1), y = Math.min(y0, y1), w = Math.abs(x1 - x0), h = Math.abs(y1 - y0);
+    box.style.cssText = 'left:' + x + 'mm;top:' + y + 'mm;width:' + w + 'mm;height:' + h + 'mm';
+    if (w > 2 || h > 2) did = true;
+    const hit = GDOC.blocks.filter(b => b.page === +page.dataset.pi &&
+      b.x < x + w && b.x + b.w > x && b.y < y + h && b.y + b.h > y).map(b => b.id);
+    document.querySelectorAll('#g-pages .g-blk').forEach(el => el.classList.toggle('sel', hit.indexOf(el.dataset.id) >= 0));
+    box._hit = hit;
+  };
+  const up = () => {
+    document.removeEventListener('pointermove', move);
+    document.removeEventListener('pointerup', up);
+    const hit = box._hit || [];
+    box.remove();
+    if (did && hit.length) gSelect(hit); else gSelect([]);
+  };
+  document.addEventListener('pointermove', move);
+  document.addEventListener('pointerup', up);
+}
+
+/* --- Texten redigeras direkt på arket (dubbelklick) ----------------------- */
+function gDblClick(e) {
+  if (!gEdit) return;
+  const t = e.target.closest('[data-t]');
+  const blkEl = e.target.closest('.g-blk');
+  if (!t || !blkEl) return;
+  const b = gFind(blkEl.dataset.id);
+  if (!b || b.locked) return;
+  t.setAttribute('contenteditable', 'true');
+  t.classList.add('g-ed');
+  t.focus();
+  try {
+    const rng = document.createRange(); rng.selectNodeContents(t);
+    const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(rng);
+  } catch (err) {}
+  const stop = () => {
+    t.removeAttribute('contenteditable'); t.classList.remove('g-ed');
+    const val = t.textContent;
+    if (gGetPath(b, t.dataset.t) !== val) {
+      gSetPath(b, t.dataset.t, val);
+      gCommit(true); gRedraw(b); gInspector();
+    }
+  };
+  t.addEventListener('blur', stop, { once: true });
+  t.addEventListener('keydown', ev => {
+    if (ev.key === 'Escape') { ev.preventDefault(); t.blur(); }
+    if (ev.key === 'Enter' && !ev.shiftKey && t.dataset.multi !== '1') { ev.preventDefault(); t.blur(); }
+  });
+}
+
+/* --- Ifyllnadsfält (rutan "Viktig information") --------------------------- */
+function gFieldInput(e) {
+  const inp = e.target.closest('.g-fi'); if (!inp) return;
+  const blkEl = inp.closest('.g-blk'); const b = gFind(blkEl.dataset.id);
+  if (!b) return;
+  b.items[+inp.dataset.fv].v = inp.value;
+  gSaveSoon();
+}
+
+/* --- Tangentbord ---------------------------------------------------------- */
+function gKeyDown(e) {
+  if (!document.body.classList.contains('guide-on') || !gEdit) return;
+  const t = e.target;
+  if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT' || t.isContentEditable)) return;
+  const meta = e.ctrlKey || e.metaKey;
+  if (meta && (e.key === 'z' || e.key === 'Z')) { e.preventDefault(); e.shiftKey ? gRedo() : gUndo(); return; }
+  if (meta && (e.key === 'y' || e.key === 'Y')) { e.preventDefault(); gRedo(); return; }
+  if (meta && (e.key === 'd' || e.key === 'D')) { e.preventDefault(); gDuplicate(); return; }
+  if (meta && (e.key === 'c' || e.key === 'C')) { gCopy(); return; }
+  if (meta && (e.key === 'v' || e.key === 'V')) { e.preventDefault(); gPaste(); return; }
+  if (meta && (e.key === 'a' || e.key === 'A')) {
+    e.preventDefault();
+    gSelect(GDOC.blocks.filter(b => b.page === gPage).map(b => b.id));
+    return;
+  }
+  if (e.key === 'Escape') { gSelect([]); return; }
+  if (!gSel.length) return;
+  if (e.key === 'Delete' || e.key === 'Backspace') { e.preventDefault(); gDelete(); return; }
+  const step = e.shiftKey ? (GDOC.grid.size * 5) : (GDOC.grid.snap ? GDOC.grid.size : 1);
+  let dx = 0, dy = 0;
+  if (e.key === 'ArrowLeft') dx = -step;
+  else if (e.key === 'ArrowRight') dx = step;
+  else if (e.key === 'ArrowUp') dy = -step;
+  else if (e.key === 'ArrowDown') dy = step;
+  else return;
+  e.preventDefault();
+  gSel.map(gFind).filter(b => b && !b.locked).forEach(b => {
+    b.x = gR(b.x + dx); b.y = gR(b.y + dy);
+    const el = document.querySelector('#g-pages .g-blk[data-id="' + b.id + '"]');
+    if (el) { el.style.left = b.x + 'mm'; el.style.top = b.y + 'mm'; }
+  });
+  gPaintSel(); gInspector(); gCommit();
+}
+
+/* --- Block-operationer ---------------------------------------------------- */
+function gDelete() {
+  if (!gSel.length) return;
+  const keep = gSel.slice();
+  if (keep.map(gFind).every(b => !b || b.locked)) { toast('🔒 Blocket är låst – lås upp först'); return; }
+  GDOC.blocks = GDOC.blocks.filter(b => keep.indexOf(b.id) < 0 || b.locked);
+  gSel = [];
+  gRender(); gInspector(); gCommit(true);
+}
+function gDuplicate() {
+  if (!gSel.length) return;
+  const copies = gSel.map(gFind).filter(Boolean).map(b => {
+    const c = JSON.parse(JSON.stringify(b));
+    c.id = gUid(); c.x = gR(b.x + 4); c.y = gR(b.y + 4); c.locked = false;
+    return c;
+  });
+  GDOC.blocks = GDOC.blocks.concat(copies);
+  gSel = copies.map(c => c.id);
+  gRender(); gInspector(); gCommit(true);
+  toast('✓ Duplicerat');
+}
+function gCopy() {
+  if (!gSel.length) return;
+  gClip = gSel.map(gFind).filter(Boolean).map(b => JSON.parse(JSON.stringify(b)));
+  toast('✓ Kopierat (' + gClip.length + ')');
+}
+function gPaste() {
+  if (!gClip || !gClip.length) return;
+  const copies = gClip.map(b => {
+    const c = JSON.parse(JSON.stringify(b));
+    c.id = gUid(); c.page = gPage; c.x = gR(b.x + 5); c.y = gR(b.y + 5); c.locked = false;
+    return c;
+  });
+  GDOC.blocks = GDOC.blocks.concat(copies);
+  gSel = copies.map(c => c.id);
+  gRender(); gInspector(); gCommit(true);
+  toast('✓ Inklistrat');
+}
+function gZOrder(dir) {
+  const b = gPrimary(); if (!b) return;
+  b.z = (b.z || 0) + dir;
+  gRender(); gCommit(true);
+}
+function gToggleLock() {
+  const b = gPrimary(); if (!b) return;
+  b.locked = !b.locked;
+  gRedraw(b); gPaintSel(); gInspector(); gCommit(true);
+  toast(b.locked ? '🔒 Låst' : '🔓 Upplåst');
+}
+/** Sätter höjden så att allt innehåll får plats. */
+function gFitHeight() {
+  const b = gPrimary(); if (!b) return;
+  const el = document.querySelector('#g-pages .g-blk[data-id="' + b.id + '"]');
+  if (!el) return;
+  const mm = gMM();
+  if (!(mm > 0)) return;
+  // Mät blockets NATURLIGA höjd: med height:auto slutar innehållet sträckas ut
+  // av flex-layouten, så vi får den höjd innehållet faktiskt behöver.
+  const prev = el.style.height;
+  el.style.height = 'auto';
+  const px = el.offsetHeight;
+  el.style.height = prev;
+  const need = px / mm + 0.4;
+  if (need > 0) { b.h = gR(Math.max(6, need)); gRedraw(b); gPaintSel(); gInspector(); gCommit(true); }
+}
+/** Justerar markerade block mot varandra. */
+function gAlign(how) {
+  const bs = gSel.map(gFind).filter(b => b && !b.locked);
+  if (bs.length < 1) return;
+  const ref = gPrimary();
+  const L = Math.min.apply(null, bs.map(b => b.x)), R = Math.max.apply(null, bs.map(b => b.x + b.w));
+  const T = Math.min.apply(null, bs.map(b => b.y)), B = Math.max.apply(null, bs.map(b => b.y + b.h));
+  bs.forEach(b => {
+    if (how === 'l') b.x = L;
+    else if (how === 'r') b.x = gR(R - b.w);
+    else if (how === 'c') b.x = gR((L + R) / 2 - b.w / 2);
+    else if (how === 't') b.y = T;
+    else if (how === 'b') b.y = gR(B - b.h);
+    else if (how === 'm') b.y = gR((T + B) / 2 - b.h / 2);
+    else if (how === 'pc') b.x = gR((G_PAGE.w - b.w) / 2);
+    else if (how === 'pm') b.y = gR((G_PAGE.h - b.h) / 2);
+    else if (how === 'w' && ref) b.w = ref.w;
+    else if (how === 'h' && ref) b.h = ref.h;
+  });
+  gRender(); gInspector(); gCommit(true);
+}
+/** Fördelar markerade block med jämna mellanrum. */
+function gDistribute(axis) {
+  const bs = gSel.map(gFind).filter(b => b && !b.locked);
+  if (bs.length < 3) { toast('Markera minst tre block'); return; }
+  bs.sort((a, b) => axis === 'x' ? a.x - b.x : a.y - b.y);
+  const first = bs[0], last = bs[bs.length - 1];
+  const span = axis === 'x' ? (last.x + last.w) - first.x : (last.y + last.h) - first.y;
+  const used = bs.reduce((s, b) => s + (axis === 'x' ? b.w : b.h), 0);
+  const gap = (span - used) / (bs.length - 1);
+  let pos = axis === 'x' ? first.x : first.y;
+  bs.forEach(b => {
+    if (axis === 'x') { b.x = gR(pos); pos += b.w + gap; }
+    else { b.y = gR(pos); pos += b.h + gap; }
+  });
+  gRender(); gInspector(); gCommit(true);
+}
+
+/* --- Lägg till block ------------------------------------------------------ */
+const G_ADD = [
+  { t: 'card',    n: 'Kort med punktlista', icon: 'list' },
+  { t: 'check',   n: 'Checklista',          icon: 'check' },
+  { t: 'kv',      n: 'Översikt (rad → åtgärd)', icon: 'warn' },
+  { t: 'fields',  n: 'Ifyllnadsfält',  icon: 'doc' },
+  { t: 'header',  n: 'Rubrik',              icon: 'flag' },
+  { t: 'banner',  n: 'Banderoll',           icon: 'warn' },
+  { t: 'steps',   n: 'Numrerade steg',      icon: 'arrowup' },
+  { t: 'panel',   n: 'Panel (bakgrund)',    icon: 'anchor' },
+  { t: 'text',    n: 'Fri text',            icon: 'doc' },
+  { t: 'image',   n: 'Bild / logga',        icon: 'camera' },
+  { t: 'divider', n: 'Linje',               icon: 'check' }
+];
+function gRenderAddPop() {
+  const p = document.getElementById('g-add-pop');
+  if (!p) return;
+  p.innerHTML = '<h4>Nytt block</h4>' + G_ADD.map(a =>
+    '<button type="button" onclick="gAdd(\'' + a.t + '\')">' + gIcon(a.icon) + a.n + '</button>').join('');
+}
+function gTogglePop(e) {
+  if (e) e.stopPropagation();
+  const p = document.getElementById('g-add-pop');
+  if (p) p.classList.toggle('open');
+}
+document.addEventListener('pointerdown', e => {
+  const p = document.getElementById('g-add-pop');
+  if (p && p.classList.contains('open') && !e.target.closest('.g-popwrap')) p.classList.remove('open');
+}, true);
+
+function gAdd(kind) {
+  const base = { id: gUid(), page: gPage, x: 10, y: 10, w: 80, h: 40, type: 'card', variant: 'light', fs: 1, z: 1, items: [] };
+  const put = o => {
+    const b = Object.assign(base, o);
+    // placera på första lediga plats i sidans vänsterkant, annars mitt på
+    b.x = gSnapVal(Math.max(0, (G_PAGE.w - b.w) / 2));
+    b.y = gSnapVal(Math.max(0, (G_PAGE.h - b.h) / 2));
+    GDOC.blocks.push(b);
+    gSel = [b.id];
+    gRender(); gInspector(); gCommit(true);
+    const el = document.querySelector('#g-pages .g-blk[data-id="' + b.id + '"]');
+    if (el && el.scrollIntoView) el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    toast('✓ Block tillagt');
+  };
+  const pop = document.getElementById('g-add-pop'); if (pop) pop.classList.remove('open');
+  switch (kind) {
+    case 'check':  return put({ title: 'CHECKLISTA', icon: 'list', items: [{ t: 'c', a: 'Punkt 1' }, { t: 'c', a: 'Punkt 2' }, { t: 'c', a: 'Punkt 3' }] });
+    case 'kv':     return put({ title: 'ÖVERSIKT', icon: 'warn', w: 120, items: [{ t: 'k', icon: 'warn', a: 'Situation', b: 'Åtgärd → åtgärd' }] });
+    case 'fields': return put({ title: 'UPPGIFTER', icon: 'doc', w: 110, items: [{ t: 'f', a: 'Rubrik:', v: '' }, { t: 'f', a: 'Rubrik:', v: '' }] });
+    case 'header': return put({ type: 'header', variant: 'dark', w: 200, h: 24, title: 'RUBRIK', sub: 'Underrubrik' });
+    case 'banner': return put({ type: 'banner', variant: 'accent', w: 200, h: 12, title: 'VIKTIGT MEDDELANDE', icon: 'warn' });
+    case 'steps':  return put({ type: 'steps', w: 200, h: 40, title: 'STEG', icon: 'arrowup', items: [], steps: [{ icon: 'stop', a: 'STEG 1', b: 'beskrivning' }, { icon: 'shield', a: 'STEG 2', b: 'beskrivning' }, { icon: 'radio', a: 'STEG 3', b: 'beskrivning' }] });
+    case 'panel':  return put({ type: 'panel', variant: 'dark', w: 200, h: 80, title: 'PANEL', z: 0 });
+    case 'text':   return put({ type: 'text', variant: 'ghost', w: 90, h: 20, title: 'Skriv din text här.' });
+    case 'image':  return put({ type: 'image', variant: 'ghost', w: 50, h: 25, src: '' });
+    case 'divider':return put({ type: 'divider', variant: 'ghost', w: 100, h: 1.2 });
+    default:       return put({ title: 'NYTT KORT', icon: 'info', items: [{ t: 'b', a: 'Punkt 1' }, { t: 'b', a: 'Punkt 2' }] });
+  }
+}
+
+/* --- Sidor ---------------------------------------------------------------- */
+function gAddPage() {
+  GDOC.pages.push({ bg: '#ffffff' });
+  gPage = GDOC.pages.length - 1;
+  gRender(); gInspector(); gCommit(true); gGoPage(gPage);
+  toast('✓ Sida ' + (gPage + 1) + ' tillagd');
+}
+async function gDelPage(i) {
+  if (GDOC.pages.length < 2) { uiAlert('Guiden måste ha minst en sida.', 'Kan inte ta bort'); return; }
+  const n = GDOC.blocks.filter(b => b.page === i).length;
+  if (!await uiConfirm('Ta bort sida ' + (i + 1) + (n ? ' och dess ' + n + ' block' : '') + '?', { title: 'Ta bort sida', okText: 'Ta bort', danger: true })) return;
+  GDOC.blocks = GDOC.blocks.filter(b => b.page !== i);
+  GDOC.blocks.forEach(b => { if (b.page > i) b.page--; });
+  GDOC.pages.splice(i, 1);
+  gPage = Math.max(0, Math.min(gPage, GDOC.pages.length - 1));
+  gSel = [];
+  gRender(); gInspector(); gCommit(true);
+}
+
+/* --- Rutnät, zoom och lägen ----------------------------------------------- */
+function gSetGrid(what) {
+  GDOC.grid[what] = !GDOC.grid[what];
+  gGridUI(); gRender(); gCommit(true);
+}
+function gSetGridSize(v) {
+  GDOC.grid.size = parseFloat(v) || 5;
+  gGridUI(); gRender(); gCommit(true);
+}
+function gGridUI() {
+  const set = (id, on) => { const el = document.getElementById(id); if (el) el.classList.toggle('on', !!on); };
+  set('g-grid-btn', GDOC.grid.show);
+  set('g-snap-btn', GDOC.grid.snap);
+  set('g-guides-btn', GDOC.grid.guides);
+  const sel = document.getElementById('g-gridsize');
+  if (sel) sel.value = String(GDOC.grid.size);
+}
+function gSetEdit(on) {
+  gEdit = !!on;
+  document.body.classList.toggle('g-edit', gEdit);
+  const b = document.getElementById('g-edit-btn');
+  if (b) {
+    b.classList.toggle('on', gEdit);
+    b.textContent = gEdit ? '✓ Klar' : '✎ Redigera';
+    b.title = gEdit ? 'Stäng redigeringsläget – visa guiden som den skrivs ut' : 'Slå på redigeringsläget';
+  }
+  if (!gEdit) gSel = [];
+  gPaintSel(); gInspector();
+  try { localStorage.setItem(K('guide_edit'), gEdit ? '1' : '0'); } catch (e) {}
+}
+function gToggleSide() {
+  document.body.classList.toggle('g-side-off');
+  const on = !document.body.classList.contains('g-side-off');
+  const b = document.getElementById('g-side-btn'); if (b) b.classList.toggle('on', on);
+  try { localStorage.setItem(K('guide_side'), on ? '1' : '0'); } catch (e) {}
+}
+
+/* --- Ikonväljare ---------------------------------------------------------- */
+function gOpenIcons(current, cb) {
+  gIconCb = cb;
+  const list = document.getElementById('g-icon-list');
+  if (list) {
+    list.innerHTML = G_ICON_KEYS.filter(k => k !== 'none').map(k =>
+      '<button type="button" title="' + _esc(G_ICONS[k].n) + '"' + (k === current ? ' class="on"' : '') +
+      ' onclick="gPickIcon(\'' + k + '\')">' + gIcon(k) + '</button>').join('');
+  }
+  const ov = document.getElementById('g-icon-overlay'); if (ov) ov.classList.add('open');
+}
+function gCloseIcons() {
+  const ov = document.getElementById('g-icon-overlay'); if (ov) ov.classList.remove('open');
+  gIconCb = null;
+}
+function gPickIcon(k) {
+  const cb = gIconCb;
+  gCloseIcons();
+  if (cb) cb(k);
+}
+
+/* --- Inspektörspanelen ---------------------------------------------------- */
+const G_ITEM_TYPES = [['b', 'Punkt'], ['d', 'Streck'], ['c', 'Kryss'], ['p', 'Text'], ['s', 'Rubrik'], ['k', 'Rad →'], ['i', 'Ikonrad'], ['f', 'Fält']];
+const G_VARIANTS = [['light', 'Ljus'], ['soft', 'Mjuk grå'], ['dark', 'Mörk'], ['accent', 'Temafärg'], ['danger', 'Röd'], ['ghost', 'Genomskinlig']];
+const G_TYPES = { card: 'Kort', header: 'Rubrik', banner: 'Banderoll', panel: 'Panel', steps: 'Steg', text: 'Fri text', image: 'Bild', divider: 'Linje' };
+
+function gInspector() {
+  const host = document.getElementById('g-side-body');
+  if (!host || !GDOC) return;
+  const b = gPrimary();
+  host.innerHTML = (gEdit && b) ? gInspectorBlock(b) : gInspectorDoc();
+}
+
+function gField(label, inner) { return '<div class="gf"><label>' + label + '</label>' + inner + '</div>'; }
+function gNum(label, prop, val, step) {
+  return '<div class="gf"><label>' + label + '</label><input type="number" step="' + (step || 0.5) + '" value="' + gR(val) +
+    '" oninput="gSetProp(\'' + prop + '\', parseFloat(this.value)||0, true)"></div>';
+}
+
+function gInspectorBlock(b) {
+  const has = t => b.type === t;
+  let h = '<h4>' + (G_TYPES[b.type] || b.type) + (gSel.length > 1 ? ' (' + gSel.length + ' markerade)' : '') + '</h4>';
+
+  // --- Innehåll ---
+  if (!has('divider') && !has('image')) {
+    h += gField(has('text') ? 'Text' : 'Titel', has('text')
+      ? '<textarea oninput="gSetProp(\'title\', this.value)">' + _esc(b.title || '') + '</textarea>'
+      : '<input type="text" value="' + _esc(b.title || '') + '" oninput="gSetProp(\'title\', this.value)">');
+  }
+  if (has('header')) h += gField('Underrubrik', '<input type="text" value="' + _esc(b.sub || '') + '" oninput="gSetProp(\'sub\', this.value)">');
+  if (has('card') || has('steps') || has('banner')) {
+    const ib = '<div class="gf"><label>Ikon</label><button class="gbtn" style="margin:0" onclick="gPickBlockIcon()">' +
+      (b.icon && b.icon !== 'none' ? gIcon(b.icon) + ' ' + _esc(G_ICONS[b.icon] ? G_ICONS[b.icon].n : b.icon) : 'Välj…') + '</button></div>';
+    h += has('banner') ? ib
+      : '<div class="grow"><div class="gf"><label>Nummer</label><input type="text" value="' + _esc(b.num || '') +
+        '" oninput="gSetProp(\'num\', this.value)"></div>' + ib + '</div>';
+  }
+  if (has('image')) {
+    h += '<button class="gbtn primary" onclick="gPickImage()">Välj bildfil…</button>' +
+         '<button class="gbtn" onclick="gUseLogo()">Använd företagsloggan</button>';
+  }
+
+  // --- Rader ---
+  if (has('card')) {
+    h += '<h4>Rader</h4>';
+    h += (b.items || []).map((it, i) => gItemRow(it, i)).join('');
+    h += '<div class="grow" style="margin-bottom:8px"><button class="gbtn sm" style="margin:0" onclick="gAddItem(\'b\')">+ Punkt</button>' +
+         '<button class="gbtn sm" style="margin:0" onclick="gAddItem(\'c\')">+ Kryss</button>' +
+         '<button class="gbtn sm" style="margin:0" onclick="gAddItem(\'s\')">+ Rubrik</button>' +
+         '<button class="gbtn sm" style="margin:0" onclick="gAddItem(\'f\')">+ Fält</button></div>';
+    h += gField('Kolumner', '<select onchange="gSetProp(\'cols\', +this.value, true)">' +
+      [1, 2, 3, 4].map(c => '<option value="' + c + '"' + ((b.cols || 1) === c ? ' selected' : '') + '>' + c + '</option>').join('') + '</select>');
+    h += '<label class="gchk"><input type="checkbox"' + (b.noHead ? ' checked' : '') + ' onchange="gSetProp(\'noHead\', this.checked, true)"> Dölj titelraden</label>';
+  }
+  if (has('steps')) {
+    h += '<h4>Steg</h4>';
+    h += (b.steps || []).map((s, i) =>
+      '<div class="gitem"><button class="gic" onclick="gPickStepIcon(' + i + ')">' + (gIcon(s.icon) || '…') + '</button>' +
+      '<span class="gtx"><input type="text" value="' + _esc(s.a || '') + '" oninput="gSetStep(' + i + ',\'a\',this.value)" placeholder="Rubrik">' +
+      '<input type="text" value="' + _esc(s.b || '') + '" oninput="gSetStep(' + i + ',\'b\',this.value)" placeholder="Beskrivning"></span>' +
+      '<button class="gmini" onclick="gMoveStep(' + i + ',-1)" title="Upp">↑</button>' +
+      '<button class="gmini" onclick="gMoveStep(' + i + ',1)" title="Ner">↓</button>' +
+      '<button class="gmini del" onclick="gDelStep(' + i + ')" title="Ta bort">✕</button></div>').join('');
+    h += '<button class="gbtn" onclick="gAddStep()">+ Lägg till steg</button>';
+  }
+
+  // --- Utseende ---
+  h += '<h4>Utseende</h4>';
+  h += gField('Stil', '<select onchange="gSetProp(\'variant\', this.value, true)">' +
+    G_VARIANTS.map(v => '<option value="' + v[0] + '"' + ((b.variant || 'light') === v[0] ? ' selected' : '') + '>' + v[1] + '</option>').join('') + '</select>');
+  h += '<div class="grow">' +
+    '<div class="gf"><label>Bakgrund</label><input type="color" value="' + (b.bg || '#ffffff') + '" oninput="gSetProp(\'bg\', this.value, true)"></div>' +
+    '<div class="gf"><label>Text</label><input type="color" value="' + (b.fg || '#15161c') + '" oninput="gSetProp(\'fg\', this.value, true)"></div>' +
+    '<div class="gf"><label>Ram</label><input type="color" value="' + (b.bd || '#cfcfda') + '" oninput="gSetProp(\'bd\', this.value, true)"></div></div>';
+  h += '<button class="gbtn" onclick="gClearColors()">↺ Använd stilens färger</button>';
+  h += gField('Textstorlek <b>' + gR((b.fs || 1) * 100) + '%</b>',
+    '<input type="range" min="0.6" max="2" step="0.05" value="' + (b.fs || 1) + '" oninput="gSetProp(\'fs\', parseFloat(this.value), true)">');
+  h += '<div class="grow">' +
+    '<div class="gf"><label>Inre marginal</label><input type="number" step="0.2" min="0" value="' + (b.pad != null ? b.pad : 1.8) + '" oninput="gSetProp(\'pad\', parseFloat(this.value)||0, true)"></div>' +
+    '<div class="gf"><label>Hörnradie</label><input type="number" step="0.2" min="0" value="' + (b.radius != null ? b.radius : 1.4) + '" oninput="gSetProp(\'radius\', parseFloat(this.value)||0, true)"></div></div>';
+
+  // --- Placering ---
+  h += '<h4>Placering (mm)</h4>';
+  h += '<div class="grow">' + gNum('X', 'x', b.x) + gNum('Y', 'y', b.y) + '</div>';
+  h += '<div class="grow">' + gNum('Bredd', 'w', b.w) + gNum('Höjd', 'h', b.h) + '</div>';
+  h += gField('Sida', '<select onchange="gSetProp(\'page\', +this.value, true)">' +
+    GDOC.pages.map((p, i) => '<option value="' + i + '"' + (b.page === i ? ' selected' : '') + '>Sida ' + (i + 1) + '</option>').join('') + '</select>');
+  h += '<button class="gbtn" onclick="gFitHeight()">↕ Anpassa höjd till innehållet</button>';
+  h += '<div class="grow" style="margin-bottom:6px">' +
+    '<button class="gbtn sm" style="margin:0" onclick="gAlign(\'pc\')">Centrera i sidled</button>' +
+    '<button class="gbtn sm" style="margin:0" onclick="gAlign(\'pm\')">Centrera i höjdled</button></div>';
+  h += '<label class="gchk"><input type="checkbox"' + (b.locked ? ' checked' : '') + ' onchange="gToggleLock()"> Lås block (kan inte flyttas)</label>';
+
+  if (gSel.length > 1) {
+    h += '<h4>Justera markerade</h4><div class="grow" style="margin-bottom:6px">' +
+      '<button class="gbtn sm" style="margin:0" onclick="gAlign(\'l\')">Vänster</button>' +
+      '<button class="gbtn sm" style="margin:0" onclick="gAlign(\'c\')">Mitt</button>' +
+      '<button class="gbtn sm" style="margin:0" onclick="gAlign(\'r\')">Höger</button></div>' +
+      '<div class="grow" style="margin-bottom:6px">' +
+      '<button class="gbtn sm" style="margin:0" onclick="gAlign(\'t\')">Topp</button>' +
+      '<button class="gbtn sm" style="margin:0" onclick="gAlign(\'m\')">Mitt</button>' +
+      '<button class="gbtn sm" style="margin:0" onclick="gAlign(\'b\')">Botten</button></div>' +
+      '<div class="grow" style="margin-bottom:6px">' +
+      '<button class="gbtn sm" style="margin:0" onclick="gAlign(\'w\')">Samma bredd</button>' +
+      '<button class="gbtn sm" style="margin:0" onclick="gAlign(\'h\')">Samma höjd</button></div>' +
+      '<div class="grow" style="margin-bottom:6px">' +
+      '<button class="gbtn sm" style="margin:0" onclick="gDistribute(\'x\')">Fördela i sidled</button>' +
+      '<button class="gbtn sm" style="margin:0" onclick="gDistribute(\'y\')">Fördela i höjdled</button></div>';
+  }
+
+  h += '<div class="g-divider"></div>';
+  h += '<div class="grow"><button class="gbtn sm" style="margin:0" onclick="gDuplicate()">⧉ Duplicera</button>' +
+       '<button class="gbtn sm danger" style="margin:0" onclick="gDelete()">✕ Ta bort</button></div>';
+  return h;
+}
+
+function gItemRow(it, i) {
+  const t = it.t || 'b';
+  const two = (t === 'k' || t === 'i');
+  return '<div class="gitem">' +
+    '<select onchange="gSetItem(' + i + ',\'t\',this.value,true)">' +
+      G_ITEM_TYPES.map(o => '<option value="' + o[0] + '"' + (t === o[0] ? ' selected' : '') + '>' + o[1] + '</option>').join('') +
+    '</select>' +
+    '<button class="gic" onclick="gPickItemIcon(' + i + ')" title="Ikon">' + (gIcon(it.icon) || '–') + '</button>' +
+    '<span class="gtx"><input type="text" value="' + _esc(it.a || '') + '" oninput="gSetItem(' + i + ',\'a\',this.value)">' +
+    (two ? '<input type="text" value="' + _esc(it.b || '') + '" oninput="gSetItem(' + i + ',\'b\',this.value)" placeholder="beskrivning / åtgärd">' : '') +
+    (t === 'f' ? '<input type="text" value="' + _esc(it.v || '') + '" oninput="gSetItem(' + i + ',\'v\',this.value)" placeholder="ifyllt värde">' : '') +
+    '</span>' +
+    '<button class="gmini" onclick="gMoveItem(' + i + ',-1)" title="Upp">↑</button>' +
+    '<button class="gmini" onclick="gMoveItem(' + i + ',1)" title="Ner">↓</button>' +
+    '<button class="gmini del" onclick="gDelItem(' + i + ')" title="Ta bort">✕</button>' +
+    '</div>';
+}
+
+function gInspectorDoc() {
+  const g = GDOC.grid;
+  let h = '<h4>Nödguiden</h4>';
+  if (!gEdit) {
+    h += '<p class="gnote">Redigeringsläget är av — guiden visas som den skrivs ut. Kryssrutor och ifyllnadsfält fungerar ändå.</p>' +
+         '<button class="gbtn primary" onclick="gSetEdit(true)">✎ Slå på redigering</button>';
+    return h;
+  }
+  h += '<p class="gnote">Klicka på ett block för att markera det. Dra för att flytta, dra i handtagen för att skala och <b>dubbelklicka på texten</b> för att skriva direkt på arket.</p>';
+  h += '<h4>Rutnät</h4>';
+  h += '<label class="gchk"><input type="checkbox"' + (g.show ? ' checked' : '') + ' onchange="gSetGrid(\'show\')"> Visa rutnät</label>';
+  h += '<label class="gchk"><input type="checkbox"' + (g.snap ? ' checked' : '') + ' onchange="gSetGrid(\'snap\')"> Fäst mot rutnätet</label>';
+  h += '<label class="gchk"><input type="checkbox"' + (g.guides ? ' checked' : '') + ' onchange="gSetGrid(\'guides\')"> Stödlinjer mot andra block</label>';
+  h += gField('Rutstorlek', '<select onchange="gSetGridSize(this.value)">' +
+    [1, 2, 2.5, 5, 10].map(s => '<option value="' + s + '"' + (g.size === s ? ' selected' : '') + '>' + String(s).replace('.', ',') + ' mm</option>').join('') + '</select>');
+  h += '<h4>Sidor</h4>';
+  h += GDOC.pages.map((p, i) =>
+    '<div class="gitem"><span class="gtx" style="font-weight:700;font-size:12px;padding-left:2px">Sida ' + (i + 1) + '</span>' +
+    '<input type="color" style="width:34px;height:26px;padding:2px;border:1px solid #dcdce3;border-radius:6px;background:#fff;cursor:pointer" value="' + (p.bg || '#ffffff') + '" oninput="gSetPageBg(' + i + ',this.value)" title="Sidans bakgrundsfärg">' +
+    '<button class="gmini" onclick="gGoPage(' + i + ')" title="Gå till sidan">→</button>' +
+    '<button class="gmini del" onclick="gDelPage(' + i + ')" title="Ta bort sidan">✕</button></div>').join('');
+  h += '<button class="gbtn" onclick="gAddPage()">+ Lägg till sida</button>';
+  h += '<h4>Guiden</h4>';
+  h += '<button class="gbtn" onclick="gExport()">↓ Spara guiden som fil</button>';
+  h += '<button class="gbtn" onclick="gImport()">↑ Ladda guide från fil</button>';
+  h += '<button class="gbtn danger" onclick="gResetDoc()">↺ Återställ standardguiden</button>';
+  h += '<h4>Kortkommandon</h4>';
+  h += '<div class="gkbd"><b>Dubbelklick</b> redigera text<br><b>Piltangenter</b> flytta – <b>Shift</b> större steg<br>' +
+       '<b>Shift+klick</b> markera flera – dra på tom yta för ram<br><b>Ctrl+D</b> duplicera – <b>Ctrl+C/V</b> kopiera/klistra<br>' +
+       '<b>Ctrl+Z</b> ångra – <b>Ctrl+Y</b> gör om – <b>Delete</b> ta bort</div>';
+  return h;
+}
+
+/* --- Inspektörens ändringar ---------------------------------------------- */
+function gSetProp(prop, val, full) {
+  const b = gPrimary(); if (!b) return;
+  // Vissa egenskaper gäller alla markerade block (praktiskt vid massändring)
+  const many = ['variant', 'bg', 'fg', 'bd', 'fs', 'pad', 'radius', 'page'];
+  const targets = (many.indexOf(prop) >= 0 && gSel.length > 1) ? gSel.map(gFind).filter(Boolean) : [b];
+  targets.forEach(t => { t[prop] = val; });
+  if (prop === 'page' || prop === 'variant') { gRender(); } else { targets.forEach(gRedraw); }
+  if (full) { gPaintSel(); gInspector(); }
+  else { gPaintSel(); }
+  gCommit();
+}
+function gClearColors() {
+  const targets = gSel.map(gFind).filter(Boolean);
+  targets.forEach(t => { delete t.bg; delete t.fg; delete t.bd; });
+  gRender(); gInspector(); gCommit(true);
+}
+function gSetItem(i, key, val, full) {
+  const b = gPrimary(); if (!b || !b.items || !b.items[i]) return;
+  b.items[i][key] = val;
+  gRedraw(b);
+  if (full) gInspector();
+  gCommit();
+}
+function gAddItem(t) {
+  const b = gPrimary(); if (!b) return;
+  b.items = b.items || [];
+  b.items.push({ t: t, a: t === 's' ? 'RUBRIK' : (t === 'f' ? 'Rubrik:' : 'Ny rad'), b: '', v: '' });
+  gRedraw(b); gInspector(); gCommit(true);
+}
+function gDelItem(i) {
+  const b = gPrimary(); if (!b) return;
+  b.items.splice(i, 1);
+  gRedraw(b); gInspector(); gCommit(true);
+}
+function gMoveItem(i, d) {
+  const b = gPrimary(); if (!b) return;
+  const j = i + d; if (j < 0 || j >= b.items.length) return;
+  const t = b.items[i]; b.items[i] = b.items[j]; b.items[j] = t;
+  gRedraw(b); gInspector(); gCommit(true);
+}
+function gSetStep(i, key, val) {
+  const b = gPrimary(); if (!b || !b.steps || !b.steps[i]) return;
+  b.steps[i][key] = val; gRedraw(b); gCommit();
+}
+function gAddStep() {
+  const b = gPrimary(); if (!b) return;
+  b.steps = b.steps || [];
+  b.steps.push({ icon: 'check', a: 'NYTT STEG', b: '' });
+  gRedraw(b); gInspector(); gCommit(true);
+}
+function gDelStep(i) {
+  const b = gPrimary(); if (!b) return;
+  b.steps.splice(i, 1); gRedraw(b); gInspector(); gCommit(true);
+}
+function gMoveStep(i, d) {
+  const b = gPrimary(); if (!b) return;
+  const j = i + d; if (j < 0 || j >= b.steps.length) return;
+  const t = b.steps[i]; b.steps[i] = b.steps[j]; b.steps[j] = t;
+  gRedraw(b); gInspector(); gCommit(true);
+}
+function gPickBlockIcon() {
+  const b = gPrimary(); if (!b) return;
+  gOpenIcons(b.icon, k => { b.icon = k; gRedraw(b); gInspector(); gCommit(true); });
+}
+function gPickItemIcon(i) {
+  const b = gPrimary(); if (!b || !b.items[i]) return;
+  gOpenIcons(b.items[i].icon, k => { b.items[i].icon = k; gRedraw(b); gInspector(); gCommit(true); });
+}
+function gPickStepIcon(i) {
+  const b = gPrimary(); if (!b || !b.steps[i]) return;
+  gOpenIcons(b.steps[i].icon, k => { b.steps[i].icon = k; gRedraw(b); gInspector(); gCommit(true); });
+}
+function gSetPageBg(i, v) {
+  GDOC.pages[i].bg = v;
+  const pg = document.querySelector('#g-pages .g-page[data-pi="' + i + '"]');
+  if (pg) pg.style.backgroundColor = v;
+  gCommit();
+}
+function gPickImage() {
+  const b = gPrimary(); if (!b) return;
+  const inp = document.createElement('input');
+  inp.type = 'file'; inp.accept = 'image/*';
+  inp.onchange = e => {
+    const f = e.target.files && e.target.files[0]; if (!f) return;
+    const fr = new FileReader();
+    fr.onload = ev => { b.src = ev.target.result; gRedraw(b); gInspector(); gCommit(true); };
+    fr.readAsDataURL(f);
+  };
+  inp.click();
+}
+function gUseLogo() {
+  const b = gPrimary(); if (!b) return;
+  let url = null;
+  try { url = localStorage.getItem(K('logo')); } catch (e) {}
+  if (!url) { const img = document.querySelector('img.company-logo'); if (img) url = img.getAttribute('src'); }
+  if (!url) { uiAlert('Ingen logga hittades. Välj en egen logga under Anpassa.', 'Ingen logga'); return; }
+  b.src = url; gRedraw(b); gInspector(); gCommit(true);
+}
+
+/* --- Fil: spara / ladda / återställ --------------------------------------- */
+function gExport() {
+  download('nodguide.json', JSON.stringify(GDOC, null, 2), 'application/json');
+  toast('✓ Guiden sparad');
+}
+function gImport() {
+  const inp = document.createElement('input');
+  inp.type = 'file'; inp.accept = '.json,application/json';
+  inp.onchange = e => {
+    const fr = new FileReader();
+    fr.onload = ev => {
+      try {
+        const d = JSON.parse(ev.target.result);
+        if (!d || !Array.isArray(d.blocks) || !Array.isArray(d.pages)) throw new Error('Filen innehåller ingen guide');
+        gApplyDoc(d);
+        toast('✓ Guide laddad');
+      } catch (err) { uiAlert('Kunde inte läsa guiden: ' + err.message, 'Fel'); }
+    };
+    fr.readAsText(e.target.files[0]);
+  };
+  inp.click();
+}
+function gApplyDoc(d) {
+  GDOC = gNormalise(d);
+  gSel = []; gPage = 0;
+  gGridUI(); gRender(); gInspector(); gSave(); gHistPush();
+}
+async function gResetDoc() {
+  if (!await uiConfirm('Återställ nödguiden till standardutseendet? Alla dina ändringar i guiden försvinner.',
+      { title: 'Återställ guiden', okText: 'Återställ', danger: true })) return;
+  gApplyDoc(gDefaultDoc());
+  toast('✓ Standardguiden återställd');
+}
+
+/** Fyller i saknade fält så att gamla/handredigerade filer alltid fungerar. */
+function gNormalise(d) {
+  d = d || {};
+  d.v = 1;
+  d.pages = Array.isArray(d.pages) && d.pages.length ? d.pages : [{ bg: '#ffffff' }];
+  d.grid = Object.assign({ show: true, snap: true, guides: true, size: 5 }, d.grid || {});
+  d.blocks = (Array.isArray(d.blocks) ? d.blocks : []).map(b => {
+    b = Object.assign({ type: 'card', variant: 'light', page: 0, x: 5, y: 5, w: 60, h: 30, fs: 1, z: 1 }, b);
+    if (!b.id) b.id = gUid();
+    b.page = Math.max(0, Math.min(b.page, d.pages.length - 1));
+    if (b.items && !Array.isArray(b.items)) b.items = [];
+    return b;
+  });
+  return d;
+}
+
+/* --- Visa / dölj guiden --------------------------------------------------- */
+/** Slår på eller av nödguide-vyn (anropas från setLayout). */
+function gShow(on) {
+  const v = document.getElementById('view-guide');
+  if (!v) return;
+  document.body.classList.toggle('guide-on', !!on);
+  v.style.display = on ? 'block' : 'none';
+  const gb = document.getElementById('guide-btn');
+  if (gb) { gb.classList.toggle('active', !!on); gb.setAttribute('aria-pressed', on ? 'true' : 'false'); }
+  if (on) {
+    gMeasureBar();
+    if (!gHist.length) gHistPush();
+    gRender(); gInspector();
+    if (gZoomAuto) setTimeout(gZoomFit, 0);   // första gången: anpassa till fönstret
+  }
+}
+/** Mäter verktygsfältets höjd så att guidens egen rad hamnar rätt. */
+function gMeasureBar() {
+  const tb = document.querySelector('.toolbar');
+  const hh = tb ? tb.offsetHeight : 0;
+  document.documentElement.style.setProperty('--tbh', (hh > 0 ? hh : 50) + 'px');
+}
+
+/* --- Standardguiden ------------------------------------------------------- */
+/* Här byggs affischen. Vill du ändra standardinnehållet permanent gör du det
+ * här — användarens egna ändringar ligger i localStorage och rörs inte förrän
+ * hen klickar "Återställ standardguiden".                                    */
+function gDefaultDoc() {
+  const B = [];
+  const add = o => { o.id = gUid(); B.push(o); return o; };
+  const C = a => ({ t: 'c', a: a });
+  const BU = a => ({ t: 'b', a: a });
+  const D = a => ({ t: 'd', a: a });
+  const S = a => ({ t: 's', a: a });
+  const KV = (icon, a, b) => ({ t: 'k', icon: icon, a: a, b: b });
+  const IR = (icon, a, b) => ({ t: 'i', icon: icon, a: a, b: b });
+  const F = a => ({ t: 'f', a: a, v: '' });
+
+  /* ---------- SIDA 1 ---------- */
+  add({ page: 0, type: 'header', variant: 'dark', x: 3, y: 3, w: 285, h: 25, fs: 1, z: 1,
+        title: 'ANLÄGGNINGSDYKNING', sub: 'NÖD- & HJÄLPGUIDE' });
+
+  add({ page: 0, type: 'banner', variant: 'accent', x: 3, y: 30, w: 285, h: 9, fs: .93, z: 1, icon: 'none',
+        title: 'STOPPA → SÄKRA → KOMMUNICERA → ASSISTERA → TA UPP → LARMA' });
+
+  add({ page: 0, type: 'card', variant: 'light', x: 3, y: 41, w: 88, h: 44, fs: 1.15, z: 1,
+        num: '1', icon: 'list', title: 'INNAN DYKET',
+        items: [C('Dykplan genomgången'), C('Riskbedömning klar'), C('Utrustning kontrollerad'),
+                C('Kommunikation testad'), C('Reservdykare redo'), C('Nödförsörjning (gas) OK'),
+                C('O₂ och första hjälpen OK'), C('Tryckkammare / restid kontrollerad')] });
+
+  add({ page: 0, type: 'card', variant: 'light', x: 94, y: 41, w: 92, h: 44, fs: 1.12, z: 1,
+        num: '2', icon: 'users', title: 'ROLLER',
+        items: [IR('helmet', 'Dykledare', 'Planerar, leder och kan avbryta arbetet.'),
+                IR('diver', 'Dykare', 'Utför arbetet och avbryter vid onormala förhållanden.'),
+                IR('shield', 'Reservdykare', 'Redo att assistera och undsätta dykaren.'),
+                IR('headset', 'Dykarskötare', 'Håller kontakt med dykaren och assisterar vid ned-/uppstigning.')] });
+
+  add({ page: 0, type: 'card', variant: 'light', x: 189, y: 41, w: 99, h: 135, fs: .95, z: 1,
+        num: '3', icon: 'aid', title: 'HJÄLPMEDEL',
+        items: [S('Räddning'), BU('Reservdykare'), BU('Reservgas'), BU('Livlina / mellanlina'), BU('Vinsch'),
+                BU('Flotte / ställning'), BU('Lyftutrustning'),
+                S('Medicin'), BU('O₂ (100%)'), BU('Första hjälpen'), BU('HLR'), BU('AED'), BU('Bår'),
+                BU('Tryckkammarinformation'),
+                S('Kommunikation'), BU('Dyktelefon'), BU('Radio'), BU('Reservkommunikation'), BU('Ljus'), BU('Linjesignaler'),
+                S('Övrigt'), BU('Huvudlampa'), BU('Reservlampa'), BU('Kniv / linkniv'), BU('Kabelsax / skärverktyg'),
+                BU('Kamera'), BU('Arbetsverktyg'),
+                S('Extern hjälp'), BU('112'), BU('Räddningstjänst'), BU('Ambulans'), BU('Tryckkammare'),
+                BU('Dykerimedicinsk kontakt'), BU('Arbetsledning')] });
+
+  add({ page: 0, type: 'card', variant: 'light', x: 3, y: 88, w: 183, h: 88, fs: 1.2, z: 1,
+        num: '4', icon: 'warn', title: 'NÖDSITUATIONER – SNABB ÖVERSIKT',
+        items: [
+          KV('lungs', '1. Luft-/gasproblem', 'Reservgas → meddela ytan → avbryt'),
+          KV('chain', '2. Fastnad / intrasslad', 'Stanna → frigör → signalera → assistans'),
+          KV('wrench', '3. Utrustningshaveri', 'Säkra → laga/byt → avbryt vid behov'),
+          KV('radio', '4. Kommunikationshaveri', 'Försök återupprätta → signaler → avbryt'),
+          KV('eye', '5. Förlorad / dålig sikt', 'Stanna → orientera → livlina → avbryt'),
+          KV('ship', '6. Fartyg / trafik', 'Stoppa dykning → säkra dykaren → ta upp'),
+          KV('bolt', '7. Ström-/kraftbortfall', 'Säkra gas & kommunikation → avbryt'),
+          KV('cross', '8. Skadad dykare', 'Reservdykare → ta upp → O₂/HLR → 112'),
+          KV('diver', '9. Dyksjuka / barotrauma', 'O₂ → larma → medicinsk kontakt → kammare'),
+          KV('wave', '10. Ström / väder / vattenförh.', 'Avbryt → meddela → ta upp vid behov'),
+          KV('snow', '11. Kyla / nedkylning', 'Avsluta → ta upp → värm → bedöm'),
+          KV('fire', '12. Brand / explosion', 'Stoppa → ta upp → larma → följ plan'),
+          KV('hazard', '13. Förorening / kemisk exp.', 'Avbryt → ta upp → sanera → bedömning'),
+          KV('panic', '14. Desorienterad / panik', 'Stoppa → kommunicera → assistans → avbryt'),
+          KV('warn', '15. Arbetsobj. blir farligt', 'Stoppa → frigör → signalera → ta upp'),
+          KV('vortex', '16. Insug / sugkraft', 'Stäng av energin → assistans → frigör')
+        ] });
+
+  add({ page: 0, type: 'banner', variant: 'danger', x: 3, y: 179, w: 285, h: 14, fs: 1.05, z: 1, icon: 'warn',
+        title: 'KOM IHÅG: AVBRYT OM NÅGOT KÄNNS FEL!' });
+
+  /* ---------- SIDA 2 ---------- */
+  add({ page: 1, type: 'steps', variant: 'light', x: 3, y: 3, w: 285, h: 41, fs: 1, z: 1,
+        num: '5', icon: 'arrowup', title: 'SÅ HÄR GÖR VI VID NÖD',
+        steps: [
+          { icon: 'stop', a: 'Stoppa', b: 'arbetet' },
+          { icon: 'shield', a: 'Säkra', b: 'dykaren' },
+          { icon: 'radio', a: 'Kommunicera', b: 'med ytan' },
+          { icon: 'diver', a: 'Assistera', b: 'med reservdykare' },
+          { icon: 'arrowup', a: 'Ta upp', b: 'dykaren' },
+          { icon: 'cross', a: 'O₂ / första hjälpen', b: 'enligt plan' },
+          { icon: 'phone', a: 'Larma', b: '112' },
+          { icon: 'chamber', a: 'Tryckkammare', b: 'informera & transport' }
+        ] });
+
+  add({ page: 1, type: 'panel', variant: 'dark', x: 3, y: 47, w: 285, h: 114, fs: 1, z: 0,
+        title: '6. DETALJER – SITUATIONER & ÅTGÄRDER' });
+
+  const detail = [
+    ['lungs', 'LUFT-/GASPROBLEM', ['Gå över till reservgas.', 'Meddela ytan.', 'Avbryt dykningen.', 'Följ planerad uppstigning / dekompression.', 'Assistans vid behov.']],
+    ['chain', 'FASTNAD / INTRASSLAD', ['Stanna. Andas. Behåll lugnet.', 'Meddela ytan.', 'Försök frigöra dig.', 'Använd skärverktyg vid behov.', 'Reservdykare assisterar.', 'Avbryt arbetet.']],
+    ['wrench', 'UTRUSTNINGSHAVERI', ['Identifiera problemet.', 'Meddela ytan.', 'Om säkerheten påverkas: AVBRYT och gå upp.', 'Reparera / byt om möjligt.']],
+    ['radio', 'KOMMUNIKATIONSHAVERI', ['Kontrollera utrustning.', 'Använd reservsignaler.', 'Meddela via livlina.', 'Om kontakt ej kan säkerställas: AVBRYT enligt plan.']],
+    ['eye', 'FÖRLORAD / DÅLIG SIKT', ['Stanna arbetet.', 'Orientera dig.', 'Använd lampa.', 'Följ livlina / slang.', 'Kommunicera med ytan.', 'Avbryt vid behov.']],
+    ['ship', 'FARTYG / TRAFIK', ['Stoppa undervattensarbete.', 'Informera fartyg / hamnvakt.', 'Säkerställ att området är säkert.', 'Ta upp dykaren enligt plan.', 'Återuppta inte förrän säkert.']],
+    ['bolt', 'STRÖM-/KRAFTBORTFALL', ['Säkra dykaren först.', 'Kontrollera belysning och kommunikation.', 'Kontrollera vinsch, pumpar och verktyg.', 'Kontrollera gasförsörjning.', 'Avbryt dykningen.']],
+    ['cross', 'SKADAD DYKARE', ['Reservdykare omedelbart.', 'Ta upp dykaren.', 'HLR / AED / O₂ enligt plan.', 'Larma 112.', 'Kontakta dykerimedicinsk kompetens.', 'Förbered transport.']],
+    ['diver', 'DYKSJUKA / BAROTRAUMA', ['Symtom? Ta på allvar!', 'Avsluta dyket.', 'Ge O₂ enligt plan.', 'Larma och kontakta medicinsk kompetens.', 'Transport till tryckkammare.', 'Dokumentera dykprofilen.']],
+    ['wave', 'STRÖM / VÄDER / VATTENFÖRH.', ['Bedöm riskerna.', 'Meddela dykarledare.', 'Avbryt eller ta upp vid behov.', 'Följ dykplanen.']],
+    ['snow', 'KYLA / NEDKYLNING', ['Ta upp dykaren.', 'Ta av våta kläder.', 'Värm kontrollerat.', 'Bedöm tillstånd.', 'Sök medicinsk hjälp vid allvarliga symtom.']],
+    ['fire', 'BRAND / EXPLOSION', ['Avbryt dykningen.', 'Ta upp dykaren.', 'Larma.', 'Följ arbetsplatsens brandplan.']],
+    ['hazard', 'FÖRORENING / KEMISK EXP.', ['Avbryt arbetet.', 'Ta upp dykaren.', 'Undvik ytterligare exponering.', 'Sänk ner och sanera enligt plan.', 'Informera sjukvård om ämnet.']],
+    ['panic', 'DESORIENTERAD / PANIK', ['Stanna.', 'Kommunicera lugnt.', 'Få kontroll på situationen.', 'Reservdykare assisterar.', 'Avbryt dykningen.']],
+    ['warn', 'ARBETSOBJ. BLIR FARLIGT', ['Stoppa arbetet.', 'Identifiera faran.', 'Frigör dykaren vid behov.', 'Meddela ytan.', 'Ta upp dykaren.']],
+    ['vortex', 'INSUG / SUGKRAFT', ['Stäng av pumpar / energi.', 'Dra inte i dykaren.', 'Reservdykare assisterar.', 'Frigör dykaren.', 'Ta upp dykaren.']]
+  ];
+  detail.forEach((d, i) => {
+    const col = i % 4, row = Math.floor(i / 4);
+    add({ page: 1, type: 'card', variant: 'light', fs: .78, z: 1,
+          x: gR(6 + col * 70.5), y: gR(56.5 + row * 26.5), w: 68, h: 25,
+          num: String(i + 1), icon: d[0], title: d[1], pad: 1.4,
+          items: d[2].map(BU) });
+  });
+
+  add({ page: 1, type: 'card', variant: 'light', x: 3, y: 162, w: 285, h: 30, fs: .76, z: 1, cols: 3,
+        num: '7', icon: 'doc', title: 'VIKTIG INFORMATION (FYLL I FÖR VARJE DYKPLATS)',
+        items: [F('Dykplats:'), F('Koordinater:'), F('Dykledare:'), F('Reservdykare:'), F('Dykarskötare:'),
+                F('112 / nödnummer:'), F('Dykerimedicinsk kontakt:'), F('Närmaste sjukhus:'), F('Tryckkammare:'),
+                F('Restid till tryckkammare:'), F('Andningsgas:'), F('Dekomp.tabell / dykprofil:'),
+                F('Kommunikation:'), F('Livlina / mellanlina:'), F('Övriga anteckningar:')] });
+
+  add({ page: 1, type: 'banner', variant: 'danger', x: 3, y: 192.5, w: 285, h: 10.5, fs: .95, z: 1, icon: 'warn',
+        title: 'SÄKERHETEN KOMMER ALLTID FÖRST – AVBRYT VID MINSTA TVEKAN!' });
+
+  return { v: 1, pages: [{ bg: '#ffffff' }, { bg: '#ffffff' }],
+           grid: { show: true, snap: true, guides: true, size: 5 }, blocks: B };
+}
+
+/* --- Uppstart ------------------------------------------------------------- */
+(function gInit() {
+  let saved = null;
+  try { saved = JSON.parse(localStorage.getItem(K('guide')) || 'null'); } catch (e) {}
+  GDOC = gNormalise(saved && Array.isArray(saved.blocks) && saved.blocks.length ? saved : gDefaultDoc());
+  try {
+    const z = parseFloat(localStorage.getItem(K('guide_zoom'))); if (z > 0) { gZoom = z; gZoomAuto = false; }
+    gEdit = localStorage.getItem(K('guide_edit')) !== '0';
+    if (localStorage.getItem(K('guide_side')) === '0') document.body.classList.add('g-side-off');
+  } catch (e) {}
+  document.body.classList.toggle('g-edit', gEdit);
+  const eb = document.getElementById('g-edit-btn'); if (eb) eb.classList.toggle('on', gEdit);
+  const sb = document.getElementById('g-side-btn'); if (sb) sb.classList.toggle('on', !document.body.classList.contains('g-side-off'));
+  gRenderAddPop();
+  gGridUI();
+  gRender();
+  gInspector();
+  gHistPush();
+
+  const host = document.getElementById('g-pages');
+  if (host) {
+    host.addEventListener('pointerdown', gPointerDown);
+    host.addEventListener('dblclick', gDblClick);
+    host.addEventListener('input', gFieldInput);
+  }
+  document.addEventListener('keydown', gKeyDown);
+  window.addEventListener('resize', () => { gMeasureBar(); gApplyZoom(); gPaintSel(); });
+  gMeasureBar();
+})();
+
 // Autosave to localStorage on any input change
 document.addEventListener('input', () => {
   try { localStorage.setItem(K('autosave'), JSON.stringify(gatherAll())); } catch(e) {}
@@ -2495,7 +4133,7 @@ function loadJSON() {
 /** Rensar hela formuläret efter bekräftelse. */
 async function clearAll() {
   if (!await uiConfirm('Rensa hela formul\u00e4ret? Detta t\u00f6mmer alla f\u00e4lt i det aktuella dyket.', { title: 'Rensa formul\u00e4ret', okText: 'Rensa', danger: true })) return;
-  document.querySelectorAll('input[type=text]').forEach(el => el.value = '');
+  document.querySelectorAll('input[type=text]').forEach(el => { if (!el.closest('#view-guide')) el.value = ''; });
   document.querySelectorAll('input[type=checkbox]').forEach(el => el.checked = false);
   ['main','b1','b2'].forEach(inst=>{ atInstances[inst].checked = {}; renderGrid(inst); });
   glSpans().forEach(sp => sp.classList.remove('gsel'));
