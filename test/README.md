@@ -50,4 +50,4 @@ npx playwright install chromium # första gången
 node nodguide.test.js
 ```
 
-Förväntat resultat: `45 OK, 0 FAIL`.
+Förväntat resultat: `46 OK, 0 FAIL`.

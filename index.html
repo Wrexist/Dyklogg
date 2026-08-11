@@ -307,48 +307,48 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
 .g-blk.v-soft{--bg:#f5f5f9;--fg:#15161c;--bd:#e0e0e9}
 .g-blk.v-ghost{--bg:transparent;--fg:#15161c;--bd:transparent}
 
-.g-head{display:flex;align-items:center;gap:1.3mm;font-weight:800;text-transform:uppercase;letter-spacing:.02em;font-size:calc(3.1mm*var(--fs));line-height:1.15;padding-bottom:.9mm;margin-bottom:1.1mm;border-bottom:.45mm solid var(--accent);flex-shrink:0}
-.g-head .g-num{background:var(--accent);color:#191919;font-weight:900;border-radius:.8mm;padding:.15mm 1.2mm;font-size:calc(2.9mm*var(--fs));flex-shrink:0}
+.g-head{display:flex;align-items:center;gap:calc(1.3mm*var(--fs));font-weight:800;text-transform:uppercase;letter-spacing:.02em;font-size:calc(3.1mm*var(--fs));line-height:1.15;padding-bottom:calc(.9mm*var(--fs));margin-bottom:calc(1.1mm*var(--fs));border-bottom:.45mm solid var(--accent);flex-shrink:0}
+.g-num{background:var(--accent);color:#191919;font-weight:900;border-radius:.8mm;padding:.15mm calc(1.2mm*var(--fs));font-size:calc(2.9mm*var(--fs));flex-shrink:0}
 .g-head .gi{width:calc(4.2mm*var(--fs));height:calc(4.2mm*var(--fs));flex-shrink:0}
 .g-head .ttl{flex:1;min-width:0}
 
 .g-body{flex:1;min-height:0;column-gap:3.5mm}
-.g-it{display:flex;align-items:flex-start;gap:1.2mm;font-size:calc(2.55mm*var(--fs));line-height:1.22;margin-bottom:.55mm;break-inside:avoid}
+.g-it{display:flex;align-items:flex-start;gap:calc(1.2mm*var(--fs));font-size:calc(2.55mm*var(--fs));line-height:1.22;margin-bottom:calc(.55mm*var(--fs));break-inside:avoid}
 .g-it .bu{color:var(--accent);font-weight:900;line-height:1.15;flex-shrink:0}
 .g-it .tx{flex:1;min-width:0}
-.g-it .gi{width:calc(3.4mm*var(--fs));height:calc(3.4mm*var(--fs));flex-shrink:0;margin-top:.15mm}
-.g-box{width:2.6mm;height:2.6mm;border:.3mm solid currentColor;border-radius:.4mm;flex-shrink:0;margin-top:.35mm;position:relative;cursor:pointer}
-.g-box.on::after{content:'';position:absolute;left:.7mm;top:.1mm;width:.8mm;height:1.6mm;border:solid currentColor;border-width:0 .35mm .35mm 0;transform:rotate(42deg)}
-.g-sub{color:var(--accent);font-weight:900;text-transform:uppercase;letter-spacing:.04em;font-size:calc(2.5mm*var(--fs));line-height:1.2;margin:1.4mm 0 .6mm;break-inside:avoid;break-after:avoid}
+.g-it .gi{width:calc(3.4mm*var(--fs));height:calc(3.4mm*var(--fs));flex-shrink:0;margin-top:calc(.15mm*var(--fs))}
+.g-box{width:calc(2.6mm*var(--fs));height:calc(2.6mm*var(--fs));border:.3mm solid currentColor;border-radius:.4mm;flex-shrink:0;margin-top:calc(.35mm*var(--fs));position:relative;cursor:pointer}
+.g-box.on::after{content:'';position:absolute;left:calc(.72mm*var(--fs));top:calc(.1mm*var(--fs));width:calc(.8mm*var(--fs));height:calc(1.6mm*var(--fs));border:solid currentColor;border-width:0 .35mm .35mm 0;transform:rotate(42deg)}
+.g-sub{color:var(--accent);font-weight:900;text-transform:uppercase;letter-spacing:.04em;font-size:calc(2.5mm*var(--fs));line-height:1.2;margin:calc(1.4mm*var(--fs)) 0 calc(.6mm*var(--fs));break-inside:avoid;break-after:avoid}
 .g-body>.g-sub:first-child{margin-top:0}
 .g-kv .a{font-weight:800;flex:0 0 40%;min-width:0}
 .g-kv .b{flex:1;min-width:0;opacity:.82}
-.g-ir{gap:1.6mm}
+.g-ir{gap:calc(1.6mm*var(--fs))}
 .g-ir .gi{width:calc(4.8mm*var(--fs));height:calc(4.8mm*var(--fs));margin-top:.3mm}
 .g-ir .t{font-weight:900;display:block;text-transform:uppercase;letter-spacing:.02em}
 .g-ir .d{opacity:.85;display:block}
 .g-fl{align-items:baseline}
 .g-fl .a{font-weight:800;white-space:nowrap}
-.g-fi{flex:1;min-width:3mm;border:none;border-bottom:.3mm dotted #8a8a95;background:transparent;font-family:inherit;font-size:inherit;color:inherit;outline:none;padding:0 .5mm}
-.g-fi:focus{border-bottom-color:var(--accent);background:rgba(255,153,0,.10)}
+.g-blk input.g-fi{flex:1;width:auto;min-width:3mm;border:none;border-bottom:.3mm dotted #8a8a95;border-radius:0;background:transparent;font-family:inherit;font-size:inherit;line-height:inherit;color:inherit;outline:none;padding:0 .5mm}
+.g-blk input.g-fi:focus{border-bottom-color:var(--accent);background:rgba(255,153,0,.10)}
 
 /* Steg-block */
-.g-steps{display:flex;gap:1.4mm;flex:1;min-height:0}
-.g-step{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;text-align:center;gap:.5mm;border:.3mm solid #e0e0e9;border-radius:1.2mm;padding:1.2mm .6mm;background:rgba(255,255,255,.9);color:#15161c}
+.g-steps{display:flex;gap:calc(1.4mm*var(--fs));flex:1;min-height:0}
+.g-step{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:calc(.5mm*var(--fs));border:.3mm solid #e0e0e9;border-radius:1.2mm;padding:calc(1.2mm*var(--fs)) calc(.6mm*var(--fs));background:rgba(255,255,255,.9);color:#15161c}
 .g-step .gi{width:calc(7mm*var(--fs));height:calc(7mm*var(--fs));stroke-width:1.6}
 .g-step .n{width:calc(5.2mm*var(--fs));height:calc(5.2mm*var(--fs));border-radius:50%;background:var(--accent);color:#191919;font-weight:900;font-size:calc(3mm*var(--fs));display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .g-step .a{font-weight:900;text-transform:uppercase;font-size:calc(2.5mm*var(--fs));line-height:1.12}
 .g-step .b{font-size:calc(2.25mm*var(--fs));opacity:.72;line-height:1.12}
 
 /* Rubrik-, banderoll-, panel-, text-, bild- och linjeblock */
-.g-hd{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.4mm;text-align:center}
+.g-hd{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:calc(1.4mm*var(--fs));text-align:center}
 .g-hd .t{font-size:calc(8.5mm*var(--fs));font-weight:900;letter-spacing:.03em;line-height:1}
-.g-hd .s{background:var(--accent);color:#191919;font-weight:900;font-size:calc(3.6mm*var(--fs));letter-spacing:.09em;padding:.7mm 3mm;border-radius:1mm}
-.g-bn{flex:1;display:flex;align-items:center;justify-content:center;gap:2.5mm;font-weight:900;text-transform:uppercase;letter-spacing:.05em;font-size:calc(3.4mm*var(--fs));text-align:center;line-height:1.12}
+.g-hd .s{background:var(--accent);color:#191919;font-weight:900;font-size:calc(3.6mm*var(--fs));letter-spacing:.09em;padding:calc(.7mm*var(--fs)) calc(3mm*var(--fs));border-radius:1mm}
+.g-bn{flex:1;display:flex;align-items:center;justify-content:center;gap:calc(2.5mm*var(--fs));font-weight:900;text-transform:uppercase;letter-spacing:.05em;font-size:calc(3.4mm*var(--fs));text-align:center;line-height:1.12}
 .g-bn .gi{width:calc(5mm*var(--fs));height:calc(5mm*var(--fs));stroke-width:2.1;flex-shrink:0}
 .g-blk.t-panel{padding:0}
 .g-pn{flex:1;display:flex;flex-direction:column;min-height:0}
-.g-pn .g-pt{font-weight:900;text-transform:uppercase;letter-spacing:.05em;font-size:calc(3.2mm*var(--fs));padding:1.3mm 2mm;border-bottom:.45mm solid var(--accent)}
+.g-pn .g-pt{display:flex;align-items:center;gap:calc(1.3mm*var(--fs));font-weight:900;text-transform:uppercase;letter-spacing:.05em;font-size:calc(3.2mm*var(--fs));padding:calc(1.3mm*var(--fs)) calc(2mm*var(--fs));border-bottom:.45mm solid var(--accent)}
 .g-tx{flex:1;white-space:pre-wrap;font-size:calc(2.8mm*var(--fs));line-height:1.32}
 .g-blk.t-divider,.g-blk.t-image{padding:0;border:none;background:transparent}
 .g-dv{flex:1;background:var(--accent);border-radius:.5mm}
@@ -510,7 +510,7 @@ body.g-side-off .g-side{display:none}
   .g-page{box-shadow:none!important;background-image:none!important;overflow:hidden}
   .g-blk{box-shadow:none!important}
   .g-blk.of::after{display:none!important}
-  .g-fi{border-bottom-color:#8a8a95!important;background:transparent!important}
+  .g-blk input.g-fi{border-bottom-color:#8a8a95!important;background:transparent!important}
 @page{size:A4 landscape;margin:3mm}
 @page pp{size:A4 portrait;margin:3mm}
 </style>
@@ -2982,7 +2982,9 @@ function gBlockHTML(b) {
       return '<div class="g-bn">' + ic + '<span data-t="title">' + _esc(b.title || '') + '</span>' + ic + '</div>';
     }
     case 'panel':
-      return '<div class="g-pn">' + (b.title ? '<div class="g-pt" data-t="title">' + _esc(b.title) + '</div>' : '') + '</div>';
+      return '<div class="g-pn">' + ((b.title || b.num) ? '<div class="g-pt">' +
+        (b.num ? '<span class="g-num">' + _esc(b.num) + '</span>' : '') +
+        '<span data-t="title">' + _esc(b.title || '') + '</span></div>' : '') + '</div>';
     case 'steps':
       return gHeadHTML(b) + '<div class="g-steps">' + (b.steps || []).map((s, i) =>
         '<div class="g-step">' + (s.icon && s.icon !== 'none' ? gIcon(s.icon) : '') +
@@ -3413,6 +3415,27 @@ function gFitHeight() {
   const need = px / mm + 0.4;
   if (need > 0) { b.h = gR(Math.max(6, need)); gRedraw(b); gPaintSel(); gInspector(); gCommit(true); }
 }
+/** Söker fram största textstorlek där innehållet fortfarande får plats i rutan. */
+function gFitText() {
+  const b = gPrimary(); if (!b) return;
+  const mm = gMM(); if (!(mm > 0)) return;
+  const nat = fs => {
+    b.fs = fs; gRedraw(b);
+    const el = document.querySelector('#g-pages .g-blk[data-id="' + b.id + '"]');
+    if (!el) return 1e9;
+    const prev = el.style.height; el.style.height = 'auto';
+    const h = el.offsetHeight / mm; el.style.height = prev;
+    return h;
+  };
+  const old = b.fs || 1;
+  let lo = 0.4, hi = 3;
+  if (nat(lo) > b.h - 0.4) { b.fs = old; gRedraw(b); toast('Innehållet får inte plats – gör rutan större'); return; }
+  for (let i = 0; i < 22; i++) { const mid = (lo + hi) / 2; if (nat(mid) <= b.h - 0.4) lo = mid; else hi = mid; }
+  b.fs = Math.max(0.4, Math.floor(lo * 100) / 100);
+  gRedraw(b); gPaintSel(); gInspector(); gCommit(true);
+  toast('✓ Textstorlek anpassad (' + Math.round(b.fs * 100) + '%)');
+}
+
 /** Justerar markerade block mot varandra. */
 function gAlign(how) {
   const bs = gSel.map(gFind).filter(b => b && !b.locked);
@@ -3617,10 +3640,11 @@ function gInspectorBlock(b) {
       : '<input type="text" value="' + _esc(b.title || '') + '" oninput="gSetProp(\'title\', this.value)">');
   }
   if (has('header')) h += gField('Underrubrik', '<input type="text" value="' + _esc(b.sub || '') + '" oninput="gSetProp(\'sub\', this.value)">');
-  if (has('card') || has('steps') || has('banner')) {
+  if (has('card') || has('steps') || has('banner') || has('panel')) {
     const ib = '<div class="gf"><label>Ikon</label><button class="gbtn" style="margin:0" onclick="gPickBlockIcon()">' +
       (b.icon && b.icon !== 'none' ? gIcon(b.icon) + ' ' + _esc(G_ICONS[b.icon] ? G_ICONS[b.icon].n : b.icon) : 'Välj…') + '</button></div>';
-    h += has('banner') ? ib
+    h += (has('banner') || has('panel')) ? (has('panel') ?
+        '<div class="gf"><label>Nummer</label><input type="text" value="' + _esc(b.num || '') + '" oninput="gSetProp(\'num\', this.value)"></div>' : ib)
       : '<div class="grow"><div class="gf"><label>Nummer</label><input type="text" value="' + _esc(b.num || '') +
         '" oninput="gSetProp(\'num\', this.value)"></div>' + ib + '</div>';
   }
@@ -3663,7 +3687,8 @@ function gInspectorBlock(b) {
     '<div class="gf"><label>Ram</label><input type="color" value="' + (b.bd || '#cfcfda') + '" oninput="gSetProp(\'bd\', this.value, true)"></div></div>';
   h += '<button class="gbtn" onclick="gClearColors()">↺ Använd stilens färger</button>';
   h += gField('Textstorlek <b>' + gR((b.fs || 1) * 100) + '%</b>',
-    '<input type="range" min="0.6" max="2" step="0.05" value="' + (b.fs || 1) + '" oninput="gSetProp(\'fs\', parseFloat(this.value), true)">');
+    '<input type="range" min="0.4" max="2.5" step="0.01" value="' + (b.fs || 1) + '" oninput="gSetProp(\'fs\', parseFloat(this.value), true)">');
+  h += '<button class="gbtn" onclick="gFitText()">⤢ Fyll rutan – största text som får plats</button>';
   h += '<div class="grow">' +
     '<div class="gf"><label>Inre marginal</label><input type="number" step="0.2" min="0" value="' + (b.pad != null ? b.pad : 1.8) + '" oninput="gSetProp(\'pad\', parseFloat(this.value)||0, true)"></div>' +
     '<div class="gf"><label>Hörnradie</label><input type="number" step="0.2" min="0" value="' + (b.radius != null ? b.radius : 1.4) + '" oninput="gSetProp(\'radius\', parseFloat(this.value)||0, true)"></div></div>';
@@ -3943,26 +3968,26 @@ function gDefaultDoc() {
   const F = a => ({ t: 'f', a: a, v: '' });
 
   /* ---------- SIDA 1 ---------- */
-  add({ page: 0, type: 'header', variant: 'dark', x: 3, y: 3, w: 285, h: 25, fs: 1, z: 1,
+  add({ page: 0, type: 'header', variant: 'dark', x: 3, y: 3, w: 285, h: 22, fs: 1.05, z: 1,
         title: 'ANLÄGGNINGSDYKNING', sub: 'NÖD- & HJÄLPGUIDE' });
 
-  add({ page: 0, type: 'banner', variant: 'accent', x: 3, y: 30, w: 285, h: 9, fs: .93, z: 1, icon: 'none',
+  add({ page: 0, type: 'banner', variant: 'accent', x: 3, y: 28, w: 285, h: 10, fs: 1.2, z: 1, icon: 'none',
         title: 'STOPPA → SÄKRA → KOMMUNICERA → ASSISTERA → TA UPP → LARMA' });
 
-  add({ page: 0, type: 'card', variant: 'light', x: 3, y: 41, w: 88, h: 44, fs: 1.15, z: 1,
+  add({ page: 0, type: 'card', variant: 'light', x: 3, y: 41, w: 97.5, h: 43, fs: 1.04, z: 1,
         num: '1', icon: 'list', title: 'INNAN DYKET',
         items: [C('Dykplan genomgången'), C('Riskbedömning klar'), C('Utrustning kontrollerad'),
                 C('Kommunikation testad'), C('Reservdykare redo'), C('Nödförsörjning (gas) OK'),
                 C('O₂ och första hjälpen OK'), C('Tryckkammare / restid kontrollerad')] });
 
-  add({ page: 0, type: 'card', variant: 'light', x: 94, y: 41, w: 92, h: 44, fs: 1.12, z: 1,
+  add({ page: 0, type: 'card', variant: 'light', x: 103.5, y: 41, w: 97.5, h: 43, fs: 1.04, z: 1,
         num: '2', icon: 'users', title: 'ROLLER',
         items: [IR('helmet', 'Dykledare', 'Planerar, leder och kan avbryta arbetet.'),
                 IR('diver', 'Dykare', 'Utför arbetet och avbryter vid onormala förhållanden.'),
                 IR('shield', 'Reservdykare', 'Redo att assistera och undsätta dykaren.'),
                 IR('headset', 'Dykarskötare', 'Håller kontakt med dykaren och assisterar vid ned-/uppstigning.')] });
 
-  add({ page: 0, type: 'card', variant: 'light', x: 189, y: 41, w: 99, h: 135, fs: .95, z: 1,
+  add({ page: 0, type: 'card', variant: 'light', x: 204, y: 41, w: 84, h: 144, fs: 1.02, z: 1,
         num: '3', icon: 'aid', title: 'HJÄLPMEDEL',
         items: [S('Räddning'), BU('Reservdykare'), BU('Reservgas'), BU('Livlina / mellanlina'), BU('Vinsch'),
                 BU('Flotte / ställning'), BU('Lyftutrustning'),
@@ -3974,7 +3999,7 @@ function gDefaultDoc() {
                 S('Extern hjälp'), BU('112'), BU('Räddningstjänst'), BU('Ambulans'), BU('Tryckkammare'),
                 BU('Dykerimedicinsk kontakt'), BU('Arbetsledning')] });
 
-  add({ page: 0, type: 'card', variant: 'light', x: 3, y: 88, w: 183, h: 88, fs: 1.2, z: 1,
+  add({ page: 0, type: 'card', variant: 'light', x: 3, y: 87, w: 198, h: 98, fs: 1.28, z: 1,
         num: '4', icon: 'warn', title: 'NÖDSITUATIONER – SNABB ÖVERSIKT',
         items: [
           KV('lungs', '1. Luft-/gasproblem', 'Reservgas → meddela ytan → avbryt'),
@@ -3995,11 +4020,11 @@ function gDefaultDoc() {
           KV('vortex', '16. Insug / sugkraft', 'Stäng av energin → assistans → frigör')
         ] });
 
-  add({ page: 0, type: 'banner', variant: 'danger', x: 3, y: 179, w: 285, h: 14, fs: 1.05, z: 1, icon: 'warn',
+  add({ page: 0, type: 'banner', variant: 'danger', x: 3, y: 188, w: 285, h: 13, fs: 1.35, z: 1, icon: 'warn',
         title: 'KOM IHÅG: AVBRYT OM NÅGOT KÄNNS FEL!' });
 
   /* ---------- SIDA 2 ---------- */
-  add({ page: 1, type: 'steps', variant: 'light', x: 3, y: 3, w: 285, h: 41, fs: 1, z: 1,
+  add({ page: 1, type: 'steps', variant: 'light', x: 3, y: 3, w: 285, h: 30, fs: .86, z: 1,
         num: '5', icon: 'arrowup', title: 'SÅ HÄR GÖR VI VID NÖD',
         steps: [
           { icon: 'stop', a: 'Stoppa', b: 'arbetet' },
@@ -4012,8 +4037,8 @@ function gDefaultDoc() {
           { icon: 'chamber', a: 'Tryckkammare', b: 'informera & transport' }
         ] });
 
-  add({ page: 1, type: 'panel', variant: 'dark', x: 3, y: 47, w: 285, h: 114, fs: 1, z: 0,
-        title: '6. DETALJER – SITUATIONER & ÅTGÄRDER' });
+  add({ page: 1, type: 'panel', variant: 'dark', x: 3, y: 36, w: 285, h: 125, fs: 1, z: 0,
+        num: '6', title: 'DETALJER – SITUATIONER & ÅTGÄRDER' });
 
   const detail = [
     ['lungs', 'LUFT-/GASPROBLEM', ['Gå över till reservgas.', 'Meddela ytan.', 'Avbryt dykningen.', 'Följ planerad uppstigning / dekompression.', 'Assistans vid behov.']],
@@ -4035,20 +4060,21 @@ function gDefaultDoc() {
   ];
   detail.forEach((d, i) => {
     const col = i % 4, row = Math.floor(i / 4);
-    add({ page: 1, type: 'card', variant: 'light', fs: .78, z: 1,
-          x: gR(6 + col * 70.5), y: gR(56.5 + row * 26.5), w: 68, h: 25,
+    add({ page: 1, type: 'card', variant: 'light', fs: .77, z: 1,
+          x: gR(6 + col * 70.5), y: gR(45 + row * 29), w: 67.5, h: 26,
           num: String(i + 1), icon: d[0], title: d[1], pad: 1.4,
           items: d[2].map(BU) });
   });
 
-  add({ page: 1, type: 'card', variant: 'light', x: 3, y: 162, w: 285, h: 30, fs: .76, z: 1, cols: 3,
+  add({ page: 1, type: 'card', variant: 'light', x: 3, y: 164, w: 285, h: 21, fs: .7, z: 1, cols: 4,
         num: '7', icon: 'doc', title: 'VIKTIG INFORMATION (FYLL I FÖR VARJE DYKPLATS)',
         items: [F('Dykplats:'), F('Koordinater:'), F('Dykledare:'), F('Reservdykare:'), F('Dykarskötare:'),
                 F('112 / nödnummer:'), F('Dykerimedicinsk kontakt:'), F('Närmaste sjukhus:'), F('Tryckkammare:'),
                 F('Restid till tryckkammare:'), F('Andningsgas:'), F('Dekomp.tabell / dykprofil:'),
-                F('Kommunikation:'), F('Livlina / mellanlina:'), F('Övriga anteckningar:')] });
+                F('Kommunikation:'), F('Livlina / mellanlina:'), F('Samlingsplats:'),
+                F('Övriga anteckningar:')] });
 
-  add({ page: 1, type: 'banner', variant: 'danger', x: 3, y: 192.5, w: 285, h: 10.5, fs: .95, z: 1, icon: 'warn',
+  add({ page: 1, type: 'banner', variant: 'danger', x: 3, y: 188, w: 285, h: 13, fs: 1.35, z: 1, icon: 'warn',
         title: 'SÄKERHETEN KOMMER ALLTID FÖRST – AVBRYT VID MINSTA TVEKAN!' });
 
   return { v: 1, pages: [{ bg: '#ffffff' }, { bg: '#ffffff' }],

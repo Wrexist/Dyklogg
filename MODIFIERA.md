@@ -174,7 +174,7 @@ Nödguiden har ett eget test som kör hela sidan i en riktig webbläsare:
 ```bash
 cd test
 npm install playwright && npx playwright install chromium   # första gången
-node nodguide.test.js       # förväntat: 45 OK, 0 FAIL
+node nodguide.test.js       # förväntat: 46 OK, 0 FAIL
 ```
 
 (Se även `test/README.md` för samma instruktioner.)
@@ -204,6 +204,7 @@ sen **📂 Ladda** och välj filen – allt ska komma tillbaka.
 | Skala | Dra i något av de åtta handtagen |
 | Ändra text | **Dubbelklicka på texten** och skriv direkt på arket |
 | Ändra allt annat | Panelen till höger (rader, ikoner, färger, storlek, position) |
+| Fylla en ruta snyggt | **⤢ Fyll rutan** sätter största textstorlek som får plats, **↕ Anpassa höjd** krymper rutan till innehållet |
 | Nytt block | **+ Lägg till block** (kort, checklista, rubrik, banderoll, steg, panel, text, bild, linje) |
 | Rutnät | Knapparna **Rutnät**, **Fäst** och **Stödlinjer** + rutstorlek 1–10 mm |
 | Ångra | Ctrl+Z / Ctrl+Y (eller knapparna i raden) |
@@ -227,9 +228,13 @@ add({ page: 0, type: 'card', variant: 'light', x: 3, y: 41, w: 88, h: 44, fs: 1.
 - `page` – 0 = första sidan, 1 = andra sidan
 - `x, y, w, h` – **millimeter** på arket (ritbar yta: 291 × 204 mm = A4 liggande
   minus utskriftsmarginalen). Det du ser på skärmen är exakt det som skrivs ut.
+  Standardguiden ligger på ett rutsystem med **3 mm marginal runt arket och
+  3 mm mellan alla block** – håll dig till det så förblir sidorna symmetriska.
 - `type` – `card`, `header`, `banner`, `panel`, `steps`, `text`, `image`, `divider`
 - `variant` – `light`, `soft`, `dark`, `accent` (temafärgen), `danger`, `ghost`
-- `fs` – textstorlek som multiplikator (1 = normal)
+- `fs` – textstorlek som multiplikator (1 = normal). Skalar HELA blocket
+  proportionerligt (radavstånd, kryssrutor, ikoner, rubrikens luft), så ett
+  block kan fyllas exakt genom att bara ändra `fs`.
 - `icon` – nyckel ur `G_ICONS` (drygt 50 ikoner, se listan i koden)
 - `items` – raderna, byggda med hjälparna `C()` kryss, `BU()` punkt, `D()` streck,
   `S()` underrubrik, `KV()` "rad → åtgärd", `IR()` ikon + rubrik + text, `F()` ifyllnadsfält

@@ -132,6 +132,15 @@ const pdfPages = buf => {
   const fitted = await p.evaluate(() => gPrimary().h);
   ok('höjden kan anpassas efter innehållet', fitted > 10 && fitted < 60, fitted);
 
+  await p.evaluate(() => { gSetProp('h', 70, true); gFitText(); });
+  await p.waitForTimeout(200);
+  const ft = await p.evaluate(() => {
+    const el = document.querySelector('#g-pages .g-blk.sel');
+    return { fs: gPrimary().fs, spill: el.scrollHeight > el.clientHeight + 2 };
+  });
+  ok('"fyll rutan" förstorar texten utan att spilla över', ft.fs > 1.4 && !ft.spill, ft);
+  await p.evaluate(() => { gSetProp('h', 43, true); gSetProp('fs', 1.04, true); });
+
   await p.click('#g-pages .g-blk .g-box');
   await p.waitForTimeout(100);
   ok('kryssruta kan bockas i', await p.evaluate(() => GDOC.blocks.some(b => (b.items || []).some(i => i.on))));
