@@ -7,13 +7,20 @@
 <html lang="sv">
 <head>
 <meta charset="UTF-8">
-<title>Dyklogg & Dykplan</title>
+<title>Dyklogg &amp; Dykplan</title>
+<meta name="theme-color" content="#141418">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Dyklogg">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%90%99%3C/text%3E%3C/svg%3E">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{--accent:#f90}
 body{font-family:Arial,Helvetica,sans-serif;font-size:11px;background:#d8d8d8;color:#000}
 
-.toolbar{position:sticky;top:0;z-index:99;background:linear-gradient(180deg,#23232a,#141418);color:#fff;padding:9px 16px;display:flex;align-items:center;gap:7px;flex-wrap:wrap;border-bottom:1px solid rgba(255,255,255,.07);box-shadow:0 4px 18px rgba(0,0,0,.30);font-size:12px}
+.appbar{position:sticky;top:0;z-index:99}
+.toolbar{position:relative;background:linear-gradient(180deg,#23232a,#141418);color:#fff;padding:9px 16px;display:flex;align-items:center;gap:7px;flex-wrap:wrap;border-bottom:1px solid rgba(255,255,255,.07);box-shadow:0 4px 18px rgba(0,0,0,.30);font-size:12px}
 .tb-brand{display:flex;align-items:center;gap:7px;font-size:15.5px;font-weight:800;letter-spacing:.2px;margin-right:4px;user-select:none}
 .tb-brand .dot{font-size:17px}
 .tb-sep{width:1px;height:26px;background:rgba(255,255,255,.14);margin:0 3px}
@@ -76,6 +83,10 @@ body{font-family:Arial,Helvetica,sans-serif;font-size:11px;background:#d8d8d8;co
 .tpl-item .tpl-name:hover{background:#ffe9c7}
 .tpl-item .tpl-del{background:#f4f4f7;border:none;border-radius:7px;width:30px;height:32px;font-size:14px;color:#c0392b;cursor:pointer;flex-shrink:0}
 .tpl-item .tpl-del:hover{background:#fde2dd}
+.menu-search{font-size:12.5px;padding:8px 10px;border:1px solid #d5d5dd;border-radius:7px;background:#fafafa;color:#26262b;width:100%;outline:none;font-family:inherit}
+.menu-search:focus{border-color:var(--accent);background:#fff}
+.backup-nudge{font-size:11px;line-height:1.4;color:#8a5a00;background:#fff4e0;border-radius:7px;padding:7px 9px;margin:0;cursor:pointer}
+.backup-nudge:hover{background:#ffeccb}
 .dive-stats{font-size:10px;font-weight:600;color:var(--accent);text-transform:none;letter-spacing:0;float:right}
 .dive-item{display:flex;align-items:center;gap:6px}
 .dive-item .dive-load{flex:1;min-width:0;text-align:left;background:#f4f4f7;border:none;border-radius:7px;padding:7px 10px;cursor:pointer}
@@ -104,6 +115,8 @@ input[type=checkbox]{width:12px;height:12px;accent-color:var(--accent);cursor:po
 .groupline .groupletters{flex:1;font-size:11px;min-width:0}
 
 .sec{display:flex;border:1px solid #aaa;border-radius:2px;overflow:hidden}
+/* "Egna fält"-rutan: hög nog för den lodräta etiketten även med ett enda fält */
+#cf-section,.cf-dyn{min-height:78px}
 .sb{flex:1;padding:5px 8px;min-width:0}
 
 .title{font-size:30px;font-weight:900;text-transform:uppercase;letter-spacing:-.5px;line-height:1}
@@ -197,6 +210,9 @@ body.editing .et{
   padding:0 2px;
 }
 body.editing .et:hover{background:rgba(42,106,173,.14);outline-color:#1a5a9d}
+/* Flikar och rubrikband behåller sin färg och form i redigeringsläget */
+body.editing .tab.et{display:flex;background:var(--accent);padding:4px 0;outline-offset:-2px}
+body.editing .ddhead.et{display:block;background:var(--accent);padding:3px 7px;outline-offset:-2px}
 body.editing .et:focus{outline:2px solid #2a6aad;background:rgba(42,106,173,.12)}
 /* Context hint bar (shows below toolbar in edit / move mode) */
 .tb-hint{display:none;font-size:11.5px;padding:6px 16px;font-weight:600;align-items:center;gap:6px}
@@ -204,6 +220,72 @@ body.editing .et:focus{outline:2px solid #2a6aad;background:rgba(42,106,173,.12)
 .move-hint{color:#d4f3dd;background:#1a5a2e}
 body.editing .edit-hint{display:flex}
 body.moving .move-hint{display:flex}
+.tb-hint .hint-btn{margin-left:auto;background:rgba(255,255,255,.14);color:inherit;border:none;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit}
+.tb-hint .hint-btn:hover{background:rgba(255,255,255,.24)}
+/* Status för aktuellt dyk (i verktygsfältet) */
+.tb-status{display:inline-flex;align-items:center;gap:7px;max-width:250px;background:transparent;border:1px solid rgba(255,255,255,.12);color:#c9c9d2;border-radius:8px;padding:6px 11px;font-size:11.5px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:background .14s,border-color .14s}
+.tb-status:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.22);color:#fff}
+.tb-status .sdot{width:8px;height:8px;border-radius:50%;background:#8a8a93;flex-shrink:0}
+.tb-status.saved .sdot{background:#3cc46e}
+.tb-status.dirty .sdot{background:var(--accent)}
+.tb-status .stitle{overflow:hidden;text-overflow:ellipsis}
+.tb-status .sstate{opacity:.65;font-weight:500}
+/* Register-knappens märke + varning om bemanningens intyg */
+.reg-badge{min-width:17px;height:17px;border-radius:9px;background:#e6a100;color:#1a1a1a;font-size:10.5px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;padding:0 5px;margin-left:1px}
+.reg-badge.bad{background:#e0463a;color:#fff}
+.tb-alert{display:inline-flex;align-items:center;gap:6px;max-width:250px;border:none;border-radius:8px;padding:7px 11px;font-size:11.5px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:rgba(230,161,0,.18);color:#ffd27a}
+.tb-alert.bad{background:rgba(224,70,58,.22);color:#ffb3ab}
+.tb-alert:hover{filter:brightness(1.2)}
+/* Register-fönstret */
+.modal-card.reg-card{width:980px;max-width:100%;max-height:90vh;display:flex;flex-direction:column;overflow:hidden}
+.reg-top{display:flex;align-items:center;gap:16px;padding:16px 22px 12px;border-bottom:1px solid #ededf1;flex-wrap:wrap}
+.reg-tabs{display:flex;background:#f1f1f5;border-radius:9px;padding:3px;gap:2px;flex-wrap:wrap}
+.reg-tabs button{border:none;background:transparent;color:#5a5a64;font-size:12.5px;font-weight:700;padding:7px 13px;border-radius:7px;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:6px}
+.reg-tabs button:hover{color:#1d1d22}
+.reg-tabs button.active{background:#fff;color:#1d1d22;box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.reg-tabs .reg-badge{height:15px;min-width:15px;font-size:9.5px}
+.reg-body{padding:16px 22px 22px;overflow-y:auto;display:flex;flex-direction:column;gap:14px;font-size:12.5px;color:#26262b}
+.reg-bar{display:flex;align-items:flex-end;gap:10px;flex-wrap:wrap}
+.reg-bar .grow{flex:1}
+.reg-bar label{display:flex;flex-direction:column;gap:4px;font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:#9a9aa5}
+.reg-bar input,.reg-bar select{font-size:13px;padding:8px 10px;border:1px solid #dcdce3;border-radius:8px;background:#fafafb;color:#26262b;font-family:inherit;outline:none;text-transform:none;letter-spacing:0;font-weight:500}
+.reg-bar input:focus,.reg-bar select:focus{border-color:var(--accent);background:#fff}
+.reg-table{width:100%;border-collapse:collapse}
+.reg-table th{text-align:left;font-size:10.5px;text-transform:uppercase;letter-spacing:.5px;color:#9a9aa5;font-weight:800;padding:6px 8px;border-bottom:1px solid #e6e6ec;white-space:nowrap}
+.reg-table td{padding:8px;border-bottom:1px solid #f0f0f4;vertical-align:middle}
+.reg-table tr.click{cursor:pointer}
+.reg-table tr.click:hover td{background:#fafaf6}
+.reg-table td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.reg-table .sub{display:block;color:#9a9aa5;font-size:11px;margin-top:1px}
+.reg-actions{white-space:nowrap;text-align:right}
+.reg-actions button{border:none;background:#f1f1f5;border-radius:7px;padding:5px 9px;font-size:12px;font-weight:700;cursor:pointer;color:#44444c;margin-left:4px;font-family:inherit}
+.reg-actions button:hover{background:#e6e6ee}
+.reg-actions button.del{color:#c0392b}
+.reg-actions button.del:hover{background:#c0392b;color:#fff}
+.chip{display:inline-block;border-radius:6px;padding:3px 8px;font-size:11px;font-weight:700;white-space:nowrap}
+.chip.ok{background:#e3f6ea;color:#1c7a42}
+.chip.warn{background:#fff1d6;color:#8a5a00}
+.chip.bad{background:#fde3e0;color:#b3261e}
+.chip.none{background:#f1f1f5;color:#8a8a93}
+.reg-empty{padding:26px 10px;text-align:center;color:#8a8a93;line-height:1.6;font-size:13px}
+.reg-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.reg-stat{background:#f6f6f9;border-radius:10px;padding:11px 13px}
+.reg-stat b{display:block;font-size:20px;font-weight:800;color:#1d1d22;font-variant-numeric:tabular-nums}
+.reg-stat span{font-size:11px;color:#8a8a93;font-weight:700;text-transform:uppercase;letter-spacing:.4px}
+.reg-note{font-size:11.5px;color:#8a8a93;line-height:1.5;margin:0}
+.reg-h{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:#9a9aa5;margin:4px 0 -4px}
+/* Underskrift med fingret */
+.sig-field{flex:1;min-width:0;display:flex;align-items:flex-end;position:relative}
+.sig-field input{flex:1;min-width:0}
+.sig-field.has-sig input{color:transparent}
+.sig-img{position:absolute;left:0;bottom:1px;height:22px;width:100%;pointer-events:none;overflow:visible}
+.sig-btn{border:none;background:transparent;color:#2a6aad;cursor:pointer;font-size:12px;line-height:1;padding:0 1px 1px 3px;opacity:.5;flex-shrink:0}
+.sig-btn:hover{opacity:1}
+.modal-card.sig-card{width:600px}
+.sig-pad{display:block;width:100%;aspect-ratio:10/3;border:1.5px dashed #c9c9d3;border-radius:10px;background:#fcfcfd;touch-action:none;cursor:crosshair}
+/* Notis längst ner */
+.toast{position:fixed;bottom:26px;left:50%;transform:translate(-50%,8px);background:#1d1d22;color:#fff;padding:10px 20px;border-radius:10px;font-size:12.5px;font-weight:700;z-index:999;pointer-events:none;opacity:0;box-shadow:0 10px 30px rgba(0,0,0,.28);transition:opacity .22s,transform .22s}
+.toast.show{opacity:1;transform:translate(-50%,0)}
 
 /* MOVE / SCALE MODE */
 body.moving{cursor:default}
@@ -226,6 +308,10 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
 .modal-msg{font-size:13px;line-height:1.55;color:#4a4a53;white-space:pre-line}
 .modal-field{display:flex;flex-direction:column;gap:6px}
 .modal-field label{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:#9a9aa5}
+.modal-row{display:flex;gap:12px}
+.modal-row>.modal-field{flex:1;min-width:0}
+.modal-field select{font-size:13.5px;padding:9px 10px;border:1px solid #dcdce3;border-radius:9px;outline:none;font-family:inherit;color:#26262b;background:#fafafb}
+.modal-field select:focus{border-color:var(--accent);background:#fff}
 .modal-field input{font-size:13.5px;padding:10px 12px;border:1px solid #dcdce3;border-radius:9px;outline:none;font-family:inherit;color:#26262b;background:#fafafb;transition:border-color .14s,box-shadow .14s,background .14s}
 .modal-field input:focus{border-color:var(--accent);background:#fff;box-shadow:0 0 0 3px rgba(255,153,0,.16)}
 .modal-foot{padding:16px 22px 20px;display:flex;gap:9px;justify-content:flex-end}
@@ -259,7 +345,7 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
 @media print{
   .lbox,.lhover{display:none!important;outline:none!important}
   body{background:#fff}
-  .toolbar,.tb-hint{display:none!important}
+  .appbar,.toolbar,.tb-hint,.toast,.sig-btn{display:none!important}
   .foldline{display:none!important}
   .athead button{display:none!important}
   .sec,.profrow,.utrow{break-inside:avoid}
@@ -275,13 +361,6 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
   #view-combined .cr .eqt{margin:0 0 1px}
   #view-combined .cr .logo{height:34px!important}
   #view-combined .cr .riskt{line-height:1.2}
-  /* Double-sided: the cloned back page starts on a new sheet */
-  [data-duplex="1"]{break-before:page;page-break-before:always}
-  /* 'logs-plan' mode: hide the normal active view, print only the built pages */
-  body.print-custom #view-combined,
-  body.print-custom #view-dyklog{display:none!important}
-  /* Full Dykplan back page printed in portrait (stående) */
-  .ppage{page:pp}
   /* Layout-lägen: baksidor på egna ark, utan skärmens marginal/skugga
      (id-selektorn behövs för att vinna över skärmregeln #layout-extra .layout-page) */
   .layout-extra-label{display:none!important}
@@ -314,8 +393,9 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
   #layout-extra .layout-back .riskt, #layout-extra .layout-plan .riskt{line-height:1.2}
   #layout-extra .layout-back .logo, #layout-extra .layout-plan .logo{height:34px!important}
   #layout-extra .layout-back .sec, #layout-extra .layout-plan .sec{break-inside:avoid}
+}
+/* Standard-@page; skrivs över dynamiskt av applyPageStyle() (#page-style). */
 @page{size:A4 landscape;margin:3mm}
-@page pp{size:A4 portrait;margin:3mm}
 </style>
 <style id="page-style"></style>
 </head>
@@ -329,9 +409,11 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
 <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 13a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></symbol>
 <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="14 3 14 9 20 9"/></symbol>
 <symbol id="i-chev" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></symbol>
+<symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
 <symbol id="i-layout" viewBox="0 0 24 24"><polygon points="12 3 21 8 12 13 3 8 12 3"/><polyline points="3 13 12 18 21 13"/></symbol>
 </defs></svg>
 
+<div class="appbar">
 <div class="toolbar">
   <div class="tb-brand"><span class="dot">&#128025;</span> Dyklogg</div>
 
@@ -355,10 +437,12 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
     <button class="btn" onclick="toggleMenu('menu-archive')"><svg class="ic"><use href="#i-archive"/></svg> Arkiv <svg class="chev"><use href="#i-chev"/></svg></button>
     <div class="menu-panel" style="min-width:300px">
       <h4>Dyk-arkiv <span id="dive-stats" class="dive-stats"></span></h4>
+      <input type="search" id="dive-search" class="menu-search" placeholder="S&#246;k dyk (nr, plats, datum, projekt &#8230;)" aria-label="S&#246;k bland sparade dyk" oninput="renderDiveList()" hidden>
       <div id="dive-list" class="tpl-list"><div class="tpl-empty">Inga sparade dyk &#228;nnu</div></div>
-      <button class="btn primary" style="justify-content:center" onclick="archiveSave()">Spara dyk i arkiv</button>
+      <button class="btn primary" style="justify-content:center" id="archive-save-btn" title="Ctrl+S" onclick="archiveSave()">Spara dyk i arkivet</button>
       <button class="btn" style="justify-content:center" onclick="newDive()">+ Nytt dyk</button>
-      <p class="menu-note">Dyken sparas lokalt i webbl&#228;saren. Anv&#228;nd Fil &#8594; Spara f&#246;r s&#228;kerhetskopia eller &#246;verf&#246;ring mellan enheter.</p>
+      <p class="backup-nudge" id="backup-nudge" hidden onclick="backupArchive()"></p>
+      <p class="menu-note">Dyken sparas lokalt i den h&#228;r webbl&#228;saren. Ta en s&#228;kerhetskopia av hela arkivet under <b>Fil</b> ibland &#8211; och f&#246;r att flytta arkivet till en annan dator.</p>
       <div class="menu-divider"></div>
       <h4>Projekt &amp; kund</h4>
       <div class="mrow">
@@ -371,6 +455,9 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
       <p class="menu-note">Ett projekt &#229;teranv&#228;nder kund-, plats- och projektnummer. Klicka rapport-ikonen i listan f&#246;r en utskrivbar sammanst&#228;llning.</p>
     </div>
   </div>
+
+  <!-- REGISTER: personal, utrustning, loggbok, månadsrapport -->
+  <button class="btn" id="reg-btn" title="Personal, utrustning, loggbok och m&#229;nadsrapport" onclick="openRegister()"><svg class="ic"><use href="#i-users"/></svg> Register <span class="reg-badge" id="reg-badge" hidden></span></button>
 
   <!-- ANPASSA: mallar + branding + egna f&#228;lt + f&#246;retagsprofil -->
   <div class="menu" id="menu-brand">
@@ -400,7 +487,7 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
       <h4>F&#246;retagsprofil</h4>
       <button class="btn primary" style="justify-content:center" onclick="exportProfile()">Spara f&#246;retagsprofil</button>
       <button class="btn" style="justify-content:center" onclick="importProfile()">Ladda f&#246;retagsprofil</button>
-      <p class="menu-note">Samlar logga, f&#228;rg, egna f&#228;lt, mallar, arbetstyper och marginaler i en fil. St&#228;ll in en g&#229;ng och dela med hela teamet.</p>
+      <p class="menu-note">Samlar logga, f&#228;rg, egna f&#228;lt, mallar, arbetstyper, marginaler samt personal- och utrustningsregistret i en fil. St&#228;ll in en g&#229;ng och dela med hela teamet.</p>
       <div class="menu-divider"></div>
       <button class="btn" style="justify-content:center" onclick="resetBranding()">&#197;terst&#228;ll logga &amp; f&#228;rg</button>
     </div>
@@ -414,8 +501,14 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
 
   <div class="tb-spacer"></div>
 
+  <!-- Varning: någon i bemanningen har utgånget/snart utgånget intyg -->
+  <button type="button" class="tb-alert" id="crew-alert" hidden onclick="openRegister('personal')"></button>
+
+  <!-- Status för aktuellt dyk: klick öppnar arkivet -->
+  <button type="button" class="tb-status" id="dive-status" title="Aktuellt dyk &#8211; klicka f&#246;r arkivet" onclick="toggleMenu('menu-archive')"><span class="sdot"></span><span class="stitle">Nytt dyk</span></button>
+
   <!-- Skriv ut + inst&#228;llningar -->
-  <button class="btn primary" onclick="window.print()"><svg class="ic"><use href="#i-printer"/></svg> Skriv ut</button>
+  <button class="btn primary" title="Skriv ut eller spara som PDF (Ctrl+P)" onclick="window.print()"><svg class="ic"><use href="#i-printer"/></svg> Skriv ut</button>
 
   <div class="menu" id="menu-print">
     <button class="btn icon" title="Utskriftsinst&#228;llningar" aria-label="Utskriftsinst&#228;llningar" onclick="toggleMenu('menu-print')"><svg class="ic"><use href="#i-gear"/></svg></button>
@@ -434,17 +527,17 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
         <input type="range" id="mright" min="0" max="30" step="1" value="4" oninput="setMargin('mr',this.value)">
       </div>
       <div class="menu-divider"></div>
-      <h4>Utskriftsinst&#228;llningar</h4>
+      <h4>Papper</h4>
       <div class="mrow">
         <span class="ml">Pappersformat</span>
         <select id="papersize" onchange="setPaper(this.value)">
-          <option value="A4">A4 &#8211; 2&#215;A5 (st&#229;ende)</option>
-          <option value="A3">A3 (st&#246;rre)</option>
+          <option value="A4">A4 (liggande, 2 &#215; A5)</option>
+          <option value="A3">A3 (liggande, 2 &#215; A4)</option>
         </select>
       </div>
-      <p class="menu-note">Baksida &amp; dubbelsidigt v&#228;ljer du nu enkelt under <b>Layout</b> uppe till v&#228;nster.</p>
+      <p class="menu-note">Fram- och baksida v&#228;ljer du under <b>Layout</b> uppe till v&#228;nster.</p>
       <div class="menu-divider"></div>
-      <label class="mchk"><input type="checkbox" id="dupchk" onchange="setDuplicate(this.checked)"> <span>Dubblett<small>Skriv p&#229; v&#228;nster halva &#8211; kopieras till h&#246;ger</small></span></label>
+      <label class="mchk"><input type="checkbox" id="dupchk" onchange="setDuplicate(this.checked)"> <span>Dubblett<small>Det du skriver i v&#228;nstra dykloggen kopieras till den h&#246;gra (2&#215; Dyklogg)</small></span></label>
       <p class="menu-note">Skriver skrivaren inte ut? V&#228;lj <b>Spara som PDF</b> och skriv ut PDF:en, eller s&#228;tt <b>Marginaler: Standard</b> i utskriftsdialogen (inte &#8220;Inga&#8221;).</p>
     </div>
   </div>
@@ -454,8 +547,13 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
     <button class="btn" onclick="toggleMenu('menu-file')"><svg class="ic"><use href="#i-file"/></svg> Fil <svg class="chev"><use href="#i-chev"/></svg></button>
     <div class="menu-panel" style="left:auto;right:0;min-width:250px">
       <h4>Spara &amp; ladda</h4>
-      <button class="btn" style="justify-content:flex-start" onclick="saveJSON()">Spara (JSON)</button>
-      <button class="btn" style="justify-content:flex-start" onclick="loadJSON()">Ladda (JSON)</button>
+      <button class="btn" style="justify-content:flex-start" onclick="saveJSON()">Spara dyk som fil (.json)</button>
+      <button class="btn" style="justify-content:flex-start" onclick="loadJSON()">&#214;ppna dyk fr&#229;n fil</button>
+      <div class="menu-divider"></div>
+      <h4>S&#228;kerhetskopia av arkivet</h4>
+      <button class="btn" style="justify-content:flex-start" onclick="backupArchive()">S&#228;kerhetskopiera hela arkivet</button>
+      <button class="btn" style="justify-content:flex-start" onclick="restoreArchive()">&#197;terst&#228;ll fr&#229;n s&#228;kerhetskopia</button>
+      <p class="menu-note" id="backup-info">Alla dyk, projekt, mallar, egna f&#228;lt och register i en fil.</p>
       <div class="menu-divider"></div>
       <h4>Export &amp; delning</h4>
       <button class="btn" style="justify-content:flex-start" onclick="exportCSV()">CSV (Excel)</button>
@@ -468,8 +566,9 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
   </div>
 </div>
 
-<div class="tb-hint edit-hint">&#9998; Klicka p&#229; valfri text f&#246;r att &#228;ndra den</div>
-<div class="tb-hint move-hint">&#10021; Klicka p&#229; n&#229;got f&#246;r att flytta &#8211; dra h&#246;rnet f&#246;r att skala &#8211; piltangenter nudgar &#8211; dubbelklick &#229;terst&#228;ller &#8211; <b>allt sparas automatiskt</b></div>
+<div class="tb-hint edit-hint">&#9998; Klicka p&#229; valfri rubrik eller etikett f&#246;r att &#228;ndra texten &#8211; <b>sparas automatiskt</b><button type="button" class="hint-btn" onclick="toggleEdit()">Klar</button></div>
+<div class="tb-hint move-hint">&#10021; Klicka p&#229; n&#229;got f&#246;r att flytta &#8211; dra h&#246;rnet f&#246;r att skala &#8211; piltangenter nudgar &#8211; dubbelklick &#229;terst&#228;ller &#8211; <b>allt sparas automatiskt</b><button type="button" class="hint-btn" onclick="resetAllPositions()">&#10226; &#197;terst&#228;ll alla positioner</button><button type="button" class="hint-btn" style="margin-left:0" onclick="toggleMove()">Klar</button></div>
+</div>
 
 <div id="view-combined"><div class="page">
 <div class="foldline"></div>
@@ -555,8 +654,8 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
   <div class="utrow">
     <div class="tab et" contenteditable="false">Utf&#246;rt Arbete / Anteckningar</div>
     <div class="utlines">
-      <input type="text" id="ut1"><input type="text" id="ut2"><input type="text" id="ut3">
-      <input type="text" id="ut4"><input type="text" id="ut5"><input type="text" id="ut6">
+      <input type="text" id="ut1" aria-label="Utf&#246;rt arbete, rad 1"><input type="text" id="ut2" aria-label="Utf&#246;rt arbete, rad 2"><input type="text" id="ut3" aria-label="Utf&#246;rt arbete, rad 3">
+      <input type="text" id="ut4" aria-label="Utf&#246;rt arbete, rad 4"><input type="text" id="ut5" aria-label="Utf&#246;rt arbete, rad 5"><input type="text" id="ut6" aria-label="Utf&#246;rt arbete, rad 6">
     </div>
     <div class="atpanel">
       <div class="athead" style="display:flex;justify-content:space-between;align-items:center">
@@ -567,7 +666,7 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
         <div id="atgrid" class="atgrid"></div>
         <div style="padding-top:6px;display:flex;align-items:center;gap:4px">
           <label class="chk" style="white-space:nowrap"><input type="checkbox" id="ovrigt-cb"> &#214;vrigt:</label>
-          <input type="text" id="ovrigt" style="font-size:10px;flex:1">
+          <input type="text" id="ovrigt" aria-label="Arbetstyp, &#246;vrigt" style="font-size:10px;flex:1">
         </div>
       </div>
     </div>
@@ -654,12 +753,12 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
       <div class="fl">
         <span class="fll et" contenteditable="false">Typ av dykarbete / omfattning (beskriv kort):</span>
         <input type="text" id="dykarbete-typ" style="margin-top:2px">
-        <input type="text" id="dykarbete-typ2" style="margin-top:4px">
+        <input type="text" id="dykarbete-typ2" aria-label="Typ av dykarbete, rad 2" style="margin-top:4px">
       </div>
       <div style="margin-top:4px">
         <span class="fll et" contenteditable="false">Arbetsmetoder / moment:</span>
-        <input type="text" id="dykarbete-met" style="margin-top:2px">
-        <input type="text" id="dykarbete-met2" style="margin-top:4px">
+        <input type="text" id="dykarbete-met" aria-label="Arbetsmetoder / moment" style="margin-top:2px">
+        <input type="text" id="dykarbete-met2" aria-label="Arbetsmetoder / moment, rad 2" style="margin-top:4px">
       </div>
     </div>
   </div>
@@ -749,7 +848,7 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
         <p><b class="et" contenteditable="false">Om svaret &#228;r Nej, f&#229;r dykeriarbeten ej genomf&#246;ras.</b></p>
       </div>
       <div class="rlines">
-        <input type="text" id="r1"><input type="text" id="r2">
+        <input type="text" id="r1" aria-label="Risk, rad 1"><input type="text" id="r2" aria-label="Risk, rad 2">
       </div>
     </div>
   </div>
@@ -765,8 +864,8 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
 <div class="col cl">
   <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">
     <div>
-      <div class="title">Dyklogg</div>
-      <div class="sub">Arbetsdyk &#8211; Kommersiell Dykverksamhet</div>
+      <div class="title et" contenteditable="false">Dyklogg</div>
+      <div class="sub et" contenteditable="false">Arbetsdyk &#8211; Kommersiell Dykverksamhet</div>
     </div>
     <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
       <img src="blackfisk.png" alt="" class="logo octopus-logo" style="height:38px">
@@ -774,19 +873,19 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
     </div>
   </div>
   <div style="display:flex;justify-content:flex-end;align-items:flex-end;gap:5px;font-weight:700;font-size:11px;margin-bottom:3px">
-    <span>Datum:</span><input type="text" id="b1-datum" style="width:120px">
+    <span class="et" contenteditable="false">Datum:</span><input type="text" id="b1-datum" style="width:120px">
   </div>
   <table class="meta">
     <tr>
-      <td style="width:65%"><span class="lbl">Arbetsplats / Projekt nr</span><input type="text" id="b1-arbetsplats"></td>
-      <td><span class="lbl">Dyk nr</span><input type="text" id="b1-dyknr"></td>
+      <td style="width:65%"><span class="lbl et" contenteditable="false">Arbetsplats / Projekt nr</span><input type="text" id="b1-arbetsplats"></td>
+      <td><span class="lbl et" contenteditable="false">Dyk nr</span><input type="text" id="b1-dyknr"></td>
     </tr>
     <tr>
-      <td colspan="2"><span class="lbl">Arbetsmoment</span><input type="text" id="b1-arbetsmoment"></td>
+      <td colspan="2"><span class="lbl et" contenteditable="false">Arbetsmoment</span><input type="text" id="b1-arbetsmoment"></td>
     </tr>
   </table>
   <div class="profrow">
-    <div class="tab">Dykprofil</div>
+    <div class="tab et" contenteditable="false">Dykprofil</div>
     <div class="profsvg">
       <svg viewBox="0 0 326 210" xmlns="http://www.w3.org/2000/svg">
         <line x1="34" y1="16" x2="314" y2="16" stroke="#ddd" stroke-width="0.7"/>
@@ -821,55 +920,55 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
       </svg>
     </div>
     <div class="ddpanel">
-      <div class="ddhead">Dykdata</div>
+      <div class="ddhead et" contenteditable="false">Dykdata</div>
       <div class="ddbody">
-        <div class="ddr"><span class="dl">Sikt:</span><input type="text" id="b1-sikt"></div>
-        <div class="ddr"><span class="dl">Temperatur (&#176;C):</span><input type="text" id="b1-temp"></div>
-        <div class="ddr"><span class="dl">Deco-stopp:</span><input type="text" id="b1-deco"></div>
-        <div class="ddr"><span class="dl">Bailout f&#246;re:</span><input type="text" id="b1-tryck-fore"></div>
-        <div class="ddr"><span class="dl">Bailout efter:</span><input type="text" id="b1-tryck-efter"></div>
+        <div class="ddr"><span class="dl et" contenteditable="false">Sikt:</span><input type="text" id="b1-sikt"></div>
+        <div class="ddr"><span class="dl et" contenteditable="false">Temperatur (&#176;C):</span><input type="text" id="b1-temp"></div>
+        <div class="ddr"><span class="dl et" contenteditable="false">Deco-stopp:</span><input type="text" id="b1-deco"></div>
+        <div class="ddr"><span class="dl et" contenteditable="false">Bailout f&#246;re:</span><input type="text" id="b1-tryck-fore"></div>
+        <div class="ddr"><span class="dl et" contenteditable="false">Bailout efter:</span><input type="text" id="b1-tryck-efter"></div>
       </div>
     </div>
   </div>
   <div class="utrow">
-    <div class="tab" style="font-size:7.5px">Utf&#246;rt Arbete / Anteckningar</div>
+    <div class="tab et" contenteditable="false" style="font-size:7.5px">Utf&#246;rt Arbete / Anteckningar</div>
     <div class="utlines">
-      <input type="text" id="b1-ut1"><input type="text" id="b1-ut2"><input type="text" id="b1-ut3">
-      <input type="text" id="b1-ut4"><input type="text" id="b1-ut5"><input type="text" id="b1-ut6">
+      <input type="text" id="b1-ut1" aria-label="Utf&#246;rt arbete, rad 1"><input type="text" id="b1-ut2" aria-label="Utf&#246;rt arbete, rad 2"><input type="text" id="b1-ut3" aria-label="Utf&#246;rt arbete, rad 3">
+      <input type="text" id="b1-ut4" aria-label="Utf&#246;rt arbete, rad 4"><input type="text" id="b1-ut5" aria-label="Utf&#246;rt arbete, rad 5"><input type="text" id="b1-ut6" aria-label="Utf&#246;rt arbete, rad 6">
     </div>
     <div class="atpanel">
       <div class="athead" style="display:flex;justify-content:space-between;align-items:center">
-        <span>Arbetstyp</span>
+        <span class="et" contenteditable="false">Arbetstyp</span>
         <button onclick="openAtModal('b1')" style="background:#444;color:#fff;border:none;border-radius:2px;padding:2px 7px;font-size:9px;cursor:pointer;font-weight:700">&#9998; Redigera</button>
       </div>
       <div class="atbody">
         <div id="atgrid-b1" class="atgrid"></div>
         <div style="padding-top:6px;display:flex;align-items:center;gap:4px">
           <label class="chk" style="white-space:nowrap"><input type="checkbox" id="b1-ovrigt-cb"> &#214;vrigt:</label>
-          <input type="text" id="b1-ovrigt" style="font-size:10px;flex:1">
+          <input type="text" id="b1-ovrigt" aria-label="Arbetstyp, &#246;vrigt" style="font-size:10px;flex:1">
         </div>
       </div>
     </div>
   </div>
   <div class="sec">
-    <div class="tab">Signering</div>
+    <div class="tab et" contenteditable="false">Signering</div>
     <div class="sb" style="padding:0">
       <div class="signrow">
-        <div class="sbox"><div class="st">Dykledare</div>
-          <div class="sf"><span>Namn:</span><input type="text" id="b1-led-namn"></div>
-          <div class="sf"><span>Underskrift:</span><input type="text" id="b1-led-sign"></div>
+        <div class="sbox"><div class="st et" contenteditable="false">Dykledare</div>
+          <div class="sf"><span class="et" contenteditable="false">Namn:</span><input type="text" id="b1-led-namn"></div>
+          <div class="sf"><span class="et" contenteditable="false">Underskrift:</span><input type="text" id="b1-led-sign"></div>
         </div>
-        <div class="sbox"><div class="st">Dykare 1</div>
-          <div class="sf"><span>Namn:</span><input type="text" id="b1-d1-namn"></div>
-          <div class="sf"><span>Underskrift:</span><input type="text" id="b1-d1-sign"></div>
+        <div class="sbox"><div class="st et" contenteditable="false">Dykare 1</div>
+          <div class="sf"><span class="et" contenteditable="false">Namn:</span><input type="text" id="b1-d1-namn"></div>
+          <div class="sf"><span class="et" contenteditable="false">Underskrift:</span><input type="text" id="b1-d1-sign"></div>
         </div>
-        <div class="sbox"><div class="st">Dykare 2</div>
-          <div class="sf"><span>Namn:</span><input type="text" id="b1-d2-namn"></div>
-          <div class="sf"><span>Underskrift:</span><input type="text" id="b1-d2-sign"></div>
+        <div class="sbox"><div class="st et" contenteditable="false">Dykare 2</div>
+          <div class="sf"><span class="et" contenteditable="false">Namn:</span><input type="text" id="b1-d2-namn"></div>
+          <div class="sf"><span class="et" contenteditable="false">Underskrift:</span><input type="text" id="b1-d2-sign"></div>
         </div>
-        <div class="sbox"><div class="st">Dyksk&#246;tare</div>
-          <div class="sf"><span>Namn:</span><input type="text" id="b1-dsk-namn"></div>
-          <div class="sf"><span>Underskrift:</span><input type="text" id="b1-dsk-sign"></div>
+        <div class="sbox"><div class="st et" contenteditable="false">Dyksk&#246;tare</div>
+          <div class="sf"><span class="et" contenteditable="false">Namn:</span><input type="text" id="b1-dsk-namn"></div>
+          <div class="sf"><span class="et" contenteditable="false">Underskrift:</span><input type="text" id="b1-dsk-sign"></div>
         </div>
       </div>
       <div class="grouprow">
@@ -884,8 +983,8 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
 <div class="col cl">
   <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">
     <div>
-      <div class="title">Dyklogg</div>
-      <div class="sub">Arbetsdyk &#8211; Kommersiell Dykverksamhet</div>
+      <div class="title et" contenteditable="false">Dyklogg</div>
+      <div class="sub et" contenteditable="false">Arbetsdyk &#8211; Kommersiell Dykverksamhet</div>
     </div>
     <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
       <img src="blackfisk.png" alt="" class="logo octopus-logo" style="height:38px">
@@ -893,19 +992,19 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
     </div>
   </div>
   <div style="display:flex;justify-content:flex-end;align-items:flex-end;gap:5px;font-weight:700;font-size:11px;margin-bottom:3px">
-    <span>Datum:</span><input type="text" id="b2-datum" style="width:120px">
+    <span class="et" contenteditable="false">Datum:</span><input type="text" id="b2-datum" style="width:120px">
   </div>
   <table class="meta">
     <tr>
-      <td style="width:65%"><span class="lbl">Arbetsplats / Projekt nr</span><input type="text" id="b2-arbetsplats"></td>
-      <td><span class="lbl">Dyk nr</span><input type="text" id="b2-dyknr"></td>
+      <td style="width:65%"><span class="lbl et" contenteditable="false">Arbetsplats / Projekt nr</span><input type="text" id="b2-arbetsplats"></td>
+      <td><span class="lbl et" contenteditable="false">Dyk nr</span><input type="text" id="b2-dyknr"></td>
     </tr>
     <tr>
-      <td colspan="2"><span class="lbl">Arbetsmoment</span><input type="text" id="b2-arbetsmoment"></td>
+      <td colspan="2"><span class="lbl et" contenteditable="false">Arbetsmoment</span><input type="text" id="b2-arbetsmoment"></td>
     </tr>
   </table>
   <div class="profrow">
-    <div class="tab">Dykprofil</div>
+    <div class="tab et" contenteditable="false">Dykprofil</div>
     <div class="profsvg">
       <svg viewBox="0 0 326 210" xmlns="http://www.w3.org/2000/svg">
         <line x1="34" y1="16" x2="314" y2="16" stroke="#ddd" stroke-width="0.7"/>
@@ -940,55 +1039,55 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
       </svg>
     </div>
     <div class="ddpanel">
-      <div class="ddhead">Dykdata</div>
+      <div class="ddhead et" contenteditable="false">Dykdata</div>
       <div class="ddbody">
-        <div class="ddr"><span class="dl">Sikt:</span><input type="text" id="b2-sikt"></div>
-        <div class="ddr"><span class="dl">Temperatur (&#176;C):</span><input type="text" id="b2-temp"></div>
-        <div class="ddr"><span class="dl">Deco-stopp:</span><input type="text" id="b2-deco"></div>
-        <div class="ddr"><span class="dl">Bailout f&#246;re:</span><input type="text" id="b2-tryck-fore"></div>
-        <div class="ddr"><span class="dl">Bailout efter:</span><input type="text" id="b2-tryck-efter"></div>
+        <div class="ddr"><span class="dl et" contenteditable="false">Sikt:</span><input type="text" id="b2-sikt"></div>
+        <div class="ddr"><span class="dl et" contenteditable="false">Temperatur (&#176;C):</span><input type="text" id="b2-temp"></div>
+        <div class="ddr"><span class="dl et" contenteditable="false">Deco-stopp:</span><input type="text" id="b2-deco"></div>
+        <div class="ddr"><span class="dl et" contenteditable="false">Bailout f&#246;re:</span><input type="text" id="b2-tryck-fore"></div>
+        <div class="ddr"><span class="dl et" contenteditable="false">Bailout efter:</span><input type="text" id="b2-tryck-efter"></div>
       </div>
     </div>
   </div>
   <div class="utrow">
-    <div class="tab" style="font-size:7.5px">Utf&#246;rt Arbete / Anteckningar</div>
+    <div class="tab et" contenteditable="false" style="font-size:7.5px">Utf&#246;rt Arbete / Anteckningar</div>
     <div class="utlines">
-      <input type="text" id="b2-ut1"><input type="text" id="b2-ut2"><input type="text" id="b2-ut3">
-      <input type="text" id="b2-ut4"><input type="text" id="b2-ut5"><input type="text" id="b2-ut6">
+      <input type="text" id="b2-ut1" aria-label="Utf&#246;rt arbete, rad 1"><input type="text" id="b2-ut2" aria-label="Utf&#246;rt arbete, rad 2"><input type="text" id="b2-ut3" aria-label="Utf&#246;rt arbete, rad 3">
+      <input type="text" id="b2-ut4" aria-label="Utf&#246;rt arbete, rad 4"><input type="text" id="b2-ut5" aria-label="Utf&#246;rt arbete, rad 5"><input type="text" id="b2-ut6" aria-label="Utf&#246;rt arbete, rad 6">
     </div>
     <div class="atpanel">
       <div class="athead" style="display:flex;justify-content:space-between;align-items:center">
-        <span>Arbetstyp</span>
+        <span class="et" contenteditable="false">Arbetstyp</span>
         <button onclick="openAtModal('b2')" style="background:#444;color:#fff;border:none;border-radius:2px;padding:2px 7px;font-size:9px;cursor:pointer;font-weight:700">&#9998; Redigera</button>
       </div>
       <div class="atbody">
         <div id="atgrid-b2" class="atgrid"></div>
         <div style="padding-top:6px;display:flex;align-items:center;gap:4px">
           <label class="chk" style="white-space:nowrap"><input type="checkbox" id="b2-ovrigt-cb"> &#214;vrigt:</label>
-          <input type="text" id="b2-ovrigt" style="font-size:10px;flex:1">
+          <input type="text" id="b2-ovrigt" aria-label="Arbetstyp, &#246;vrigt" style="font-size:10px;flex:1">
         </div>
       </div>
     </div>
   </div>
   <div class="sec">
-    <div class="tab">Signering</div>
+    <div class="tab et" contenteditable="false">Signering</div>
     <div class="sb" style="padding:0">
       <div class="signrow">
-        <div class="sbox"><div class="st">Dykledare</div>
-          <div class="sf"><span>Namn:</span><input type="text" id="b2-led-namn"></div>
-          <div class="sf"><span>Underskrift:</span><input type="text" id="b2-led-sign"></div>
+        <div class="sbox"><div class="st et" contenteditable="false">Dykledare</div>
+          <div class="sf"><span class="et" contenteditable="false">Namn:</span><input type="text" id="b2-led-namn"></div>
+          <div class="sf"><span class="et" contenteditable="false">Underskrift:</span><input type="text" id="b2-led-sign"></div>
         </div>
-        <div class="sbox"><div class="st">Dykare 1</div>
-          <div class="sf"><span>Namn:</span><input type="text" id="b2-d1-namn"></div>
-          <div class="sf"><span>Underskrift:</span><input type="text" id="b2-d1-sign"></div>
+        <div class="sbox"><div class="st et" contenteditable="false">Dykare 1</div>
+          <div class="sf"><span class="et" contenteditable="false">Namn:</span><input type="text" id="b2-d1-namn"></div>
+          <div class="sf"><span class="et" contenteditable="false">Underskrift:</span><input type="text" id="b2-d1-sign"></div>
         </div>
-        <div class="sbox"><div class="st">Dykare 2</div>
-          <div class="sf"><span>Namn:</span><input type="text" id="b2-d2-namn"></div>
-          <div class="sf"><span>Underskrift:</span><input type="text" id="b2-d2-sign"></div>
+        <div class="sbox"><div class="st et" contenteditable="false">Dykare 2</div>
+          <div class="sf"><span class="et" contenteditable="false">Namn:</span><input type="text" id="b2-d2-namn"></div>
+          <div class="sf"><span class="et" contenteditable="false">Underskrift:</span><input type="text" id="b2-d2-sign"></div>
         </div>
-        <div class="sbox"><div class="st">Dyksk&#246;tare</div>
-          <div class="sf"><span>Namn:</span><input type="text" id="b2-dsk-namn"></div>
-          <div class="sf"><span>Underskrift:</span><input type="text" id="b2-dsk-sign"></div>
+        <div class="sbox"><div class="st et" contenteditable="false">Dyksk&#246;tare</div>
+          <div class="sf"><span class="et" contenteditable="false">Namn:</span><input type="text" id="b2-dsk-namn"></div>
+          <div class="sf"><span class="et" contenteditable="false">Underskrift:</span><input type="text" id="b2-dsk-sign"></div>
         </div>
       </div>
       <div class="grouprow">
@@ -1016,6 +1115,25 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
     </div>
   </div>
 </div>
+
+<!-- Register: personal, utrustning, loggbok, månadsrapport -->
+<div id="reg-overlay" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="reg-title">
+  <div class="modal-card reg-card">
+    <div class="reg-top">
+      <div class="modal-head" id="reg-title" style="padding:0">Register</div>
+      <div class="reg-tabs" role="tablist">
+        <button type="button" data-tab="personal" onclick="showRegTab('personal')">Personal <span class="reg-badge" id="reg-badge-personal" hidden></span></button>
+        <button type="button" data-tab="utrustning" onclick="showRegTab('utrustning')">Utrustning <span class="reg-badge" id="reg-badge-utrustning" hidden></span></button>
+        <button type="button" data-tab="loggbok" onclick="showRegTab('loggbok')">Loggbok per dykare</button>
+        <button type="button" data-tab="rapport" onclick="showRegTab('rapport')">M&#229;nadsrapport</button>
+      </div>
+      <div style="flex:1"></div>
+      <button class="at-x" onclick="closeRegister()" aria-label="St&#228;ng">&times;</button>
+    </div>
+    <div class="reg-body" id="reg-body"></div>
+  </div>
+</div>
+<datalist id="dl-personal"></datalist>
 
 <script>
 /* ============================================================================
@@ -1066,13 +1184,35 @@ function legacyGroupVersions(d) {
 // bara de visuella nudge-positionerna — text, kryss och data rörs aldrig.
 /** Strukturfingeravtryck över alla [data-lid]-element; avgör om sparade flytta/skala-positioner fortfarande passar DOM:en. */
 function layoutSig() {
-  let s = '';
-  document.querySelectorAll('[data-lid]').forEach(el => { s += el.tagName; });
+  // Räknas alltid i "hemma-ordning" (Logg+Plan-arket först, dykplanen på sin
+  // plats i det, sedan 2× Dyklogg) – oavsett vilken layout som är aktiv och
+  // alltså var dykplanen just nu är flyttad. Annars skulle positionerna
+  // kastas bort varje gång man laddar om i en annan layout än man sparade i.
+  const tags = root => root ? Array.from(root.querySelectorAll('[data-lid]'), el => el.tagName).join('') : '';
+  const vc = document.getElementById('view-combined'), vd = document.getElementById('view-dyklog');
+  const plan = document.querySelector('[data-lid].col.cr, [data-lid][data-plan]');
+  let s = tags(vc);
+  if (plan && vc && !vc.contains(plan)) s += plan.tagName + tags(plan);
+  s += tags(vd);
   let h = 0;
   for (let i = 0; i < s.length; i++) { h = (h * 31 + s.charCodeAt(i)) | 0; }
   return s.length + ':' + h;
 }
 let editMode = false;
+
+/** Sant om elementet hör till själva blanketten – inte verktygsfältets
+ *  inställningar (Dubblett, Bläckfisk …), modalernas fält eller den statiska
+ *  kopie-baksidan. Bara blankettens fält är dyk-data. */
+function isFormField(el) { return !el.closest('.appbar, .modal-overlay, .layout-copy-page'); }
+/** Blankettens inmatningsfält som matchar selektorn (se isFormField). */
+function formInputs(sel) { return Array.from(document.querySelectorAll(sel)).filter(isFormField); }
+
+/** Autosparar hela formuläret i webbläsaren och uppdaterar dyk-statusen. */
+function persist() {
+  const d = gatherAll();
+  try { localStorage.setItem(K('autosave'), JSON.stringify(d)); } catch (e) {}
+  updateDiveStatus(d);
+}
 
 
 // --- Toolbar dropdown menus ---
@@ -1091,10 +1231,23 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMenus()
 
 // --- Generic file download helper ---
 function download(name, content, type) {
+  const url = URL.createObjectURL(new Blob([content], { type: type || 'text/plain' }));
   const a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([content], { type: type || 'text/plain' }));
-  a.download = name;
-  a.click();
+  a.href = url; a.download = name; a.style.display = 'none';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => { try { URL.revokeObjectURL(url); } catch (e) {} }, 4000);
+}
+/** Öppnar en filväljare och lämnar filens text till callback (null om inget valdes). */
+function pickTextFile(accept, cb) {
+  const inp = document.createElement('input'); inp.type = 'file'; inp.accept = accept;
+  inp.onchange = () => {
+    const f = inp.files && inp.files[0]; if (!f) return;
+    const fr = new FileReader();
+    fr.onload = ev => cb(String(ev.target.result || ''), f.name);
+    fr.onerror = () => uiAlert('Filen kunde inte läsas.', 'Fel');
+    fr.readAsText(f);
+  };
+  inp.click();
 }
 
 // ====================== Snygga modaler (ersätter prompt/confirm/alert) ======
@@ -1113,10 +1266,25 @@ function uiModal(opts) {
     if (opts.title) h += '<div class="modal-head">' + _esc(opts.title) + '</div>';
     h += '<div class="modal-body">';
     if (opts.message) h += '<div class="modal-msg">' + _esc(opts.message) + '</div>';
-    fields.forEach(f => {
-      h += '<div class="modal-field"><label>' + _esc(f.label) + '</label>'
-        + '<input data-k="' + _esc(f.key) + '" type="text" value="' + _esc(f.value || '') + '" placeholder="' + _esc(f.placeholder || '') + '"></div>';
-    });
+    // Fält: { key, label, value, placeholder, type: 'text'|'date'|'number'|'select', options, half }
+    // Två fält i rad med half:true hamnar bredvid varandra.
+    const fieldHtml = f => {
+      let x = '<div class="modal-field"><label>' + _esc(f.label) + '</label>';
+      if (f.type === 'select') {
+        x += '<select data-k="' + _esc(f.key) + '">' + (f.options || []).map(o => {
+          const v = Array.isArray(o) ? o[0] : o, l = Array.isArray(o) ? o[1] : o;
+          return '<option value="' + _esc(v) + '"' + (String(v) === String(f.value == null ? '' : f.value) ? ' selected' : '') + '>' + _esc(l) + '</option>';
+        }).join('') + '</select>';
+      } else {
+        const t = f.type === 'date' || f.type === 'number' ? f.type : 'text';
+        x += '<input data-k="' + _esc(f.key) + '" type="' + t + '" value="' + _esc(f.value == null ? '' : f.value) + '" placeholder="' + _esc(f.placeholder || '') + '"' + (t === 'number' ? ' min="0" step="1"' : '') + '>';
+      }
+      return x + '</div>';
+    };
+    for (let i = 0; i < fields.length; i++) {
+      if (fields[i].half && fields[i + 1] && fields[i + 1].half) { h += '<div class="modal-row">' + fieldHtml(fields[i]) + fieldHtml(fields[i + 1]) + '</div>'; i++; }
+      else h += fieldHtml(fields[i]);
+    }
     h += '</div><div class="modal-foot">';
     if (!opts.okOnly) h += '<button class="modal-btn ghost" data-act="cancel">' + _esc(opts.cancelText || 'Avbryt') + '</button>';
     h += '<button class="modal-btn ' + (opts.danger ? 'danger' : 'primary') + '" data-act="ok">' + _esc(opts.okText || 'OK') + '</button>';
@@ -1124,8 +1292,13 @@ function uiModal(opts) {
     card.innerHTML = h;
     overlay.appendChild(card);
     document.body.appendChild(overlay);
-    const inputs = card.querySelectorAll('input[data-k]');
-    if (inputs[0]) setTimeout(() => { inputs[0].focus(); inputs[0].select(); }, 30);
+    const inputs = card.querySelectorAll('[data-k]');
+    // Fokusera första fältet – men aldrig om användaren redan hunnit till ett
+    // annat fält i modalen (då skulle texten hamna i fel fält).
+    if (inputs[0]) setTimeout(() => {
+      if (card.contains(document.activeElement)) return;
+      inputs[0].focus(); if (inputs[0].select) inputs[0].select();
+    }, 30);
     const done = res => { overlay.remove(); document.removeEventListener('keydown', onKey, true); resolve(res); };
     const values = () => { const v = {}; inputs.forEach(i => v[i.getAttribute('data-k')] = i.value.trim()); return v; };
     const ok = () => done(fields.length ? values() : true);
@@ -1135,7 +1308,7 @@ function uiModal(opts) {
     overlay.addEventListener('mousedown', e => { if (e.target === overlay) cancel(); });
     function onKey(e) {
       if (e.key === 'Escape') { e.preventDefault(); cancel(); }
-      else if (e.key === 'Enter' && fields.length <= 1) { e.preventDefault(); ok(); }
+      else if (e.key === 'Enter' && e.target.tagName !== 'BUTTON') { e.preventDefault(); ok(); }
     }
     document.addEventListener('keydown', onKey, true);
   });
@@ -1175,15 +1348,19 @@ function renderTemplateList() {
 async function saveTemplate() {
   const name = await uiPrompt('Namn på mallen', '', { title: 'Spara som mall', okText: 'Spara mall', placeholder: 't.ex. Standardteam eller projektnamn' });
   if (!name || !name.trim()) return;
-  const t = getTemplates(); t[name.trim()] = gatherAll(); setTemplates(t);
+  // En mall får aldrig bära med sig underskrifter – varje dyk signeras för sig
+  const data = gatherAll(); Object.keys(data).forEach(k => { if (k.indexOf('sig.') === 0) delete data[k]; });
+  const t = getTemplates(); t[name.trim()] = data; setTemplates(t);
   renderTemplateList(); toast('✓ Mall sparad');
 }
 /** Tillämpar en sparad mall på formuläret. */
-function applyTemplate(n) {
+async function applyTemplate(n) {
   const t = getTemplates(); if (!t[n]) return;
+  closeMenus();
+  if (hasUnsavedData() && !await uiConfirm('Mallen ersätter det som står i formuläret nu. Fortsätta?', { title: 'Använd mall', okText: 'Använd mallen' })) return;
   applyAll(JSON.parse(JSON.stringify(t[n])));
-  try { localStorage.setItem(K('autosave'), JSON.stringify(gatherAll())); } catch (e) {}
-  closeMenus(); toast('✓ Mall "' + n + '" använd');
+  afterDataLoaded();
+  toast('✓ Mall "' + n + '" använd');
 }
 /** Tar bort en sparad mall. */
 async function deleteTemplate(n) {
@@ -1200,9 +1377,14 @@ function setAccent(color) {
   try { localStorage.setItem(K('accent'), color); } catch (e) {}
 }
 function applyLogo(url) { document.querySelectorAll('img.company-logo').forEach(img => { img.src = url; }); }
+/** Godkänner bara inbäddade bilder som logga (data:image/...). */
+function isImageDataUrl(u) { return typeof u === 'string' && /^data:image\/[\w.+-]+;base64,/i.test(u); }
+/** Godkänner bara färger på formen #rgb / #rrggbb. */
+function isHexColor(c) { return typeof c === 'string' && /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(c); }
 /** Läser in en vald bildfil som logga och sparar den lokalt. */
 function onLogoPicked(e) {
   const f = e.target.files && e.target.files[0]; if (!f) return;
+  if (!/^image\//.test(f.type)) { uiAlert('Välj en bildfil (PNG, JPG, SVG …).', 'Fel filtyp'); e.target.value = ''; return; }
   const fr = new FileReader();
   fr.onload = ev => {
     const url = ev.target.result;
@@ -1232,8 +1414,8 @@ function resetBranding() {
     if (!img.dataset.orig) img.dataset.orig = img.getAttribute('src');
   });
   try {
-    const c = localStorage.getItem(K('accent')); if (c) setAccent(c);
-    const l = localStorage.getItem(K('logo')); if (l) applyLogo(l);
+    const c = localStorage.getItem(K('accent')); if (isHexColor(c)) setAccent(c);
+    const l = localStorage.getItem(K('logo')); if (isImageDataUrl(l)) applyLogo(l);
     setOctopus(localStorage.getItem(K('octopus')) === '1');   // av om inget sparat
   } catch (e) {}
   renderTemplateList();
@@ -1256,33 +1438,42 @@ function exportProfile() {
     arbetstyper: atInstances.main.typer.slice(),
     margins: { ml: ls('ml') || '4', mr: ls('mr') || '4', mid: ls('mid') || '4' },
     paper: ls('paper') || 'A4',
-    printmode: ls('printmode') || 'off',
-    octopus: ls('octopus') === '1'
+    octopus: ls('octopus') === '1',
+    personal: getPersonal(),
+    utrustning: getUtrustning()
   };
   download('dyklogg-foretagsprofil.json', JSON.stringify(profile, null, 2), 'application/json');
   closeMenus(); toast('✓ Företagsprofil sparad');
 }
 /** Öppnar en filväljare och läser in en företagsprofil. */
 function importProfile() {
-  const inp = document.createElement('input'); inp.type = 'file'; inp.accept = '.json,application/json';
-  inp.onchange = e => {
-    const fr = new FileReader();
-    fr.onload = ev => { try { applyProfile(JSON.parse(ev.target.result)); } catch (err) { uiAlert('Kunde inte läsa profilen: ' + err, 'Fel'); } };
-    fr.readAsText(e.target.files[0]);
-  };
-  inp.click();
+  closeMenus();
+  pickTextFile('.json,application/json', text => {
+    let p;
+    try { p = JSON.parse(text); } catch (err) { uiAlert('Filen är inte en giltig JSON-fil.', 'Kunde inte läsa profilen'); return; }
+    if (p && p._type === 'dyklogg-arkiv') { uiAlert('Det här är en säkerhetskopia av arkivet.\nLäs in den via Fil → Återställ från säkerhetskopia.', 'Fel sorts fil'); return; }
+    if (p && p._type !== 'dyklogg-foretagsprofil' && (p._atInstances || p._layout)) {
+      uiAlert('Det här är en sparad dykfil, inte en företagsprofil.\nÖppna den via Fil → Öppna dyk från fil.', 'Fel sorts fil'); return;
+    }
+    applyProfile(p);
+  });
 }
 /** Tillämpar en inläst företagsprofil på appen. */
 function applyProfile(p) {
   if (!p || typeof p !== 'object') { uiAlert('Ogiltig företagsprofil.', 'Fel'); return; }
-  if (p.accent) setAccent(p.accent);
-  if (p.logo) { try { localStorage.setItem(K('logo'), p.logo); } catch (e) {} applyLogo(p.logo); }
-  if (Array.isArray(p.customfields)) { setCustomFields(p.customfields); renderCustomFields(); }
+  if (isHexColor(p.accent)) setAccent(p.accent);
+  if (isImageDataUrl(p.logo)) { try { localStorage.setItem(K('logo'), p.logo); } catch (e) {} applyLogo(p.logo); }
+  if (Array.isArray(p.customfields)) {
+    const cf = p.customfields.filter(f => f && typeof f.label === 'string' && /^[\w-]+$/.test(String(f.key || '')))
+      .map(f => ({ key: String(f.key), label: f.label.slice(0, 80) }));
+    setCustomFields(cf); renderCustomFields();
+  }
   if (p.templates && typeof p.templates === 'object') {
     const t = getTemplates(); Object.assign(t, p.templates); setTemplates(t); renderTemplateList();
   }
   if (Array.isArray(p.arbetstyper) && p.arbetstyper.length) {
-    ['main','b1','b2'].forEach(inst => { atInstances[inst].typer = p.arbetstyper.slice(); });
+    const typer = p.arbetstyper.map(x => String(x == null ? '' : x).trim()).filter(Boolean);
+    ['main','b1','b2'].forEach(inst => { atInstances[inst].typer = typer.slice(); atInstances[inst].checked = {}; });
     ['main','b1','b2'].forEach(renderGrid);
   }
   if (p.margins) {
@@ -1291,37 +1482,58 @@ function applyProfile(p) {
     if (p.margins.mr != null) { setMargin('mr', p.margins.mr); sync('mright', p.margins.mr); }
     if (p.margins.mid != null) { setMid(p.margins.mid); sync('midgap', p.margins.mid); }
   }
-  if (p.paper) { setPaper(p.paper); const el = document.getElementById('papersize'); if (el) el.value = p.paper; }
-  if (p.printmode) setPrintMode(p.printmode);
+  if (p.paper === 'A4' || p.paper === 'A3') { setPaper(p.paper); const el = document.getElementById('papersize'); if (el) el.value = p.paper; }
   if (p.octopus !== undefined) setOctopus(!!p.octopus);
-  try { localStorage.setItem(K('autosave'), JSON.stringify(gatherAll())); } catch (e) {}
+  const mP = mergeRegister(getPersonal(), p.personal, PERSON_FIELDS), mE = mergeRegister(getUtrustning(), p.utrustning, EQUIP_FIELDS);
+  if (mP.added || mP.updated) setPersonal(mP.list);
+  if (mE.added || mE.updated) setUtrustning(mE.list);
+  persist(); syncCopyBack(); updatePrintFit();
   closeMenus(); toast('✓ Företagsprofil laddad');
 }
 
 // ====================== Egna fält (custom fields) ======================
-// Definitions ({key,label}) are app-level (shared across all dives); the
-// values live per-dive as inputs with id "cf-<key>" (picked up by gatherAll).
-function getCustomFields() { try { return JSON.parse(localStorage.getItem(K('customfields')) || '[]'); } catch (e) { return []; } }
+// Definitionerna ({key,label}) gäller hela appen (alla dyk); värdena sparas per
+// dyk som fält med id "cf-<key>" (Logg + Plan) och "b1-cf-<key>" / "b2-cf-<key>"
+// (de två dykloggarna i 2× Dyklogg). gatherAll plockar upp dem automatiskt.
+function getCustomFields() { try { const a = JSON.parse(localStorage.getItem(K('customfields')) || '[]'); return Array.isArray(a) ? a : []; } catch (e) { return []; } }
 function setCustomFields(a) { try { localStorage.setItem(K('customfields'), JSON.stringify(a)); } catch (e) {} }
+/** Ser till att varje dyklogg-blad i 2× Dyklogg har en "Egna fält"-ruta.
+ *  Rutorna skapas här (inte i HTML:en) och får data-nolid, så att de inte
+ *  påverkar flytta/skala-positionernas fingeravtryck. */
+function cfHosts() {
+  const hosts = [{ host: document.getElementById('cf-host'), section: document.getElementById('cf-section'), prefix: '' }];
+  document.querySelectorAll('#view-dyklog > .page > .col.cl').forEach((col, i) => {
+    const prefix = 'b' + (i + 1) + '-';
+    let section = col.querySelector(':scope > .cf-dyn');
+    if (!section) {
+      section = document.createElement('div');
+      section.className = 'sec cf-dyn'; section.setAttribute('data-nolid', ''); section.style.display = 'none';
+      section.innerHTML = '<div class="tab">Egna f\u00e4lt</div><div class="sb"></div>';
+      col.appendChild(section);
+    }
+    hosts.push({ host: section.querySelector('.sb'), section: section, prefix: prefix });
+  });
+  return hosts;
+}
 function renderCustomFields() {
   const fields = getCustomFields();
-  const host = document.getElementById('cf-host');
-  const section = document.getElementById('cf-section');
-  if (host) {
-    // preserve current values before rebuild
+  cfHosts().forEach(({ host, section, prefix }) => {
+    if (!host) return;
+    // behåll nuvarande värden när rutan byggs om
     const cur = {};
-    host.querySelectorAll('input[id^="cf-"]').forEach(i => cur[i.id] = i.value);
+    host.querySelectorAll('input[id]').forEach(i => cur[i.id] = i.value);
     host.innerHTML = '';
     fields.forEach(f => {
       const row = document.createElement('div'); row.className = 'fl';
       const lab = document.createElement('span'); lab.className = 'fll'; lab.textContent = f.label;
-      const inp = document.createElement('input'); inp.type = 'text'; inp.id = 'cf-' + f.key;
+      const inp = document.createElement('input'); inp.type = 'text'; inp.id = prefix + 'cf-' + f.key;
       if (cur[inp.id] !== undefined) inp.value = cur[inp.id];
       row.appendChild(lab); row.appendChild(inp); host.appendChild(row);
     });
     if (section) section.style.display = fields.length ? '' : 'none';
-    setTimeout(() => updatePrintFit(), 0);   // sidhöjden ändrades (deferred: körs även vid uppstart, innan layout-motorn initierats)
-  }
+  });
+  // sidhöjden ändrades (deferred: körs även vid uppstart, innan layout-motorn initierats)
+  setTimeout(() => { updatePrintFit(); syncCopyBack(); }, 0);
   // management list in the Anpassa menu
   const mng = document.getElementById('cf-manage');
   if (mng) {
@@ -1343,18 +1555,18 @@ async function addCustomField() {
   const label = await uiPrompt('Namn på fältet', '', { title: 'Nytt eget fält', okText: 'Lägg till', placeholder: 't.ex. Gasblandning, Tanktryck' });
   if (!label || !label.trim()) return;
   const fields = getCustomFields();
-  fields.push({ key: 'f' + Date.now(), label: label.trim() });
+  fields.push({ key: 'f' + Date.now(), label: label.trim().slice(0, 80) });
   setCustomFields(fields); renderCustomFields();
-  try { localStorage.setItem(K('autosave'), JSON.stringify(gatherAll())); } catch (e) {}
+  persist();
   toast('✓ Eget fält tillagt');
 }
 /** Tar bort ett eget fält (och dess värde i nuvarande dyk). */
 async function removeCustomField(key) {
   const f = getCustomFields().find(x => x.key === key);
-  if (!await uiConfirm('Ta bort fältet "' + (f ? f.label : '') + '"? Värdet i nuvarande dyk försvinner.', { title: 'Ta bort fält', okText: 'Ta bort', danger: true })) return;
+  if (!await uiConfirm('Ta bort fältet "' + (f ? f.label : '') + '"? Fältet försvinner från alla dyk.', { title: 'Ta bort fält', okText: 'Ta bort', danger: true })) return;
   setCustomFields(getCustomFields().filter(x => x.key !== key));
   renderCustomFields();
-  try { localStorage.setItem(K('autosave'), JSON.stringify(gatherAll())); } catch (e) {}
+  persist();
   toast('Fält borttaget');
 }
 renderCustomFields();   // build the fields before autosave restore fills their values
@@ -1367,10 +1579,98 @@ function getDives() { try { return JSON.parse(localStorage.getItem(K('dives')) |
 function setDives(o) { try { localStorage.setItem(K('dives'), JSON.stringify(o)); return true; } catch (e) { uiAlert('Kunde inte spara – webbläsarens lagring kan vara full.', 'Lagring full'); return false; } }
 let currentDiveId = null;
 try { currentDiveId = localStorage.getItem(K('current')) || null; } catch (e) {}
+// Kanonisk ögonblicksbild av det arkiverade dyket som formuläret motsvarar –
+// används för att avgöra om det finns osparade ändringar.
+let _savedSnap = null;
 
+/** Kanonisk jämförelsesträng för ett dyk: tomma fält, okryssade rutor,
+ *  orörda positioner och metadata räknas inte, och nyckelordningen spelar
+ *  ingen roll. Två dyk med samma innehåll ger alltså samma sträng. */
+function diveSnap(d) {
+  const o = {};
+  Object.keys(d || {}).sort().forEach(k => {
+    let v = d[k];
+    if (v === '' || v === false || v == null || k === '_lsig') return;
+    if (k === '_atInstances') {
+      try {
+        const a = JSON.parse(v);
+        Object.keys(a).forEach(i => { const c = (a[i] && a[i].checked) || {}; a[i].checked = Object.keys(c).filter(j => c[j]).sort().join(','); });
+        v = JSON.stringify(a);
+      } catch (e) {}
+    }
+    if (k === '_layout') {
+      try {
+        const t = JSON.parse(v), keep = {};
+        Object.keys(t).sort().forEach(l => { const x = t[l]; if (x && (x.x || x.y || (x.s != null && x.s !== 1))) keep[l] = x; });
+        if (!Object.keys(keep).length) return;
+        v = JSON.stringify(keep);
+      } catch (e) {}
+    }
+    o[k] = v;
+  });
+  return JSON.stringify(o);
+}
+/** Sant om ett insamlat formulär innehåller någon ifylld dyk-data. */
+function hasFormData(d) {
+  if (Object.keys(d).some(k => k[0] !== '_' && k.indexOf('et.') !== 0 && (d[k] === true || (typeof d[k] === 'string' && d[k].trim() !== '')))) return true;
+  return Object.values(atInstances).some(o => Object.values(o.checked || {}).some(Boolean));
+}
+/** Sant om formuläret har ändringar som inte finns sparade i arkivet. */
+function hasUnsavedData(d) {
+  d = d || gatherAll();
+  return currentDiveId ? diveSnap(d) !== _savedSnap : hasFormData(d);
+}
+/** Uppdaterar statusknappen i verktygsfältet (vilket dyk, sparat eller inte). */
+function updateDiveStatus(d) {
+  const el = document.getElementById('dive-status'); if (!el) return;
+  d = d || gatherAll();
+  const dirty = hasUnsavedData(d);
+  const m = diveMeta();
+  let state = '', cls = '';
+  if (currentDiveId && !dirty) { state = 'sparat'; cls = 'saved'; }
+  else if (currentDiveId) { state = 'osparade ändringar'; cls = 'dirty'; }
+  else if (dirty) { state = 'ej i arkivet'; cls = 'dirty'; }
+  const title = (m.dyknr || m.plats) ? diveTitle(m) : (currentDiveId ? 'Namnlöst dyk' : 'Nytt dyk');
+  el.className = 'tb-status' + (cls ? ' ' + cls : '');
+  el.innerHTML = '<span class="sdot"></span><span class="stitle"></span><span class="sstate"></span>';
+  el.querySelector('.stitle').textContent = title;
+  el.querySelector('.sstate').textContent = state ? '· ' + state : '';
+  el.title = title + (state ? ' – ' + state : '') + '\nKlicka för att öppna arkivet (Ctrl+S sparar)';
+  const btn = document.getElementById('archive-save-btn');
+  if (btn) btn.textContent = currentDiveId ? 'Uppdatera dyket i arkivet' : 'Spara dyk i arkivet';
+  updateCrewAlert();
+}
+/** Körs efter att formuläret fått nytt innehåll (dyk, mall eller fil). */
+function afterDataLoaded() {
+  if (dupOn) mirrorB1toB2();
+  syncCopyBack();
+  persist();
+  updatePrintFit();
+}
+/** Tömmer all dyk-data i formuläret. Blankettens utseende (egna etiketter,
+ *  flytta/skala-positioner, arbetstypslistor) behålls. */
+function resetFormData() {
+  formInputs('input[type=text], input[type=date]').forEach(el => el.value = '');
+  formInputs('input[type=checkbox]').forEach(el => el.checked = false);
+  ['main','b1','b2'].forEach(inst => { atInstances[inst].checked = {}; renderGrid(inst); });
+  glSpans().forEach(sp => sp.classList.remove('gsel'));
+  sigs = {}; renderAllSigs();
+}
+
+/** Sant om Logg + Plan-arkets dyklogg är den som syns (annars 2× Dyklogg-bladen). */
+function mainLogVisible() { return typeof activeLayout !== 'undefined' && activeLayout === 'logg-plan'; }
+/** Ett dyklogg-fälts värde från den dyklogg som SYNS i aktiv layout (Logg + Plan:
+ *  huvudvyn, annars första bladet i 2× Dyklogg), med den andra som reserv. Den
+ *  dolda loggen kan innehålla gamla värden eller projektuppgifter och får aldrig
+ *  gå före det användaren faktiskt ser och fyller i. */
+function logVal(id) {
+  const raw = x => { const el = document.getElementById(x); return el ? el.value.trim() : ''; };
+  const main = raw(id), b1 = raw('b1-' + id);
+  return mainLogVisible() ? (main || b1) : (b1 || main);
+}
 function diveMeta() {
-  const v = id => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
-  return { datum: v('datum') || v('b1-datum') || v('plan-datum'), dyknr: v('dyknr') || v('b1-dyknr'), plats: v('arbetsplats') || v('b1-arbetsplats') };
+  const plan = document.getElementById('plan-datum');
+  return { datum: logVal('datum') || (plan ? plan.value.trim() : ''), dyknr: logVal('dyknr'), plats: logVal('arbetsplats') };
 }
 function diveTitle(d) {
   const p = [];
@@ -1386,62 +1686,709 @@ function fmtWhen(ts) {
 /** Sparar eller uppdaterar det aktuella dyket i det lokala arkivet. */
 function archiveSave() {
   const dives = getDives();
-  const id = currentDiveId || ('d' + Date.now());
+  const exists = !!(currentDiveId && dives[currentDiveId]);
+  const id = exists ? currentDiveId : ('d' + Date.now());
   const m = diveMeta();
   const prev = dives[id] || {};
-  dives[id] = { id: id, datum: m.datum, dyknr: m.dyknr, plats: m.plats, projectId: activeProjectId || prev.projectId || null, savedAt: Date.now(), data: gatherAll() };
+  const data = gatherAll();
+  dives[id] = { id: id, datum: m.datum, dyknr: m.dyknr, plats: m.plats, projectId: activeProjectId || prev.projectId || null, savedAt: Date.now(), data: data };
   if (!setDives(dives)) return;
-  currentDiveId = id; try { localStorage.setItem(K('current'), id); } catch (e) {}
-  renderDiveList(); renderProjectList(); toast('✓ Dyk sparat i arkivet');
+  currentDiveId = id; _savedSnap = diveSnap(data);
+  try { localStorage.setItem(K('current'), id); } catch (e) {}
+  renderDiveList(); renderProjectList(); updateDiveStatus(data);
+  toast(exists ? '✓ Dyket uppdaterat i arkivet' : '✓ Dyket sparat i arkivet');
 }
-/** Tömmer formuläret och påbörjar ett nytt, tomt dyk. */
+/** Tömmer formuläret och påbörjar ett nytt, tomt dyk. Är ett projekt aktivt
+ *  fylls projektets uppgifter i direkt. */
 async function newDive() {
-  if (!await uiConfirm('Starta ett nytt, tomt dyk?\nOsparade ändringar i det nuvarande går förlorade om du inte sparat det i arkivet.', { title: 'Nytt dyk', okText: 'Nytt dyk' })) return;
-  document.querySelectorAll('input[type=text]').forEach(el => el.value = '');
-  document.querySelectorAll('input[type=checkbox]').forEach(el => el.checked = false);
-  ['main','b1','b2'].forEach(inst => { atInstances[inst].checked = {}; renderGrid(inst); });
-  glSpans().forEach(sp => sp.classList.remove('gsel'));
-  layoutTf = {}; document.querySelectorAll('[data-lid]').forEach(el => { el.style.transform = ''; });
+  closeMenus();
+  if (hasUnsavedData() && !await uiConfirm('Det nuvarande dyket har ändringar som inte är sparade i arkivet. De försvinner om du fortsätter.', { title: 'Starta nytt dyk?', okText: 'Starta nytt dyk', danger: true })) return;
+  // Följer med till nästa dyk: bemanningen och arbetsplatsen i den synliga
+  // dykloggen, samt dykplanens bemanning, uppdrag och larminformation (samma
+  // för hela jobbet). Underskrifter följer aldrig med – varje dyk signeras för sig.
+  const pre = mainLogVisible() ? '' : 'b1-';
+  const val = id => { const el = document.getElementById(id); return el ? el.value : ''; };
+  const keep = {};
+  const CARRY_PLAN = ['b-pchef', 'b-cert', 'upprattat', 'projektledare', 'uppdragsgivare', 'projektnummer', 'plats', 'larmnr', 'tryck', 'avstand'];
+  SIGN_NAME_KEYS.concat(['arbetsplats']).map(k => pre + k).concat(PLAN_CREW_IDS, CARRY_PLAN).forEach(id => { if (val(id).trim()) keep[id] = val(id); });
+  const no = nextDiveNo([val(pre + 'dyknr'), pre ? val('b2-dyknr') : '']);
+  resetFormData();
   selectEl(null);
-  currentDiveId = null; try { localStorage.removeItem(K('current')); localStorage.setItem(K('autosave'), JSON.stringify(gatherAll())); } catch (e) {}
-  renderDiveList(); closeMenus(); toast('Nytt dyk påbörjat');
+  currentDiveId = null; _savedSnap = null;
+  try { localStorage.removeItem(K('current')); } catch (e) {}
+  const set = (id, v) => { const el = document.getElementById(id); if (el) el.value = v; };
+  Object.keys(keep).forEach(id => set(id, keep[id]));
+  set(pre + 'datum', todayISO()); set('plan-datum', todayISO()); set(pre + 'dyknr', String(no));
+  if (getProjects()[activeProjectId]) fillProjectInfo(getProjects()[activeProjectId]);
+  afterDataLoaded();
+  renderDiveList();
+  toast('Nytt dyk nr ' + no + ' – datum' + (Object.keys(keep).length ? ' och bemanning' : '') + ' ifyllt');
+}
+/** Nästa lediga dyknummer: högsta numret i arkivet (inom aktivt projekt, om
+ *  ett sådant är valt) och i formuläret just nu, plus ett. */
+function nextDiveNo(extra) {
+  const pid = activeProjectId && getProjects()[activeProjectId] ? activeProjectId : null;
+  let max = 0;
+  const see = v => { v = String(v == null ? '' : v).trim(); if (/^\d{1,6}$/.test(v)) max = Math.max(max, +v); };
+  Object.values(getDives()).forEach(dv => {
+    if (pid && dv.projectId !== pid) return;
+    const d = dv.data || {};
+    [dv.dyknr, d.dyknr, d['b1-dyknr'], d['b2-dyknr']].forEach(see);
+  });
+  (extra || []).forEach(see);
+  return max + 1;
 }
 /** Laddar ett arkiverat dyk in i formuläret. */
-function loadDive(id) {
+async function loadDive(id) {
   const d = getDives()[id]; if (!d) return;
-  applyAll(JSON.parse(JSON.stringify(d.data)));
+  if (id === currentDiveId && !hasUnsavedData()) { closeMenus(); return; }
+  closeMenus();
+  if (hasUnsavedData() && !await uiConfirm('Det nuvarande dyket har ändringar som inte är sparade i arkivet. De försvinner om du öppnar ett annat dyk.', { title: 'Öppna dyk?', okText: 'Öppna ändå', danger: true })) return;
+  applyAll(JSON.parse(JSON.stringify(d.data || {})));
   currentDiveId = id;
-  if (d.projectId !== undefined) setActiveProject(d.projectId || '');
-  try { localStorage.setItem(K('current'), id); localStorage.setItem(K('autosave'), JSON.stringify(gatherAll())); } catch (e) {}
-  renderDiveList(); closeMenus(); toast('✓ Dyk laddat');
+  _savedSnap = diveSnap(gatherAll());
+  try { localStorage.setItem(K('current'), id); } catch (e) {}
+  if (d.projectId !== undefined) setActiveProject(d.projectId && getProjects()[d.projectId] ? d.projectId : '');
+  afterDataLoaded();
+  renderDiveList(); toast('✓ ' + diveTitle(d) + ' öppnat');
 }
 /** Tar bort ett dyk ur arkivet. */
 async function deleteDive(id) {
   const dives = getDives(); if (!dives[id]) return;
-  if (!await uiConfirm('Ta bort detta dyk ur arkivet? Detta går inte att ångra.', { title: 'Ta bort dyk', okText: 'Ta bort', danger: true })) return;
+  if (!await uiConfirm('Ta bort "' + diveTitle(dives[id]) + '" ur arkivet? Detta går inte att ångra.', { title: 'Ta bort dyk', okText: 'Ta bort', danger: true })) return;
   delete dives[id]; setDives(dives);
-  if (currentDiveId === id) { currentDiveId = null; try { localStorage.removeItem(K('current')); } catch (e) {} }
-  renderDiveList(); toast('Dyk borttaget');
+  if (currentDiveId === id) { currentDiveId = null; _savedSnap = null; try { localStorage.removeItem(K('current')); } catch (e) {} }
+  renderDiveList(); renderProjectList(); updateDiveStatus(); toast('Dyk borttaget');
 }
 function renderDiveList() {
   const list = document.getElementById('dive-list'); if (!list) return;
-  const arr = Object.values(getDives()).sort((a, b) => (b.savedAt || 0) - (a.savedAt || 0));
+  const all = Object.values(getDives()).sort((a, b) => (b.savedAt || 0) - (a.savedAt || 0));
+  const projects = getProjects();
   const stats = document.getElementById('dive-stats');
-  if (stats) stats.textContent = arr.length ? (arr.length + (arr.length === 1 ? ' dyk' : ' dyk')) : '';
-  if (!arr.length) { list.innerHTML = '<div class="tpl-empty">Inga sparade dyk ännu</div>'; return; }
+  if (stats) stats.textContent = all.length ? all.length + ' dyk' : '';
+  updateBackupInfo(all.length);
+  // Sökfältet visas först när arkivet börjar bli långt
+  const search = document.getElementById('dive-search');
+  if (search) search.hidden = all.length <= 4 && !search.value;
+  const q = search && !search.hidden ? search.value.trim().toLowerCase() : '';
+  const hay = d => [diveTitle(d), d.datum, d.projectId && projects[d.projectId] ? projects[d.projectId].name : '',
+    d.data && (d.data.arbetsmoment || d.data['b1-arbetsmoment'])].filter(Boolean).join(' ').toLowerCase();
+  // Varje sökord ska matcha BÖRJAN av ett ord (så "5" hittar dyk 5, inte datumet 2026-09-25)
+  const tokens = t => t.split(/[^0-9a-z\u00e5\u00e4\u00f6\u00e9\u00fc]+/).filter(Boolean);
+  const words = tokens(q);
+  const arr = words.length ? all.filter(d => { const t = tokens(hay(d)); return words.every(w => t.some(x => x.indexOf(w) === 0)); }) : all;
+  if (!all.length) { list.innerHTML = '<div class="tpl-empty">Inga sparade dyk ännu</div>'; return; }
+  if (!arr.length) { list.innerHTML = '<div class="tpl-empty">Inga dyk matchar sökningen</div>'; return; }
   list.innerHTML = '';
   arr.forEach(d => {
     const row = document.createElement('div'); row.className = 'dive-item' + (d.id === currentDiveId ? ' current' : '');
     const b = document.createElement('button'); b.className = 'dive-load'; b.onclick = () => loadDive(d.id);
+    b.title = d.id === currentDiveId ? 'Det här dyket är öppet' : 'Öppna dyket';
     const t = document.createElement('span'); t.className = 'dive-title'; t.textContent = diveTitle(d);
     const meta = document.createElement('span'); meta.className = 'dive-meta';
-    const proj = d.projectId ? (getProjects()[d.projectId] || {}).name : '';
+    const proj = d.projectId ? (projects[d.projectId] || {}).name : '';
     meta.textContent = [d.datum, proj, 'sparad ' + fmtWhen(d.savedAt)].filter(Boolean).join(' · ');
     b.appendChild(t); b.appendChild(meta);
     const del = document.createElement('button'); del.className = 'tpl-del'; del.textContent = '×'; del.title = 'Ta bort dyk';
     del.onclick = e => { e.stopPropagation(); deleteDive(d.id); };
     row.appendChild(b); row.appendChild(del); list.appendChild(row);
   });
+}
+
+// ====================== Säkerhetskopia av hela arkivet ======================
+// Allt som annars bara finns i webbläsarens lagring – dyk, projekt, mallar och
+// egna fält – i EN fil. Återställning SLÅR IHOP med det som redan finns (den
+// nyaste versionen av varje dyk vinner), så inget raderas.
+const BACKUP_NUDGE_DAYS = 14;
+/** Visar när senaste säkerhetskopian togs, och påminner om det var länge sedan. */
+function updateBackupInfo(nDives) {
+  let last = 0;
+  try { last = +localStorage.getItem(K('lastbackup')) || 0; } catch (e) {}
+  const info = document.getElementById('backup-info');
+  if (info) info.textContent = last ? 'Senaste säkerhetskopia: ' + fmtWhen(last) + '.' : 'Alla dyk, projekt, mallar, egna fält och register i en fil. Ingen säkerhetskopia tagen ännu.';
+  const nudge = document.getElementById('backup-nudge');
+  if (nudge) {
+    const old = !last || Date.now() - last > BACKUP_NUDGE_DAYS * 864e5;
+    nudge.hidden = !(nDives > 0 && old);
+    nudge.textContent = last ? '⚠ Det var över ' + BACKUP_NUDGE_DAYS + ' dagar sedan senaste säkerhetskopian. Klicka här för att ta en nu.'
+      : '⚠ Arkivet finns bara i den här webbläsaren. Klicka här för att spara en säkerhetskopia.';
+  }
+}
+/** Laddar ner hela arkivet (dyk, projekt, mallar, egna fält) som en fil. */
+function backupArchive() {
+  closeMenus();
+  const dives = getDives(), projects = getProjects(), templates = getTemplates(), customfields = getCustomFields();
+  const personal = getPersonal(), utrustning = getUtrustning();
+  const n = Object.keys(dives).length;
+  if (!n && !Object.keys(projects).length && !Object.keys(templates).length && !customfields.length && !personal.length && !utrustning.length) { toast('Det finns inget att säkerhetskopiera ännu'); return; }
+  const backup = { _type: 'dyklogg-arkiv', _v: 1, savedAt: Date.now(), dives: dives, projects: projects, templates: templates, customfields: customfields, personal: personal, utrustning: utrustning };
+  download('dyklogg-arkiv_' + new Date().toISOString().slice(0, 10) + '.json', JSON.stringify(backup), 'application/json');
+  try { localStorage.setItem(K('lastbackup'), String(Date.now())); } catch (e) {}
+  renderDiveList();
+  toast('✓ Säkerhetskopia sparad (' + n + ' dyk)');
+}
+/** Läser in en säkerhetskopia och slår ihop den med arkivet. */
+function restoreArchive() {
+  closeMenus();
+  pickTextFile('.json,application/json', async text => {
+    let b;
+    try { b = JSON.parse(text); } catch (e) { uiAlert('Filen är inte en giltig JSON-fil.', 'Kunde inte återställa'); return; }
+    if (!b || b._type !== 'dyklogg-arkiv' || typeof b.dives !== 'object') {
+      uiAlert('Det här är ingen säkerhetskopia av arkivet.\nEtt enskilt dyk öppnar du via Fil → Öppna dyk från fil.', 'Fel sorts fil'); return;
+    }
+    const dives = getDives(), projects = getProjects();
+    const inD = Object.values(b.dives || {}).filter(d => d && typeof d.id === 'string' && d.data && typeof d.data === 'object');
+    const inP = Object.values(b.projects || {}).filter(p => p && typeof p.id === 'string' && typeof p.name === 'string');
+    const newD = inD.filter(d => !dives[d.id]).length;
+    const updD = inD.filter(d => dives[d.id] && (d.savedAt || 0) > (dives[d.id].savedAt || 0)).length;
+    const newP = inP.filter(p => !projects[p.id]).length;
+    const curT = getTemplates(), haveCf = new Set(getCustomFields().map(f => f.key));
+    const inT = (b.templates && typeof b.templates === 'object' && !Array.isArray(b.templates)) ? b.templates : {};
+    const inCf = Array.isArray(b.customfields) ? b.customfields.filter(f => f && typeof f.label === 'string' && /^[\w-]+$/.test(String(f.key || ''))) : [];
+    const newT = Object.keys(inT).filter(k => !curT[k] && inT[k] && typeof inT[k] === 'object').length;
+    const newCf = inCf.filter(f => !haveCf.has(String(f.key))).length;
+    const mP = mergeRegister(getPersonal(), b.personal, PERSON_FIELDS), mE = mergeRegister(getUtrustning(), b.utrustning, EQUIP_FIELDS);
+    const regN = mP.added + mP.updated + mE.added + mE.updated;
+    if (!newD && !updD && !newP && !newT && !newCf && !regN) { uiAlert('Allt i säkerhetskopian finns redan i arkivet.', 'Inget att återställa'); return; }
+    const parts = [];
+    if (newD) parts.push(newD + ' nya dyk');
+    if (updD) parts.push(updD + ' dyk i nyare version');
+    if (newP) parts.push(newP + ' nya projekt');
+    if (mP.added || mP.updated) parts.push((mP.added + mP.updated) + ' personer i personalregistret');
+    if (mE.added || mE.updated) parts.push((mE.added + mE.updated) + ' utrustningar');
+    if (newT) parts.push(newT + ' nya mallar');
+    if (newCf) parts.push(newCf + ' nya egna fält');
+    const msg = 'Säkerhetskopian från ' + fmtWhen(b.savedAt) + ' innehåller ' + inD.length + ' dyk.\n\n'
+      + 'Läggs till: ' + parts.join(', ') + '.\n'
+      + 'Inget i ditt nuvarande arkiv raderas.';
+    if (!await uiConfirm(msg, { title: 'Återställ från säkerhetskopia', okText: 'Återställ' })) return;
+    inD.forEach(d => { if (!dives[d.id] || (d.savedAt || 0) > (dives[d.id].savedAt || 0)) dives[d.id] = d; });
+    inP.forEach(p => { if (!projects[p.id]) projects[p.id] = p; });
+    if (!setDives(dives) || !setProjects(projects)) return;
+    if (mP.added || mP.updated) setPersonal(mP.list);
+    if (mE.added || mE.updated) setUtrustning(mE.list);
+    if (newT) { Object.keys(inT).forEach(k => { if (!curT[k] && inT[k] && typeof inT[k] === 'object') curT[k] = inT[k]; }); setTemplates(curT); renderTemplateList(); }
+    if (newCf) {
+      const cf = getCustomFields();
+      inCf.forEach(f => { const k = String(f.key); if (!haveCf.has(k)) { cf.push({ key: k, label: f.label.slice(0, 80) }); haveCf.add(k); } });
+      setCustomFields(cf); renderCustomFields();
+    }
+    // Uppdaterades det öppna dyket? Då stämmer inte längre "sparat"-jämförelsen.
+    if (currentDiveId && dives[currentDiveId]) _savedSnap = diveSnap(dives[currentDiveId].data);
+    renderProjectList(); renderDiveList(); updateDiveStatus();
+    toast('✓ Arkivet återställt');
+  });
+}
+
+// ====================== Register: personal & utrustning ======================
+// Personal och utrustning läggs in EN gång. Namnen föreslås sedan i alla
+// namnfält (dyklogg + dykplan), och appen varnar när certifikat, läkarintyg
+// eller utrustningskontroller går ut. Allt ligger lokalt i webbläsaren och
+// följer med i säkerhetskopian och företagsprofilen.
+const REG_WARN_DAYS = 30;                                  // varna så här många dagar i förväg
+// Namnfält i signeringen (per dyklogg: '' = Logg + Plan, 'b1-'/'b2-' = 2× Dyklogg)
+const SIGN_NAME_KEYS = ['led-namn', 'd1-namn', 'd2-namn', 'dsk-namn'];
+// Bemanningen i dykplanen
+const PLAN_CREW_IDS = ['b-led', 'b-d1', 'b-d2', 'b-reserv', 'b-dskotar'];
+const EQUIP_TYPES = ['Kompressor', 'Hjälm / mask', 'Flaska / bailout', 'Slangpaket / navelsträng', 'Kommunikation', 'Räddningsutrustning', 'Dykdräkt', 'Verktyg', 'Övrigt'];
+const PERSON_ROLES = ['Dykare', 'Dykledare', 'Dykskötare', 'Dykledare / dykare', 'Övrigt'];
+
+function _lsArr(k) { try { const a = JSON.parse(localStorage.getItem(K(k)) || '[]'); return Array.isArray(a) ? a : []; } catch (e) { return []; } }
+function _lsSetArr(k, a) {
+  try { localStorage.setItem(K(k), JSON.stringify(a)); return true; }
+  catch (e) { uiAlert('Kunde inte spara – webbläsarens lagring kan vara full.', 'Lagring full'); return false; }
+}
+function getPersonal() { return _lsArr('personal'); }
+function setPersonal(a) { const ok = _lsSetArr('personal', a); refreshRegisterUI(); return ok; }
+function getUtrustning() { return _lsArr('utrustning'); }
+function setUtrustning(a) { const ok = _lsSetArr('utrustning', a); refreshRegisterUI(); return ok; }
+
+const _pad2 = n => String(n).padStart(2, '0');
+/** ÅÅÅÅ-MM-DD för ett Date-objekt (lokal tid). */
+function isoOf(d) { return d.getFullYear() + '-' + _pad2(d.getMonth() + 1) + '-' + _pad2(d.getDate()); }
+function todayISO() { return isoOf(new Date()); }
+function _isIso(s) { return /^\d{4}-\d{2}-\d{2}$/.test(String(s || '')); }
+/** Antal dagar från i dag till datumet (negativt = passerat), eller null. */
+function daysUntil(iso) {
+  if (!_isIso(iso)) return null;
+  const [y, m, d] = iso.split('-').map(Number);
+  const now = new Date(); now.setHours(0, 0, 0, 0);
+  return Math.round((new Date(y, m - 1, d) - now) / 864e5);
+}
+/** Lägger till n månader till ett ÅÅÅÅ-MM-DD-datum (31 jan + 1 mån = 28/29 feb). */
+function addMonths(iso, n) {
+  const [y, m, d] = iso.split('-').map(Number);
+  const last = new Date(y, m - 1 + n + 1, 0).getDate();
+  return isoOf(new Date(y, m - 1 + n, Math.min(d, last)));
+}
+const LEVEL_RANK = { ok: 0, none: 1, warn: 2, bad: 3 };
+/** Status för ett utgångsdatum: { level: ok|warn|bad|none, text }. */
+function expiryStatus(iso, what) {
+  const d = daysUntil(iso);
+  if (d === null) return { level: 'none', text: what + ': datum saknas' };
+  if (d < 0) return { level: 'bad', text: what + ' gick ut ' + iso, short: what.toLowerCase() + ' utgånget' };
+  if (d <= REG_WARN_DAYS) return { level: 'warn', text: what + (d === 0 ? ' går ut i dag' : ' går ut om ' + d + (d === 1 ? ' dag' : ' dagar')), short: what.toLowerCase() + (d === 0 ? ' går ut i dag' : ' går ut om ' + d + ' d') };
+  return { level: 'ok', text: what + ' giltigt t.o.m. ' + iso };
+}
+/** Samlad status för en person (sämsta av certifikat och läkarintyg). */
+function personStatus(p) {
+  const parts = [expiryStatus(p.certUtgar, 'Certifikat'), expiryStatus(p.lakareUtgar, 'Läkarintyg')];
+  const level = parts.reduce((a, x) => LEVEL_RANK[x.level] > LEVEL_RANK[a] ? x.level : a, 'ok');
+  const bad = parts.filter(x => x.level === 'warn' || x.level === 'bad');
+  return { level: level, parts: parts, issues: bad.map(x => x.text), short: bad.map(x => x.short) };
+}
+function equipStatus(e) {
+  const d = daysUntil(e.nastaKontroll);
+  if (d === null) return { level: 'none', text: 'Inget kontrolldatum' };
+  if (d < 0) return { level: 'bad', text: 'Kontroll försenad sedan ' + e.nastaKontroll };
+  if (d <= REG_WARN_DAYS) return { level: 'warn', text: d === 0 ? 'Kontroll i dag' : 'Kontroll om ' + d + (d === 1 ? ' dag' : ' dagar') };
+  return { level: 'ok', text: 'Nästa kontroll ' + e.nastaKontroll };
+}
+const normName = s => String(s || '').replace(/\s+/g, ' ').trim().toLowerCase();
+function findPerson(name, people) { const n = normName(name); return n ? (people || getPersonal()).find(p => normName(p.namn) === n) || null : null; }
+/** Id:n för alla namnfält som ska få förslag ur personalregistret. */
+function nameFieldIds() {
+  const ids = [];
+  ['', 'b1-', 'b2-'].forEach(pre => SIGN_NAME_KEYS.forEach(k => ids.push(pre + k)));
+  return ids.concat(PLAN_CREW_IDS, ['b-pchef', 'upprattat', 'projektledare']);
+}
+/** Personer i det SYNLIGA dyket (synlig dyklogg + dykplanens bemanning) vars
+ *  intyg gått ut eller snart går ut. */
+function crewIssues() {
+  const prefixes = mainLogVisible() ? [''] : ['b1-', 'b2-'];
+  const ids = PLAN_CREW_IDS.slice();
+  prefixes.forEach(pre => SIGN_NAME_KEYS.forEach(k => ids.push(pre + k)));
+  const seen = new Set(), out = [], people = getPersonal();
+  if (!people.length) return out;
+  ids.forEach(id => {
+    const el = document.getElementById(id); if (!el || !el.value.trim()) return;
+    const p = findPerson(el.value, people); if (!p || seen.has(p.id)) return;
+    seen.add(p.id);
+    const st = personStatus(p);
+    if (st.issues.length) out.push({ name: p.namn, level: st.level, issues: st.issues, short: st.short });
+  });
+  return out.sort((a, b) => LEVEL_RANK[b.level] - LEVEL_RANK[a.level]);
+}
+/** Varningschipet i verktygsfältet för det öppna dyket. */
+function updateCrewAlert() {
+  const el = document.getElementById('crew-alert'); if (!el) return;
+  const list = crewIssues();
+  el.hidden = !list.length;
+  if (!list.length) return;
+  const first = list[0];
+  el.className = 'tb-alert' + (first.level === 'bad' ? ' bad' : '');
+  el.textContent = '⚠ ' + first.name + ': ' + first.short[0] + (list.length > 1 ? ' (+' + (list.length - 1) + ')' : '');
+  el.title = list.map(x => x.name + ': ' + x.issues.join(', ')).join('\n') + '\nKlicka för personalregistret';
+}
+/** Uppdaterar märken, namnförslag och varningar efter en ändring i registren. */
+function refreshRegisterUI() {
+  const people = getPersonal(), equip = getUtrustning();
+  // Namnförslag i alla namnfält
+  const dl = document.getElementById('dl-personal');
+  if (dl) {
+    dl.innerHTML = '';
+    people.slice().sort((a, b) => String(a.namn).localeCompare(String(b.namn), 'sv')).forEach(p => {
+      const o = document.createElement('option'); o.value = p.namn;
+      o.label = [p.roll, p.certifikat].filter(Boolean).join(' · ');
+      dl.appendChild(o);
+    });
+  }
+  const pBad = people.filter(p => { const l = personStatus(p).level; return l === 'bad' || l === 'warn'; });
+  const eBad = equip.filter(e => { const l = equipStatus(e).level; return l === 'bad' || l === 'warn'; });
+  const anyBad = pBad.some(p => personStatus(p).level === 'bad') || eBad.some(e => equipStatus(e).level === 'bad');
+  const badge = (id, n, bad) => { const b = document.getElementById(id); if (!b) return; b.hidden = !n; b.textContent = n; b.classList.toggle('bad', !!bad); };
+  badge('reg-badge', pBad.length + eBad.length, anyBad);
+  badge('reg-badge-personal', pBad.length, pBad.some(p => personStatus(p).level === 'bad'));
+  badge('reg-badge-utrustning', eBad.length, eBad.some(e => equipStatus(e).level === 'bad'));
+  const rb = document.getElementById('reg-btn');
+  if (rb) rb.title = (pBad.length || eBad.length)
+    ? (pBad.length ? pBad.length + ' person(er) med intyg som gått ut / snart går ut. ' : '') + (eBad.length ? eBad.length + ' utrustning(ar) behöver kontroll.' : '')
+    : 'Personal, utrustning, loggbok och månadsrapport';
+  updateCrewAlert();
+  if (regOpen()) renderRegTab();
+}
+
+/** Slår ihop inlästa registerposter (från säkerhetskopia/profil) med de
+ *  befintliga: nya id:n läggs till, en nyare version (updatedAt) ersätter den
+ *  gamla. Bara textfält följer med. Returnerar { list, added, updated }. */
+function mergeRegister(current, incoming, fields) {
+  const list = current.slice(), byId = new Map(list.map((x, i) => [x.id, i]));
+  let added = 0, updated = 0;
+  (Array.isArray(incoming) ? incoming : []).forEach(x => {
+    if (!x || typeof x.id !== 'string' || typeof x.namn !== 'string' || !x.namn.trim()) return;
+    const rec = { id: x.id.slice(0, 40), updatedAt: +x.updatedAt || 0 };
+    fields.forEach(f => { rec[f] = typeof x[f] === 'string' ? x[f].slice(0, 200) : ''; });
+    ['certUtgar', 'lakareUtgar', 'senasteKontroll', 'nastaKontroll'].forEach(f => { if (f in rec && !_isIso(rec[f])) rec[f] = ''; });
+    if ('intervall' in rec && !(/^\d{1,3}$/.test(rec.intervall) && +rec.intervall > 0)) rec.intervall = '';
+    if (!byId.has(rec.id)) { byId.set(rec.id, list.length); list.push(rec); added++; }
+    else if (rec.updatedAt > (+list[byId.get(rec.id)].updatedAt || 0)) { list[byId.get(rec.id)] = rec; updated++; }
+  });
+  return { list: list, added: added, updated: updated };
+}
+const PERSON_FIELDS = ['namn', 'roll', 'certifikat', 'certUtgar', 'lakareUtgar', 'telefon', 'anteckning'];
+const EQUIP_FIELDS = ['namn', 'typ', 'serienr', 'senasteKontroll', 'intervall', 'nastaKontroll', 'anteckning'];
+
+// ---------- Register-fönstret ----------
+let _regTab = 'personal';
+const _regState = { pq: '', eq: '', lbPerson: '', lbFrom: '', lbTo: '', rpProj: '', rpMonth: '' };
+function regOpen() { const o = document.getElementById('reg-overlay'); return !!(o && o.classList.contains('open')); }
+/** Öppnar registret (valfri flik: personal | utrustning | loggbok | rapport). */
+function openRegister(tab) {
+  closeMenus();
+  if (tab) _regTab = tab;
+  document.getElementById('reg-overlay').classList.add('open');
+  showRegTab(_regTab);
+}
+function closeRegister() { document.getElementById('reg-overlay').classList.remove('open'); }
+function showRegTab(tab) {
+  _regTab = tab;
+  document.querySelectorAll('.reg-tabs button').forEach(b => b.classList.toggle('active', b.getAttribute('data-tab') === tab));
+  renderRegTab();
+}
+function renderRegTab() {
+  const body = document.getElementById('reg-body'); if (!body) return;
+  const focused = document.activeElement && body.contains(document.activeElement) ? document.activeElement.id : null;
+  ({ personal: renderPersonalTab, utrustning: renderEquipTab, loggbok: renderLogbookTab, rapport: renderReportTab })[_regTab](body);
+  if (focused) { const f = document.getElementById(focused); if (f) { f.focus(); if (f.setSelectionRange && f.type === 'search') f.setSelectionRange(f.value.length, f.value.length); } }
+}
+document.getElementById('reg-overlay').addEventListener('mousedown', function (e) { if (e.target === this) closeRegister(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && regOpen() && !e.defaultPrevented) closeRegister(); });
+
+const _chip = (level, text) => '<span class="chip ' + level + '">' + _esc(text) + '</span>';
+const _dateChip = (iso, what) => { const st = expiryStatus(iso, what); return _isIso(iso) ? _chip(st.level, iso) : _chip('none', '—'); };
+
+function renderPersonalTab(body) {
+  const q = normName(_regState.pq);
+  const all = getPersonal().slice().sort((a, b) => LEVEL_RANK[personStatus(b).level] - LEVEL_RANK[personStatus(a).level] || String(a.namn).localeCompare(String(b.namn), 'sv'));
+  const list = q ? all.filter(p => normName([p.namn, p.roll, p.certifikat, p.telefon].join(' ')).includes(q)) : all;
+  let h = '<div class="reg-bar"><label>Sök<input type="search" id="reg-pq" placeholder="Namn, roll, certifikat …" value="' + _esc(_regState.pq) + '"></label><div class="grow"></div>'
+    + '<button class="modal-btn primary" onclick="editPerson()">+ Lägg till person</button></div>';
+  if (!all.length) {
+    h += '<div class="reg-empty"><b>Inga personer ännu.</b><br>Lägg in dykarna en gång – sedan väljer du dem i en lista när du fyller i dyklogg och dykplan,<br>och appen varnar ' + REG_WARN_DAYS + ' dagar innan ett certifikat eller läkarintyg går ut.</div>';
+  } else if (!list.length) {
+    h += '<div class="reg-empty">Ingen person matchar sökningen.</div>';
+  } else {
+    h += '<table class="reg-table"><thead><tr><th>Namn</th><th>Roll</th><th>Certifikat</th><th>Certifikat t.o.m.</th><th>Läkarintyg t.o.m.</th><th>Status</th><th></th></tr></thead><tbody>';
+    list.forEach(p => {
+      const st = personStatus(p);
+      const status = st.issues.length ? _chip(st.level, st.issues.join(', ')) : st.level === 'none' ? _chip('none', 'Datum saknas') : _chip('ok', 'Giltigt');
+      h += '<tr class="click" data-id="' + _esc(p.id) + '"><td><b>' + _esc(p.namn) + '</b>' + (p.telefon ? '<span class="sub">' + _esc(p.telefon) + '</span>' : '') + '</td>'
+        + '<td>' + _esc(p.roll || '') + '</td><td>' + _esc(p.certifikat || '') + '</td>'
+        + '<td>' + _dateChip(p.certUtgar, 'Certifikat') + '</td><td>' + _dateChip(p.lakareUtgar, 'Läkarintyg') + '</td>'
+        + '<td>' + status + '</td><td class="reg-actions"><button data-act="edit">Ändra</button><button class="del" data-act="del" title="Ta bort">×</button></td></tr>';
+    });
+    h += '</tbody></table>';
+  }
+  h += '<p class="reg-note">Namnen föreslås automatiskt i dykloggens och dykplanens namnfält. Står någon i det öppna dyket med ett intyg som gått ut (eller går ut inom ' + REG_WARN_DAYS + ' dagar) visas en varning i verktygsfältet.</p>';
+  body.innerHTML = h;
+  const s = body.querySelector('#reg-pq'); if (s) s.oninput = () => { _regState.pq = s.value; renderRegTab(); };
+  body.querySelectorAll('tr[data-id]').forEach(tr => tr.onclick = e => {
+    const id = tr.getAttribute('data-id'), act = e.target.getAttribute('data-act');
+    if (act === 'del') deletePerson(id); else editPerson(id);
+  });
+}
+/** Lägger till eller ändrar en person i personalregistret. */
+async function editPerson(id, prev) {
+  const people = getPersonal();
+  const cur = prev || people.find(p => p.id === id) || {};
+  const r = await uiModal({
+    title: id ? 'Ändra person' : 'Ny person', okText: id ? 'Spara' : 'Lägg till',
+    fields: [
+      { key: 'namn', label: 'Namn', value: cur.namn, placeholder: 'För- och efternamn' },
+      { key: 'roll', label: 'Roll', type: 'select', value: cur.roll || 'Dykare', options: PERSON_ROLES, half: true },
+      { key: 'certifikat', label: 'Certifikat / behörighet', value: cur.certifikat, placeholder: 't.ex. S30, A-cert', half: true },
+      { key: 'certUtgar', label: 'Certifikat giltigt t.o.m.', type: 'date', value: cur.certUtgar, half: true },
+      { key: 'lakareUtgar', label: 'Läkarintyg giltigt t.o.m.', type: 'date', value: cur.lakareUtgar, half: true },
+      { key: 'telefon', label: 'Telefon', value: cur.telefon, placeholder: '(valfritt)', half: true },
+      { key: 'anteckning', label: 'Anteckning', value: cur.anteckning, placeholder: '(valfritt)', half: true }
+    ]
+  });
+  if (!r) return;
+  if (!r.namn) { await uiAlert('Personen måste ha ett namn.', 'Namn saknas'); return editPerson(id, r); }
+  const dup = people.find(p => normName(p.namn) === normName(r.namn) && p.id !== id);
+  if (dup && !await uiConfirm('Det finns redan en person som heter "' + dup.namn + '". Lägga till ändå?', { title: 'Samma namn', okText: 'Ja, lägg till' })) return;
+  const rec = { id: id || ('ps' + Date.now()), namn: r.namn.slice(0, 80), roll: r.roll, certifikat: r.certifikat.slice(0, 80),
+    certUtgar: _isIso(r.certUtgar) ? r.certUtgar : '', lakareUtgar: _isIso(r.lakareUtgar) ? r.lakareUtgar : '',
+    telefon: r.telefon.slice(0, 40), anteckning: r.anteckning.slice(0, 200), updatedAt: Date.now() };
+  const i = people.findIndex(p => p.id === rec.id);
+  if (i >= 0) people[i] = rec; else people.push(rec);
+  if (setPersonal(people)) toast(id ? '✓ ' + rec.namn + ' uppdaterad' : '✓ ' + rec.namn + ' tillagd');
+}
+async function deletePerson(id) {
+  const p = getPersonal().find(x => x.id === id); if (!p) return;
+  if (!await uiConfirm('Ta bort ' + p.namn + ' ur personalregistret? Dyk där personen står med påverkas inte.', { title: 'Ta bort person', okText: 'Ta bort', danger: true })) return;
+  setPersonal(getPersonal().filter(x => x.id !== id)); toast('Person borttagen');
+}
+
+function renderEquipTab(body) {
+  const q = normName(_regState.eq);
+  const all = getUtrustning().slice().sort((a, b) => LEVEL_RANK[equipStatus(b).level] - LEVEL_RANK[equipStatus(a).level] || String(a.nastaKontroll || '9').localeCompare(String(b.nastaKontroll || '9')) || String(a.namn).localeCompare(String(b.namn), 'sv'));
+  const list = q ? all.filter(e => normName([e.namn, e.typ, e.serienr, e.anteckning].join(' ')).includes(q)) : all;
+  let h = '<div class="reg-bar"><label>Sök<input type="search" id="reg-eq" placeholder="Benämning, typ, serienummer …" value="' + _esc(_regState.eq) + '"></label><div class="grow"></div>'
+    + '<button class="modal-btn primary" onclick="editEquip()">+ Lägg till utrustning</button></div>';
+  if (!all.length) {
+    h += '<div class="reg-empty"><b>Ingen utrustning ännu.</b><br>Lägg in kompressorer, hjälmar, flaskor, slangpaket m.m. med datum för nästa service eller provtryckning<br>så påminner appen ' + REG_WARN_DAYS + ' dagar innan. Med ett kontrollintervall räknas nästa datum ut när du bockar av en kontroll.</div>';
+  } else if (!list.length) {
+    h += '<div class="reg-empty">Ingen utrustning matchar sökningen.</div>';
+  } else {
+    h += '<table class="reg-table"><thead><tr><th>Benämning</th><th>Typ</th><th>Serienr / ID</th><th>Senaste kontroll</th><th>Nästa kontroll</th><th>Status</th><th></th></tr></thead><tbody>';
+    list.forEach(e => {
+      const st = equipStatus(e);
+      h += '<tr class="click" data-id="' + _esc(e.id) + '"><td><b>' + _esc(e.namn) + '</b>' + (e.anteckning ? '<span class="sub">' + _esc(e.anteckning) + '</span>' : '') + '</td>'
+        + '<td>' + _esc(e.typ || '') + '</td><td>' + _esc(e.serienr || '') + '</td>'
+        + '<td>' + _esc(e.senasteKontroll || '—') + (e.intervall ? '<span class="sub">var ' + _esc(e.intervall) + ' mån</span>' : '') + '</td>'
+        + '<td>' + (_isIso(e.nastaKontroll) ? _chip(st.level, e.nastaKontroll) : _chip('none', '—')) + '</td>'
+        + '<td>' + _chip(st.level, st.text) + '</td>'
+        + '<td class="reg-actions"><button data-act="done" title="Markera som kontrollerad i dag">✓ Kontrollerad</button><button data-act="edit">Ändra</button><button class="del" data-act="del" title="Ta bort">×</button></td></tr>';
+    });
+    h += '</tbody></table>';
+  }
+  body.innerHTML = h;
+  const s = body.querySelector('#reg-eq'); if (s) s.oninput = () => { _regState.eq = s.value; renderRegTab(); };
+  body.querySelectorAll('tr[data-id]').forEach(tr => tr.onclick = e => {
+    const id = tr.getAttribute('data-id'), act = e.target.getAttribute('data-act');
+    if (act === 'del') deleteEquip(id); else if (act === 'done') equipChecked(id); else editEquip(id);
+  });
+}
+async function editEquip(id, prev) {
+  const list = getUtrustning();
+  const cur = prev || list.find(e => e.id === id) || {};
+  const r = await uiModal({
+    title: id ? 'Ändra utrustning' : 'Ny utrustning', okText: id ? 'Spara' : 'Lägg till',
+    fields: [
+      { key: 'namn', label: 'Benämning', value: cur.namn, placeholder: 't.ex. Kompressor Bauer, Hjälm KM37 #2' },
+      { key: 'typ', label: 'Typ', type: 'select', value: cur.typ || EQUIP_TYPES[0], options: EQUIP_TYPES, half: true },
+      { key: 'serienr', label: 'Serienummer / ID', value: cur.serienr, placeholder: '(valfritt)', half: true },
+      { key: 'senasteKontroll', label: 'Senaste kontroll', type: 'date', value: cur.senasteKontroll, half: true },
+      { key: 'intervall', label: 'Kontrollintervall (månader)', type: 'number', value: cur.intervall, placeholder: 't.ex. 12', half: true },
+      { key: 'nastaKontroll', label: 'Nästa kontroll / service', type: 'date', value: cur.nastaKontroll, half: true },
+      { key: 'anteckning', label: 'Anteckning', value: cur.anteckning, placeholder: '(valfritt)', half: true }
+    ]
+  });
+  if (!r) return;
+  if (!r.namn) { await uiAlert('Ange en benämning.', 'Benämning saknas'); return editEquip(id, r); }
+  const iv = parseInt(r.intervall, 10);
+  const rec = { id: id || ('eq' + Date.now()), namn: r.namn.slice(0, 80), typ: r.typ, serienr: r.serienr.slice(0, 60),
+    senasteKontroll: _isIso(r.senasteKontroll) ? r.senasteKontroll : '', intervall: iv > 0 && iv < 241 ? String(iv) : '',
+    nastaKontroll: _isIso(r.nastaKontroll) ? r.nastaKontroll : '', anteckning: r.anteckning.slice(0, 200), updatedAt: Date.now() };
+  // Nästa kontroll räknas ut om den saknas men senaste + intervall finns
+  if (!rec.nastaKontroll && rec.senasteKontroll && rec.intervall) rec.nastaKontroll = addMonths(rec.senasteKontroll, +rec.intervall);
+  const i = list.findIndex(e => e.id === rec.id);
+  if (i >= 0) list[i] = rec; else list.push(rec);
+  if (setUtrustning(list)) toast(id ? '✓ Utrustning uppdaterad' : '✓ Utrustning tillagd');
+}
+/** Bockar av en kontroll i dag och räknar fram nästa datum (intervall eller fråga). */
+async function equipChecked(id) {
+  const list = getUtrustning(); const e = list.find(x => x.id === id); if (!e) return;
+  let next = +e.intervall > 0 ? addMonths(todayISO(), +e.intervall) : '';
+  if (!next) {
+    const r = await uiModal({ title: 'Kontrollerad i dag', message: e.namn + ' har inget kontrollintervall. När ska nästa kontroll göras?', okText: 'Spara',
+      fields: [{ key: 'd', label: 'Nästa kontroll', type: 'date', value: addMonths(todayISO(), 12) }] });
+    if (!r) return;
+    next = _isIso(r.d) ? r.d : '';
+  }
+  e.senasteKontroll = todayISO(); e.nastaKontroll = next; e.updatedAt = Date.now();
+  if (setUtrustning(list)) toast('✓ ' + e.namn + ' kontrollerad' + (next ? ' – nästa ' + next : ''));
+}
+async function deleteEquip(id) {
+  const e = getUtrustning().find(x => x.id === id); if (!e) return;
+  if (!await uiConfirm('Ta bort ' + e.namn + ' ur utrustningsregistret?', { title: 'Ta bort utrustning', okText: 'Ta bort', danger: true })) return;
+  setUtrustning(getUtrustning().filter(x => x.id !== id)); toast('Utrustning borttagen');
+}
+
+// ---------- Loggar ur arkivet (underlag för loggbok och månadsrapport) ----------
+// Ett arkiverat dyk kan innehålla upp till tre dykloggar: Logg + Plan-loggen
+// och de två bladen i 2× Dyklogg. Varje ifylld logg räknas som ett dyk.
+const LOG_KEYS = ['datum', 'dyknr', 'arbetsplats', 'arbetsmoment', 'time-in', 'time-out', 'maxdjup', 'bottentid', 'sikt', 'temp', 'deco', 'ut1', 'led-namn', 'd1-namn', 'd2-namn', 'dsk-namn'];
+// En logg räknas bara som ett dyk om den har riktiga dykuppgifter – inte om
+// bara datum, dyknummer, plats eller namn är förifyllda.
+const LOG_REAL_KEYS = ['maxdjup', 'time-in', 'time-out', 'bottentid', 'arbetsmoment', 'ut1'];
+const _toMin = t => +t.slice(0, 2) * 60 + +t.slice(3);
+/** Dyktid i minuter för en logg: start→slut, annars bottentiden. */
+function logMinutes(L) {
+  const a = normTime(L['time-in']), b = normTime(L['time-out']);
+  if (a && b) { const m = (_toMin(b) - _toMin(a) + 1440) % 1440; if (m > 0) return m; }
+  const bt = num(L.bottentid); return isNaN(bt) || bt < 0 ? 0 : bt;
+}
+function diveLogs(dive) {
+  const d = (dive && dive.data) || {}, out = [], seen = new Set();
+  ['', 'b1-', 'b2-'].forEach(pre => {
+    const L = {};
+    LOG_KEYS.forEach(k => { const v = d[pre + k]; L[k] = typeof v === 'string' ? v.trim() : ''; });
+    if (!LOG_REAL_KEYS.some(k => L[k])) return;
+    const key = JSON.stringify(L); if (seen.has(key)) return;   // Dubblett-läget: höger blad = vänster
+    seen.add(key);
+    L.iso = normDate(L.datum) || normDate(dive.datum) || (dive.savedAt ? isoOf(new Date(dive.savedAt)) : '');
+    L.minutes = logMinutes(L);
+    L.depth = num(L.maxdjup);
+    L.diveId = dive.id; L.projectId = dive.projectId || null;
+    out.push(L);
+  });
+  return out;
+}
+function allLogs() {
+  return Object.values(getDives()).reduce((a, dv) => a.concat(diveLogs(dv)), [])
+    .sort((a, b) => (a.iso || '').localeCompare(b.iso || '') || String(a.dyknr).localeCompare(String(b.dyknr), 'sv', { numeric: true }));
+}
+/** Personens roll i en logg (Dykare/Dykledare/Dykskötare) eller ''. */
+function roleInLog(L, name) {
+  const n = normName(name); if (!n) return '';
+  if (normName(L['d1-namn']) === n || normName(L['d2-namn']) === n) return 'Dykare';
+  if (normName(L['led-namn']) === n) return 'Dykledare';
+  if (normName(L['dsk-namn']) === n) return 'Dykskötare';
+  return '';
+}
+const fmtMin = m => { m = Math.round(m || 0); return Math.floor(m / 60) + ' h ' + _pad2(m % 60) + ' min'; };
+const fmtDepth = x => isNaN(x) ? '' : String(x).replace('.', ',') + ' m';
+const _csv = rows => '﻿' + rows.map(r => r.map(c => '"' + String(c == null ? '' : c).replace(/"/g, '""') + '"').join(';')).join('\r\n');
+/** Öppnar en utskriftsvänlig sida i ett nytt fönster. */
+function openPrintPage(title, subtitle, inner) {
+  const html = '<!DOCTYPE html><html lang="sv"><head><meta charset="UTF-8"><title>' + _esc(title) + '</title>' +
+    '<style>body{font-family:Arial,sans-serif;color:#111;margin:28px;font-size:12px}h1{font-size:22px;margin:0 0 2px}h2{font-size:14px;margin:18px 0 6px}' +
+    '.sub{color:#c87a00;font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:14px}' +
+    '.stats{display:flex;gap:10px;margin:0 0 16px;flex-wrap:wrap}.stats div{border:1px solid #ddd;border-radius:6px;padding:8px 12px;min-width:120px}.stats b{display:block;font-size:17px}.stats span{font-size:10px;color:#666;text-transform:uppercase}' +
+    'table{width:100%;border-collapse:collapse}th,td{border:1px solid #bbb;padding:5px 7px;text-align:left;vertical-align:top}' +
+    'th{background:#f90;font-size:10px;text-transform:uppercase;letter-spacing:.4px}tr:nth-child(even) td{background:#faf7f2}td.num{text-align:right;white-space:nowrap}' +
+    '.sign{margin-top:36px;display:flex;gap:40px}.sign div{flex:1;border-top:1px solid #333;padding-top:4px;font-size:10px;color:#555}' +
+    '.foot{margin-top:14px;color:#888;font-size:10px}@media print{.noprint{display:none}body{margin:10mm}}' +
+    'button{background:#f90;border:none;padding:8px 16px;font-weight:700;border-radius:6px;cursor:pointer;margin-bottom:14px}</style></head><body>' +
+    '<button class="noprint" onclick="window.print()">🖨 Skriv ut</button>' +
+    '<h1>' + _esc(title) + '</h1><div class="sub">' + _esc(subtitle) + '</div>' + inner +
+    '<div class="foot">Genererad ' + _esc(new Date().toLocaleString('sv-SE')) + ' ur Dyklogg</div></body></html>';
+  const w = window.open('', '_blank');
+  if (!w) { uiAlert('Tillåt popup-fönster för att visa utskriften.', 'Popup blockerad'); return; }
+  w.document.open(); w.document.write(html); w.document.close();
+}
+const _statsHtml = tiles => '<div class="stats">' + tiles.map(t => '<div><b>' + _esc(t[1]) + '</b><span>' + _esc(t[0]) + '</span></div>').join('') + '</div>';
+const _tileHtml = tiles => '<div class="reg-stats">' + tiles.map(t => '<div class="reg-stat"><b>' + _esc(t[1]) + '</b><span>' + _esc(t[0]) + '</span></div>').join('') + '</div>';
+
+// ---------- Loggbok per dykare ----------
+/** Loggboksdata för en person inom ett valfritt datumintervall. */
+function logbookFor(name, from, to) {
+  const rows = allLogs().filter(L => (!from || (L.iso && L.iso >= from)) && (!to || (L.iso && L.iso <= to)))
+    .map(L => Object.assign({ role: roleInLog(L, name) }, L)).filter(L => L.role);
+  const dives = rows.filter(L => L.role === 'Dykare');
+  const depths = dives.map(L => L.depth).filter(x => !isNaN(x));
+  return { rows: rows, dives: dives.length, minutes: dives.reduce((a, L) => a + L.minutes, 0),
+    maxDepth: depths.length ? Math.max.apply(null, depths) : NaN, last: dives.length ? dives[dives.length - 1].iso : '' };
+}
+function _logbookNames() {
+  const reg = getPersonal().map(p => p.namn).sort((a, b) => a.localeCompare(b, 'sv'));
+  const regSet = new Set(reg.map(normName)), other = new Map();
+  allLogs().forEach(L => ['led-namn', 'd1-namn', 'd2-namn', 'dsk-namn'].forEach(k => { const n = L[k]; if (n && !regSet.has(normName(n)) && !other.has(normName(n))) other.set(normName(n), n); }));
+  return { reg: reg, other: Array.from(other.values()).sort((a, b) => a.localeCompare(b, 'sv')) };
+}
+function renderLogbookTab(body) {
+  const names = _logbookNames();
+  if (names.reg.concat(names.other).indexOf(_regState.lbPerson) < 0) _regState.lbPerson = names.reg[0] || names.other[0] || '';
+  const opt = n => '<option' + (n === _regState.lbPerson ? ' selected' : '') + '>' + _esc(n) + '</option>';
+  let h = '<div class="reg-bar"><label>Dykare<select id="lb-person">'
+    + (names.reg.length ? '<optgroup label="Personalregistret">' + names.reg.map(opt).join('') + '</optgroup>' : '')
+    + (names.other.length ? '<optgroup label="Övriga namn i arkivet">' + names.other.map(opt).join('') + '</optgroup>' : '')
+    + (!names.reg.length && !names.other.length ? '<option value="">— inga namn ännu —</option>' : '')
+    + '</select></label><label>Från<input type="date" id="lb-from" value="' + _esc(_regState.lbFrom) + '"></label><label>Till<input type="date" id="lb-to" value="' + _esc(_regState.lbTo) + '"></label>'
+    + '<div class="grow"></div><button class="modal-btn ghost" onclick="exportLogbookCSV()">CSV</button><button class="modal-btn primary" onclick="printLogbook()">Skriv ut loggbok</button></div>';
+  if (!_regState.lbPerson) {
+    h += '<div class="reg-empty"><b>Inga dyk i arkivet ännu.</b><br>Loggboken räknas fram ur de dyk som sparats i arkivet, utifrån namnen i signeringen.</div>';
+    body.innerHTML = h; return;
+  }
+  const lb = logbookFor(_regState.lbPerson, _regState.lbFrom, _regState.lbTo);
+  h += _tileHtml([['Dyk som dykare', String(lb.dives)], ['Total dyktid', fmtMin(lb.minutes)], ['Största djup', isNaN(lb.maxDepth) ? '—' : fmtDepth(lb.maxDepth)], ['Senaste dyk', lb.last || '—']]);
+  if (!lb.rows.length) h += '<div class="reg-empty">Inga dyk för ' + _esc(_regState.lbPerson) + ' i valt intervall.</div>';
+  else {
+    h += '<table class="reg-table"><thead><tr><th>Datum</th><th>Dyk nr</th><th>Roll</th><th>Arbetsplats</th><th>Arbetsmoment</th><th style="text-align:right">Max djup</th><th style="text-align:right">Dyktid</th></tr></thead><tbody>';
+    lb.rows.slice().reverse().forEach(L => {
+      h += '<tr><td>' + _esc(L.iso || L.datum) + '</td><td>' + _esc(L.dyknr) + '</td><td>' + _esc(L.role) + '</td><td>' + _esc(L.arbetsplats) + '</td><td>' + _esc(L.arbetsmoment) + '</td>'
+        + '<td class="num">' + _esc(fmtDepth(L.depth)) + '</td><td class="num">' + (L.minutes ? L.minutes + ' min' : '') + '</td></tr>';
+    });
+    h += '</tbody></table>';
+  }
+  h += '<p class="reg-note">Räknas fram ur arkiverade dyk utifrån namnen i signeringen (Dykare 1/2 = dykare). Dyktid = starttid → sluttid, annars bottentid. Spara dyken i arkivet för att de ska komma med.</p>';
+  body.innerHTML = h;
+  body.querySelector('#lb-person').onchange = e => { _regState.lbPerson = e.target.value; renderRegTab(); };
+  body.querySelector('#lb-from').onchange = e => { _regState.lbFrom = e.target.value; renderRegTab(); };
+  body.querySelector('#lb-to').onchange = e => { _regState.lbTo = e.target.value; renderRegTab(); };
+}
+const _lbPeriod = () => (_regState.lbFrom || _regState.lbTo) ? (_regState.lbFrom || '…') + ' – ' + (_regState.lbTo || '…') : 'Alla dyk';
+function printLogbook() {
+  const name = _regState.lbPerson; if (!name) return;
+  const lb = logbookFor(name, _regState.lbFrom, _regState.lbTo), p = findPerson(name);
+  let inner = (p ? '<p>' + [p.roll, p.certifikat ? 'Certifikat: ' + p.certifikat + (p.certUtgar ? ' (t.o.m. ' + p.certUtgar + ')' : '') : '', p.lakareUtgar ? 'Läkarintyg t.o.m. ' + p.lakareUtgar : ''].filter(Boolean).map(_esc).join(' · ') + '</p>' : '')
+    + _statsHtml([['Dyk som dykare', String(lb.dives)], ['Total dyktid', fmtMin(lb.minutes)], ['Största djup', isNaN(lb.maxDepth) ? '—' : fmtDepth(lb.maxDepth)], ['Period', _lbPeriod()]])
+    + '<table><thead><tr><th>Datum</th><th>Dyk nr</th><th>Roll</th><th>Arbetsplats</th><th>Arbetsmoment</th><th>Max djup</th><th>Dyktid</th><th>Dykledare</th></tr></thead><tbody>'
+    + (lb.rows.map(L => '<tr><td>' + _esc(L.iso || L.datum) + '</td><td>' + _esc(L.dyknr) + '</td><td>' + _esc(L.role) + '</td><td>' + _esc(L.arbetsplats) + '</td><td>' + _esc(L.arbetsmoment) + '</td><td class="num">' + _esc(fmtDepth(L.depth)) + '</td><td class="num">' + (L.minutes ? L.minutes + ' min' : '') + '</td><td>' + _esc(L['led-namn']) + '</td></tr>').join('')
+      || '<tr><td colspan="8" style="text-align:center;color:#888">Inga dyk</td></tr>')
+    + '</tbody></table><div class="sign"><div>Underskrift dykare</div><div>Underskrift / intygas av arbetsgivare</div></div>';
+  openPrintPage('Dykloggbok – ' + name, 'Personlig loggbok · ' + _lbPeriod(), inner);
+}
+function exportLogbookCSV() {
+  const name = _regState.lbPerson; if (!name) return;
+  const lb = logbookFor(name, _regState.lbFrom, _regState.lbTo);
+  const rows = [['Datum', 'Dyk nr', 'Roll', 'Arbetsplats', 'Arbetsmoment', 'Max djup (m)', 'Dyktid (min)', 'Dykledare']]
+    .concat(lb.rows.map(L => [L.iso || L.datum, L.dyknr, L.role, L.arbetsplats, L.arbetsmoment, isNaN(L.depth) ? '' : String(L.depth).replace('.', ','), L.minutes || '', L['led-namn']]));
+  download('loggbok_' + name.replace(/[^\wåäöÅÄÖ-]+/g, '-') + '.csv', _csv(rows), 'text/csv;charset=utf-8');
+  toast('✓ Loggbok exporterad');
+}
+
+// ---------- Månadsrapport / fakturaunderlag ----------
+function monthReport(projectId, month) {
+  const rows = allLogs().filter(L => (!projectId || L.projectId === projectId) && L.iso && L.iso.slice(0, 7) === month);
+  const perDiver = new Map();
+  rows.forEach(L => ['d1-namn', 'd2-namn'].forEach(k => {
+    const n = L[k]; if (!n) return;
+    const e = perDiver.get(normName(n)) || { name: n, dives: 0, minutes: 0 };
+    e.dives++; e.minutes += L.minutes; perDiver.set(normName(n), e);
+  }));
+  const depths = rows.map(L => L.depth).filter(x => !isNaN(x));
+  return { rows: rows, minutes: rows.reduce((a, L) => a + L.minutes, 0), days: new Set(rows.map(L => L.iso)).size,
+    maxDepth: depths.length ? Math.max.apply(null, depths) : NaN, divers: Array.from(perDiver.values()).sort((a, b) => b.dives - a.dives || a.name.localeCompare(b.name, 'sv')) };
+}
+const _monthName = m => { const [y, mo] = m.split('-').map(Number); return new Date(y, mo - 1, 1).toLocaleDateString('sv-SE', { month: 'long', year: 'numeric' }); };
+function renderReportTab(body) {
+  if (!_regState.rpMonth) _regState.rpMonth = todayISO().slice(0, 7);
+  const projects = Object.values(getProjects()).sort((a, b) => String(a.name).localeCompare(String(b.name), 'sv'));
+  if (_regState.rpProj && !getProjects()[_regState.rpProj]) _regState.rpProj = '';
+  let h = '<div class="reg-bar"><label>Projekt<select id="rp-proj"><option value="">Alla projekt</option>'
+    + projects.map(p => '<option value="' + _esc(p.id) + '"' + (p.id === _regState.rpProj ? ' selected' : '') + '>' + _esc(p.name) + '</option>').join('')
+    + '</select></label><label>Månad<input type="month" id="rp-month" value="' + _esc(_regState.rpMonth) + '"></label>'
+    + '<div class="grow"></div><button class="modal-btn ghost" onclick="exportReportCSV()">CSV</button><button class="modal-btn primary" onclick="printReport()">Skriv ut rapport</button></div>';
+  const r = monthReport(_regState.rpProj, _regState.rpMonth);
+  h += _tileHtml([['Antal dyk', String(r.rows.length)], ['Total dyktid', fmtMin(r.minutes)], ['Dykdagar', String(r.days)], ['Största djup', isNaN(r.maxDepth) ? '—' : fmtDepth(r.maxDepth)]]);
+  if (!r.rows.length) h += '<div class="reg-empty">Inga arkiverade dyk ' + _esc(_monthName(_regState.rpMonth)) + (_regState.rpProj ? ' i det här projektet' : '') + '.</div>';
+  else {
+    h += '<table class="reg-table"><thead><tr><th>Datum</th><th>Dyk nr</th><th>Arbetsplats</th><th>Dykare</th><th>Dykledare</th><th>Arbetsmoment</th><th style="text-align:right">Max djup</th><th style="text-align:right">Dyktid</th></tr></thead><tbody>';
+    r.rows.forEach(L => {
+      h += '<tr><td>' + _esc(L.iso) + '</td><td>' + _esc(L.dyknr) + '</td><td>' + _esc(L.arbetsplats) + '</td><td>' + _esc([L['d1-namn'], L['d2-namn']].filter(Boolean).join(', ')) + '</td><td>' + _esc(L['led-namn']) + '</td><td>' + _esc(L.arbetsmoment) + '</td>'
+        + '<td class="num">' + _esc(fmtDepth(L.depth)) + '</td><td class="num">' + (L.minutes ? L.minutes + ' min' : '') + '</td></tr>';
+    });
+    h += '</tbody></table>';
+    if (r.divers.length) {
+      h += '<div class="reg-h">Per dykare</div><table class="reg-table"><thead><tr><th>Dykare</th><th style="text-align:right">Antal dyk</th><th style="text-align:right">Dyktid</th></tr></thead><tbody>'
+        + r.divers.map(d => '<tr><td>' + _esc(d.name) + '</td><td class="num">' + d.dives + '</td><td class="num">' + fmtMin(d.minutes) + '</td></tr>').join('') + '</tbody></table>';
+    }
+  }
+  h += '<p class="reg-note">Underlag för fakturering och uppföljning, räknat ur dyk som sparats i arkivet. Datumet tas från dykloggen.</p>';
+  body.innerHTML = h;
+  body.querySelector('#rp-proj').onchange = e => { _regState.rpProj = e.target.value; renderRegTab(); };
+  body.querySelector('#rp-month').onchange = e => { if (/^\d{4}-\d{2}$/.test(e.target.value)) { _regState.rpMonth = e.target.value; renderRegTab(); } };
+}
+function _reportTitle() { const p = getProjects()[_regState.rpProj]; return (p ? p.name : 'Alla projekt') + ' – ' + _monthName(_regState.rpMonth); }
+function printReport() {
+  const r = monthReport(_regState.rpProj, _regState.rpMonth), p = getProjects()[_regState.rpProj];
+  let inner = (p ? '<p>' + [p.kund ? 'Uppdragsgivare: ' + p.kund : '', p.projektnr ? 'Projektnummer: ' + p.projektnr : '', p.plats ? 'Plats: ' + p.plats : ''].filter(Boolean).map(_esc).join(' · ') + '</p>' : '')
+    + _statsHtml([['Antal dyk', String(r.rows.length)], ['Total dyktid', fmtMin(r.minutes)], ['Dykdagar', String(r.days)], ['Största djup', isNaN(r.maxDepth) ? '—' : fmtDepth(r.maxDepth)]])
+    + '<table><thead><tr><th>Datum</th><th>Dyk nr</th><th>Arbetsplats</th><th>Dykare</th><th>Dykledare</th><th>Arbetsmoment</th><th>Max djup</th><th>Dyktid</th></tr></thead><tbody>'
+    + (r.rows.map(L => '<tr><td>' + _esc(L.iso) + '</td><td>' + _esc(L.dyknr) + '</td><td>' + _esc(L.arbetsplats) + '</td><td>' + _esc([L['d1-namn'], L['d2-namn']].filter(Boolean).join(', ')) + '</td><td>' + _esc(L['led-namn']) + '</td><td>' + _esc(L.arbetsmoment) + '</td><td class="num">' + _esc(fmtDepth(L.depth)) + '</td><td class="num">' + (L.minutes ? L.minutes + ' min' : '') + '</td></tr>').join('')
+      || '<tr><td colspan="8" style="text-align:center;color:#888">Inga dyk</td></tr>') + '</tbody></table>'
+    + (r.divers.length ? '<h2>Per dykare</h2><table><thead><tr><th>Dykare</th><th>Antal dyk</th><th>Dyktid</th></tr></thead><tbody>' + r.divers.map(d => '<tr><td>' + _esc(d.name) + '</td><td class="num">' + d.dives + '</td><td class="num">' + fmtMin(d.minutes) + '</td></tr>').join('') + '</tbody></table>' : '');
+  openPrintPage('Månadsrapport – ' + _reportTitle(), 'Dykrapport / fakturaunderlag', inner);
+}
+function exportReportCSV() {
+  const r = monthReport(_regState.rpProj, _regState.rpMonth), projects = getProjects();
+  const rows = [['Datum', 'Dyk nr', 'Projekt', 'Arbetsplats', 'Dykare 1', 'Dykare 2', 'Dykledare', 'Arbetsmoment', 'Max djup (m)', 'Dyktid (min)']]
+    .concat(r.rows.map(L => [L.iso, L.dyknr, (projects[L.projectId] || {}).name || '', L.arbetsplats, L['d1-namn'], L['d2-namn'], L['led-namn'], L.arbetsmoment, isNaN(L.depth) ? '' : String(L.depth).replace('.', ','), L.minutes || '']));
+  download('manadsrapport_' + _regState.rpMonth + '.csv', _csv(rows), 'text/csv;charset=utf-8');
+  toast('✓ Månadsrapport exporterad');
 }
 
 // ====================== Projekt / kund ======================
@@ -1451,19 +2398,21 @@ let activeProjectId = null;
 try { activeProjectId = localStorage.getItem(K('activeproject')) || null; } catch (e) {}
 
 /** Skapar ett nytt projekt via en formulärmodal (namn, kund, plats, projektnr, projektledare, upprättad av). */
-async function newProject() {
+async function newProject(prev) {
+  prev = prev || {};
   const r = await uiModal({
     title: 'Nytt projekt', okText: 'Skapa projekt',
     fields: [
-      { key: 'name', label: 'Projektnamn', placeholder: 't.ex. Kajrenovering Hamnen' },
-      { key: 'kund', label: 'Uppdragsgivare / kund', placeholder: '(valfritt)' },
-      { key: 'plats', label: 'Plats / position', placeholder: '(valfritt)' },
-      { key: 'projektnr', label: 'Projektnummer', placeholder: '(valfritt)' },
-      { key: 'projektledare', label: 'Projektledare', placeholder: '(valfritt)' },
-      { key: 'upprattadav', label: 'Dykplan upprättad av', placeholder: '(valfritt)' }
+      { key: 'name', label: 'Projektnamn', value: prev.name, placeholder: 't.ex. Kajrenovering Hamnen' },
+      { key: 'kund', label: 'Uppdragsgivare / kund', value: prev.kund, placeholder: '(valfritt)' },
+      { key: 'plats', label: 'Plats / position', value: prev.plats, placeholder: '(valfritt)' },
+      { key: 'projektnr', label: 'Projektnummer', value: prev.projektnr, placeholder: '(valfritt)' },
+      { key: 'projektledare', label: 'Projektledare', value: prev.projektledare, placeholder: '(valfritt)' },
+      { key: 'upprattadav', label: 'Dykplan upprättad av', value: prev.upprattadav, placeholder: '(valfritt)' }
     ]
   });
-  if (!r || !r.name) return;
+  if (!r) return;
+  if (!r.name) { await uiAlert('Ge projektet ett namn.', 'Namn saknas'); return newProject(r); }
   const projects = getProjects();
   const id = 'p' + Date.now();
   projects[id] = { id: id, name: r.name, kund: r.kund, plats: r.plats, projektnr: r.projektnr, projektledare: r.projektledare, upprattadav: r.upprattadav, createdAt: Date.now() };
@@ -1476,24 +2425,29 @@ async function newProject() {
 function setActiveProject(id) {
   activeProjectId = id || null;
   try { if (activeProjectId) localStorage.setItem(K('activeproject'), activeProjectId); else localStorage.removeItem(K('activeproject')); } catch (e) {}
-  const sel = document.getElementById('project-select'); if (sel) sel.value = activeProjectId || '';
+  renderProjectList();
   renderDiveList();
 }
 /** Fyller dykloggen och dykplanen med det aktiva projektets uppgifter på rätt fält. */
 function applyProjectInfo() {
   const p = getProjects()[activeProjectId];
   if (!p) { toast('Välj ett aktivt projekt först'); return; }
+  fillProjectInfo(p);
+  afterDataLoaded();
+  closeMenus(); toast('✓ Projektets uppgifter ifyllda');
+}
+/** Skriver ett projekts uppgifter till rätt fält i dyklogg och dykplan. */
+function fillProjectInfo(p) {
   const set = (id, val) => { const el = document.getElementById(id); if (el && val) el.value = val; };
   // Dyklogg-rutan (arbetsplats/projekt)
-  set('arbetsplats', p.name); set('b1-arbetsplats', p.name); set('b2-arbetsplats', p.name);
+  const ap = p.name + (p.projektnr ? ' / ' + p.projektnr : '');
+  set('arbetsplats', ap); set('b1-arbetsplats', ap); set('b2-arbetsplats', ap);
   // Dykplanen – varje uppgift hamnar på sin rätta plats
   set('uppdragsgivare', p.kund);
   set('plats', p.plats);
   set('projektnummer', p.projektnr);
   set('projektledare', p.projektledare);
   set('upprattat', p.upprattadav);
-  try { localStorage.setItem(K('autosave'), JSON.stringify(gatherAll())); } catch (e) {}
-  closeMenus(); toast('✓ Projektuppgifter ifyllda i dykplanen');
 }
 /** Tar bort ett projekt; tillhörande dyk avtaggas men ligger kvar i arkivet. */
 async function deleteProject(id) {
@@ -1546,8 +2500,8 @@ function projectReport(id) {
   const g = (d, k) => (d.data && (d.data[k] || d.data['b1-' + k])) ? String(d.data[k] || d.data['b1-' + k]) : '';
   const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const rows = dives.map(d => '<tr><td>' + esc(d.dyknr || g(d, 'dyknr')) + '</td><td>' + esc(d.datum || g(d, 'datum')) +
-    '</td><td>' + esc(g(d, 'maxdjup')) + '</td><td>' + esc(g(d, 'bottentid')) + '</td><td>' + esc(g(d, 'time-in')) +
-    '–' + esc(g(d, 'time-out')) + '</td><td>' + esc(g(d, 'led-namn')) + '</td><td>' + esc(g(d, 'arbetsmoment')) + '</td></tr>').join('');
+    '</td><td>' + esc(g(d, 'maxdjup')) + '</td><td>' + esc(g(d, 'bottentid')) + '</td><td>' +
+    esc([g(d, 'time-in'), g(d, 'time-out')].filter(Boolean).join('–')) + '</td><td>' + esc(g(d, 'led-namn')) + '</td><td>' + esc(g(d, 'arbetsmoment')) + '</td></tr>').join('');
   const html = '<!DOCTYPE html><html lang="sv"><head><meta charset="UTF-8"><title>Projektrapport – ' + esc(p.name) + '</title>' +
     '<style>body{font-family:Arial,sans-serif;color:#111;margin:28px;font-size:12px}h1{font-size:22px;margin:0 0 2px}' +
     '.sub{color:#c87a00;font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:14px}' +
@@ -1568,35 +2522,80 @@ function projectReport(id) {
     '</tbody></table><div class="foot">Genererad ' + new Date().toLocaleString('sv-SE') + '</div></body></html>';
   const w = window.open('', '_blank');
   if (!w) { uiAlert('Tillåt popup-fönster för att visa rapporten.', 'Popup blockerad'); return; }
-  w.document.write(html); w.document.close();
+  w.document.open(); w.document.write(html); w.document.close();
 }
 
 // ====================== UDDF-export ======================
-/** Exporterar dyket till UDDF-format (dykprogram). */
+/** Tolkar ett fritt skrivet datum (2026-06-02, 20260602, 2/6 2026, 02.06.2026 …)
+ *  till ÅÅÅÅ-MM-DD. Returnerar '' om det inte går att tolka säkert. */
+function normDate(s) {
+  s = String(s || '').trim();
+  let m, y, mo, d;
+  if ((m = s.match(/^(\d{4})[-\/.](\d{1,2})[-\/.](\d{1,2})$/))) { y = m[1]; mo = m[2]; d = m[3]; }
+  else if ((m = s.match(/^(\d{4})(\d{2})(\d{2})$/))) { y = m[1]; mo = m[2]; d = m[3]; }
+  else if ((m = s.match(/^(\d{1,2})[-\/. ](\d{1,2})[-\/. ](\d{2}|\d{4})$/))) { d = m[1]; mo = m[2]; y = m[3].length === 2 ? '20' + m[3] : m[3]; }
+  else return '';
+  const dt = new Date(+y, +mo - 1, +d);
+  if (dt.getFullYear() !== +y || dt.getMonth() !== +mo - 1 || dt.getDate() !== +d) return '';
+  return y + '-' + String(mo).padStart(2, '0') + '-' + String(d).padStart(2, '0');
+}
+/** Tolkar en klockslag (8:30, 08.30, 0830, 8) till HH:MM, annars ''. */
+function normTime(s) {
+  s = String(s || '').trim();
+  const m = s.match(/^(\d{1,2})(?:[:.]?(\d{2}))?$/);
+  if (!m || +m[1] > 23 || (m[2] && +m[2] > 59)) return '';
+  return String(m[1]).padStart(2, '0') + ':' + (m[2] || '00');
+}
+/** Tolkar ett tal med komma eller punkt ("18,5 m" → 18.5), annars NaN. */
+function num(s) { const m = String(s || '').replace(',', '.').match(/-?\d+(\.\d+)?/); return m ? parseFloat(m[0]) : NaN; }
+
+/** Exporterar dyket till UDDF 3.2 (för dykprogram som Subsurface m.fl.). */
 function exportUDDF() {
   closeMenus();
   const raw = id => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
-  // Fältet kan finnas dubbelt: huvudvyns id ("maxdjup") eller b1-bladets ("b1-maxdjup"),
-  // beroende på aktiv layout (t.ex. standardläget 2× Dyklogg + Dykplan använder b1-/b2-).
-  const v = id => raw(id) || raw('b1-' + id);
+  // Fältet finns dubbelt: huvudvyns id ("maxdjup") och b1-bladets ("b1-maxdjup").
+  // Den dyklogg som syns i aktiv layout går först (se logVal).
+  const v = logVal;
   const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-  const datum = v('datum');
-  const dt = /^\d{4}-\d{2}-\d{2}$/.test(datum) ? datum + 'T' + (v('time-in') || '00:00') + ':00' : new Date().toISOString();
-  const depth = (parseFloat((v('maxdjup') || '0').replace(',', '.')) || 0).toString();
-  const tempC = parseFloat((v('temp') || '').replace(',', '.'));
-  const tempK = isNaN(tempC) ? '' : (tempC + 273.15).toFixed(2);
-  const uddf = '<?xml version="1.0" encoding="UTF-8"?>\n' +
-    '<uddf version="3.2.0">\n  <generator><name>Dyklogg</name><type>logbook</type></generator>\n' +
-    '  <profiledata>\n    <repetitiongroup>\n      <dive>\n' +
-    '        <informationbeforedive>\n          <datetime>' + esc(dt) + '</datetime>\n' +
-    (v('arbetsplats') ? '          <divenumber>' + esc(v('dyknr')) + '</divenumber>\n' : '') +
-    '        </informationbeforedive>\n' +
-    '        <informationafterdive>\n          <greatestdepth>' + esc(depth) + '</greatestdepth>\n' +
-    (v('bottentid') ? '          <diveduration>' + esc(v('bottentid')) + '</diveduration>\n' : '') +
-    (tempK ? '          <lowesttemperature>' + tempK + '</lowesttemperature>\n' : '') +
-    (v('sikt') ? '          <visibility>' + esc(v('sikt')) + '</visibility>\n' : '') +
-    '        </informationafterdive>\n      </dive>\n    </repetitiongroup>\n  </profiledata>\n</uddf>\n';
-  download(buildFileName().replace(/\.json$/, '') + '.uddf', uddf, 'application/xml');
+  const datum = normDate(v('datum') || raw('plan-datum'));
+  const tin = normTime(v('time-in')), tout = normTime(v('time-out'));
+  if (!datum) toast('Obs: datumet kunde inte tolkas – dagens datum används i UDDF-filen');
+  const dt = (datum || new Date().toISOString().slice(0, 10)) + 'T' + (tin || '00:00') + ':00';
+  // Dyktid i sekunder: helst start→slut, annars bottentiden (i minuter).
+  let dur = NaN;
+  if (tin && tout) {
+    const mins = t => +t.slice(0, 2) * 60 + +t.slice(3);
+    dur = ((mins(tout) - mins(tin) + 1440) % 1440) * 60;
+  }
+  if (!(dur > 0)) dur = num(v('bottentid')) * 60;
+  const depth = num(v('maxdjup'));
+  const tempC = num(v('temp'));
+  const vis = num(v('sikt'));
+  const dnr = v('dyknr');
+  const L = [];
+  L.push('<?xml version="1.0" encoding="UTF-8"?>');
+  L.push('<uddf xmlns="http://www.streit.cc/uddf/3.2/" version="3.2.0">');
+  L.push('  <generator><name>Dyklogg</name><type>logbook</type><datetime>' + new Date().toISOString().slice(0, 19) + '</datetime></generator>');
+  L.push('  <profiledata>');
+  L.push('    <repetitiongroup id="rg1">');
+  L.push('      <dive id="dive1">');
+  L.push('        <informationbeforedive>');
+  L.push('          <datetime>' + esc(dt) + '</datetime>');
+  if (/^\d+$/.test(dnr)) L.push('          <divenumber>' + dnr + '</divenumber>');
+  L.push('        </informationbeforedive>');
+  L.push('        <informationafterdive>');
+  if (!isNaN(depth)) L.push('          <greatestdepth>' + depth + '</greatestdepth>');
+  if (dur > 0) L.push('          <diveduration>' + Math.round(dur) + '</diveduration>');
+  if (!isNaN(tempC)) L.push('          <lowesttemperature>' + (tempC + 273.15).toFixed(2) + '</lowesttemperature>');
+  if (!isNaN(vis)) L.push('          <visibility>' + vis + '</visibility>');
+  const notes = [v('arbetsplats'), v('arbetsmoment')].concat([1, 2, 3, 4, 5, 6].map(i => v('ut' + i))).filter(Boolean);
+  if (notes.length) L.push('          <notes><para>' + esc(notes.join(' – ')) + '</para></notes>');
+  L.push('        </informationafterdive>');
+  L.push('      </dive>');
+  L.push('    </repetitiongroup>');
+  L.push('  </profiledata>');
+  L.push('</uddf>');
+  download(buildFileName().replace(/\.json$/, '') + '.uddf', L.join('\n') + '\n', 'application/xml');
   toast('✓ UDDF exporterad');
 }
 
@@ -1605,9 +2604,9 @@ function exportUDDF() {
 function emailLog() {
   closeMenus();
   const raw = id => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
-  // Fältet kan finnas dubbelt: huvudvyns id ("maxdjup") eller b1-bladets ("b1-maxdjup"),
-  // beroende på aktiv layout (t.ex. standardläget 2× Dyklogg + Dykplan använder b1-/b2-).
-  const v = id => raw(id) || raw('b1-' + id);
+  // Fältet finns dubbelt: huvudvyns id ("maxdjup") och b1-bladets ("b1-maxdjup").
+  // Den dyklogg som syns i aktiv layout går först (se logVal).
+  const v = logVal;
   const L = [];
   const add = (label, val) => { if (val) L.push(label + ': ' + val); };
   add('Datum', v('datum'));
@@ -1616,22 +2615,34 @@ function emailLog() {
   add('Arbetsmoment', v('arbetsmoment'));
   add('Starttid', v('time-in')); add('Sluttid', v('time-out'));
   add('Max djup', v('maxdjup')); add('Bottentid', v('bottentid'));
-  add('Sikt', v('sikt')); add('Temperatur', v('temp'));
-  add('Dykledare', v('led-namn'));
+  add('Sikt', v('sikt')); add('Temperatur (°C)', v('temp')); add('Deco-stopp', v('deco'));
+  add('Dykledare', v('led-namn')); add('Dykare 1', v('d1-namn')); add('Dykare 2', v('d2-namn')); add('Dykskötare', v('dsk-namn'));
+  const ut = [1, 2, 3, 4, 5, 6].map(i => v('ut' + i)).filter(Boolean);
+  if (ut.length) L.push('', 'Utfört arbete / anteckningar:', ...ut.map(x => '  ' + x));
   const subject = 'Dyklogg' + (v('dyknr') ? ' – dyk ' + v('dyknr') : '') + (v('datum') ? ' (' + v('datum') + ')' : '');
   const body = L.join('\n') + '\n\n(Skapad i Dyklogg. Bifoga ev. PDF/JSON manuellt.)';
+  if (!L.length) { toast('Fyll i dyket först – det finns inget att mejla'); return; }
   window.location.href = 'mailto:?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
 }
 
 // ====================== CSV-export ======================
+const _txt = el => (el ? el.textContent : '').replace(/\s+/g, ' ').replace(/:\s*$/, '').trim();
+/** Läsbar etikett för ett fält i CSV-exporten, med sammanhang där samma
+ *  etikett förekommer flera gånger (t.ex. "Dykledare – Namn"). */
 function fieldLabel(inp) {
-  const row = inp.closest('.ddr,.fl,.sf,.svgfield,.svgtime,td,label');
-  if (row) {
-    const lab = row.querySelector('.dl,.fll,.lbl,span,label');
-    if (lab && lab !== inp) { const t = lab.textContent.replace(/\s+/g, ' ').trim(); if (t) return t.replace(/:\s*$/, ''); }
-    if (row.tagName === 'LABEL') { const t = row.textContent.replace(/\s+/g, ' ').trim(); if (t) return t; }
+  let label = inp.getAttribute('aria-label') || '';
+  if (!label) {
+    const row = inp.closest('.ddr,.fl,.sf,.svgfield,.svgtime,td,label');
+    if (row) {
+      const lab = row.querySelector('.dl,.fll,.lbl,span');
+      if (lab && lab !== inp) label = _txt(lab);
+      if (!label && row.tagName === 'LABEL') label = _txt(row);
+    }
   }
-  return inp.id || '';
+  if (!label) label = inp.id || '';
+  const ctx = inp.closest('.sbox') ? inp.closest('.sbox').querySelector('.st')
+    : inp.closest('.eqcol') ? inp.closest('.eqcol').querySelector('.eqt') : null;
+  return ctx ? _txt(ctx) + ' – ' + label : label;
 }
 /** Exporterar ifyllda fält (dyklogg + dykplan) till en CSV-fil. */
 function exportCSV() {
@@ -1640,19 +2651,25 @@ function exportCSV() {
   // Dyklogg-kolumnen: huvudvyns fält om ifyllda, annars b1-bladet (2× Dyklogg-layouten,
   // standardläget vid första besök) – + dykplanen, oavsett vilken layout som är aktiv
   // (planen kan vara flyttad).
+  // Den dyklogg som syns i aktiv layout exporteras; den andra bara om den synliga är tom.
   const mainCl = document.querySelector('#view-combined .cl');
-  const hasMainData = mainCl && [...mainCl.querySelectorAll('input[type=text], input[type=date]')].some(i => i.value.trim());
-  const clRoot = hasMainData ? mainCl : document.querySelector('#view-dyklog .cl');
+  const b1Cl = document.querySelector('#view-dyklog .cl');
+  const hasData = root => !!root && [...root.querySelectorAll('input[type=text], input[type=date]')].some(i => i.value.trim());
+  const [first, second] = mainLogVisible() ? [mainCl, b1Cl] : [b1Cl, mainCl];
+  const clRoot = hasData(first) || !hasData(second) ? first : second;
   const roots = [clRoot, document.querySelector('#view-combined .cr') || _planEl];
   roots.forEach(root => {
     if (!root) return;
     root.querySelectorAll('input[type=text], input[type=date]').forEach(inp => {
-      const v = (inp.value || '').trim(); if (!v) return;
+      const v = (inp.value || '').trim();
+      if (!v) { if (sigs[inp.id]) rows.push([fieldLabel(inp), 'Signerad digitalt']); return; }
       rows.push([fieldLabel(inp), v]);
     });
     root.querySelectorAll('input[type=checkbox]').forEach(cb => {
       if (!cb.checked) return;
-      const lab = cb.closest('label'); const t = lab ? lab.textContent.replace(/\s+/g, ' ').trim() : '';
+      const lab = cb.closest('label'); let t = _txt(lab);
+      const eq = cb.closest('.eqcol'); if (eq && t) t = _txt(eq.querySelector('.eqt')) + ' – ' + t;
+      if (cb.closest('.atgrid') && t) t = 'Arbetstyp – ' + t;
       if (t) rows.push([t, 'Ja']);
     });
   });
@@ -1681,7 +2698,10 @@ function switchView(v) {
 // den ska – aldrig kopierar – så inga dubbla id:n och all ifylld data följer med.
 // Baksida (#layout-extra) visas under framsidan på skärmen och skrivs ut på eget ark.
 let activeLayout = 'logg-plan';
+// Giltiga layout-lägen och deras korta namn i verktygsfältet.
+const LAYOUTS = { 'logg-plan': 'Logg + Plan', '2x': '2× Dyklogg', '2x-copy': '2× dubbelsidig', '2x-plan': '2× + Dykplan', 'hel-plan': 'Hel Dykplan' };
 const _planEl = document.querySelector('#view-combined .cr');
+if (_planEl) _planEl.setAttribute('data-plan', '');   // hittas även när den flyttats (se layoutSig)
 const _planHome = _planEl ? _planEl.parentNode : null;
 const _planClass = _planEl ? _planEl.className : '';
 const _planStyle = _planEl ? (_planEl.getAttribute('style') || '') : '';
@@ -1716,17 +2736,26 @@ function _planPage(cls, labelText) {
   _layoutExtra.appendChild(page);
   _layoutExtra.style.display = 'block';
 }
-// Bygger en STATISK kopia av framsidan (2× Dyklogg) som baksida. Id och
-// data-lid strippas så inga dubbletter uppstår; värdena speglas live via
-// syncCopyBack() medan man skriver.
+// Bygger en STATISK kopia av framsidan (2× Dyklogg) som baksida. Id, data-lid,
+// nycklar och redigerbarhet strippas så att kopian aldrig förväxlas med
+// originalet. Kopian byggs om (syncCopyBack) när framsidan ändras.
 function _copyBackPage() {
   const src = document.getElementById('view-dyklog');
   if (!src || !src.firstElementChild) return;
   const page = src.firstElementChild.cloneNode(true);   // .page
   page.removeAttribute('id');
   page.classList.add('layout-page', 'layout-copy-page');
+  page.setAttribute('aria-hidden', 'true');
   page.querySelectorAll('[id]').forEach(e => e.removeAttribute('id'));
   page.querySelectorAll('[data-lid]').forEach(e => e.removeAttribute('data-lid'));
+  page.querySelectorAll('[data-k],[data-k0]').forEach(e => { e.removeAttribute('data-k'); e.removeAttribute('data-k0'); });
+  page.querySelectorAll('.et').forEach(e => { e.classList.remove('et'); e.removeAttribute('contenteditable'); });
+  page.querySelectorAll('.lhover').forEach(e => e.classList.remove('lhover'));
+  page.querySelectorAll('input, button').forEach(e => { e.tabIndex = -1; });
+  // Värden (property, inte attribut) följer inte med cloneNode – kopiera dem.
+  const s = src.firstElementChild.querySelectorAll('input');
+  const d = page.querySelectorAll('input');
+  s.forEach((el, i) => { const t = d[i]; if (!t) return; if (el.type === 'checkbox') t.checked = el.checked; else t.value = el.value; });
   const label = document.createElement('div');
   label.className = 'layout-extra-label';
   label.textContent = '⤵ Baksida – kopia av framsidan';
@@ -1734,24 +2763,17 @@ function _copyBackPage() {
   _layoutExtra.appendChild(label);
   _layoutExtra.appendChild(page);
   _layoutExtra.style.display = 'block';
-  syncCopyBack();
 }
-/** Speglar framsidans värden till kopie-baksidan (om en sådan visas). */
+/** Bygger om kopie-baksidan (om en sådan visas) så att den speglar framsidan:
+ *  värden, kryss, gruppbokstäver, arbetstypslistor och etiketter. */
 function syncCopyBack() {
-  const clone = _layoutExtra.querySelector('.layout-copy-page');
-  const src = document.getElementById('view-dyklog');
-  if (!src || !clone) return;
-  const s = src.querySelectorAll('input, select, textarea');
-  const d = clone.querySelectorAll('input, select, textarea');
-  s.forEach((el, i) => {
-    const t = d[i]; if (!t) return;
-    if (el.type === 'checkbox' || el.type === 'radio') t.checked = el.checked; else t.value = el.value;
-  });
+  try { if (!_layoutExtra.querySelector('.layout-copy-page')) return; } catch (e) { return; }   // ej initierad än
+  _copyBackPage();
 }
 /** Aktiverar ett layout-läge. Layout är ENDA stället för fram/baksida. */
 function setLayout(name) {
+  if (!LAYOUTS[name]) name = '2x-plan';
   resetLayout();
-  setPrintMode('off');                              // Layout sköter baksidor; gamla "Baksida"-valet är borta
   if (name === 'logg-plan') { switchView('combined'); }
   else if (name === '2x') { switchView('dyklog'); }
   else if (name === '2x-copy') { switchView('dyklog'); _copyBackPage(); }
@@ -1771,14 +2793,13 @@ function setLayout(name) {
 }
 /** Uppdaterar Layout-knappens etikett och markerar det aktiva valet. */
 function updateLayoutUI() {
-  const names = { 'logg-plan': 'Logg + Plan', '2x': '2× Dyklogg', '2x-copy': '2× dubbelsidig', '2x-plan': '2× + Dykplan', 'hel-plan': 'Hel Dykplan' };
   const lbl = document.getElementById('layout-label');
-  if (lbl) lbl.textContent = names[activeLayout] || 'Layout';
+  if (lbl) lbl.textContent = LAYOUTS[activeLayout] || 'Layout';
   document.querySelectorAll('.layout-opt').forEach(b => b.classList.toggle('sel', b.getAttribute('data-lay') === activeLayout));
 }
 // Spegla framsidan till kopie-baksidan medan man skriver.
-document.addEventListener('input', syncCopyBack);
-document.addEventListener('change', syncCopyBack);
+document.addEventListener('input', e => { if (isFormField(e.target)) syncCopyBack(); });
+document.addEventListener('change', e => { if (isFormField(e.target)) syncCopyBack(); });
 
 // --- Pappersformat & utskriftsorientering ---
 // Aktuellt pappersval hålls i minnet (_paper) så det stämmer direkt även om
@@ -1855,7 +2876,10 @@ document.addEventListener('input', () => { clearTimeout(_pfTimer); _pfTimer = se
 })();
 
 // --- Fold margin: dead space in the middle so the sheet can be folded into a dive book ---
+/** Begränsar ett marginalvärde till ett heltal i [0, max] mm. */
+function clampMm(v, max) { const n = parseInt(v, 10); return String(isNaN(n) ? 4 : Math.max(0, Math.min(max, n))); }
 function setMid(v) {
+  v = clampMm(v, 50);
   document.documentElement.style.setProperty('--mid', v + 'mm');
   const out = document.getElementById('midval');
   if (out) out.textContent = v + ' mm';
@@ -1871,6 +2895,7 @@ function setMid(v) {
 
 // --- Outer left/right margins of the logs/plan (mm) ---
 function setMargin(side, v) {
+  v = clampMm(v, 30);
   document.documentElement.style.setProperty('--' + side, v + 'mm');
   const out = document.getElementById((side === 'ml' ? 'mleft' : 'mright') + 'val');
   if (out) out.textContent = v + ' mm';
@@ -1894,13 +2919,13 @@ function mirrorB1toB2() {
     if (!t) return;
     if (el.type === 'checkbox') t.checked = el.checked; else t.value = el.value;
   });
+  // Arbetstyper: samma lista och samma kryss på båda bladen
+  const a1 = atInstances.b1, a2 = atInstances.b2;
   const g1 = document.getElementById('atgrid-b1');
-  const g2 = document.getElementById('atgrid-b2');
-  if (g1 && g2) {
-    const c1 = g1.querySelectorAll('input[type=checkbox]');
-    const c2 = g2.querySelectorAll('input[type=checkbox]');
-    c1.forEach((cb,i) => { if (c2[i]) c2[i].checked = cb.checked; });
-  }
+  if (g1) g1.querySelectorAll('input[type=checkbox]').forEach((cb, i) => { a1.checked[i] = cb.checked; });
+  a2.typer = a1.typer.slice();
+  a2.checked = Object.assign({}, a1.checked);
+  renderGrid('b2');
   // Mirror selected gruppbeteckning letters from the b1 blade onto b2
   const b1g = document.querySelector('#view-dyklog .col:nth-child(2) .groupletters');
   const b2g = document.querySelector('#view-dyklog .col:nth-child(3) .groupletters');
@@ -1908,6 +2933,10 @@ function mirrorB1toB2() {
     const s1 = b1g.querySelectorAll('span'), s2 = b2g.querySelectorAll('span');
     s1.forEach((sp,i) => { if (s2[i]) s2[i].classList.toggle('gsel', sp.classList.contains('gsel')); });
   }
+  // Underskrifter
+  Object.keys(sigs).filter(k => k.indexOf('b2-') === 0).forEach(k => delete sigs[k]);
+  Object.keys(sigs).filter(k => k.indexOf('b1-') === 0).forEach(k => { sigs['b2-' + k.slice(3)] = sigs[k]; });
+  sigInputs().forEach(i => { if (i.id.indexOf('b2-') === 0) renderSig(i.id); });
 }
 function setDuplicate(on) {
   dupOn = !!on;
@@ -1924,85 +2953,6 @@ function setDuplicate(on) {
   }
 })();
 
-// --- Double-sided print modes ---
-//   'off'       : single-sided (active view only)
-//   'copy'      : back side = identical copy of the active view
-//   'logs-plan' : front = 2 Dyklogg (Dyklog-vyn), back = hel Dykplan (liggande, full bredd)
-let printMode = 'off';
-/** Den gamla "Baksida"-mekaniken (kopia/logs-plan med blandad orientering) är
- *  pensionerad – Layout-menyn sköter nu fram/baksida. Tvingas alltid till 'off'
- *  så att äldre sparvärden eller importerade profiler inte kan återuppliva den. */
-function setPrintMode() {
-  printMode = 'off';
-  try { localStorage.setItem(K('printmode'), 'off'); } catch(e) {}
-}
-function copyFieldValues(src, clone) {
-  const s = src.querySelectorAll('input, textarea, select');
-  const d = clone.querySelectorAll('input, textarea, select');
-  s.forEach((el, i) => {
-    const t = d[i];
-    if (!t) return;
-    if (el.type === 'checkbox' || el.type === 'radio') {
-      if (el.checked) t.setAttribute('checked', 'checked'); else t.removeAttribute('checked');
-    } else {
-      t.setAttribute('value', el.value);
-    }
-  });
-}
-function removePrintExtras() {
-  document.querySelectorAll('[data-duplex="1"]').forEach(el => el.remove());
-  document.body.classList.remove('print-custom');
-}
-/** Bygger ev. baksidor inför utskrift utifrån valt utskriftsläge. */
-function buildPrintExtras() {
-  removePrintExtras();
-  if (printMode === 'off') return;
-
-  if (printMode === 'copy') {
-    const active = currentView === 'dyklog'
-      ? document.getElementById('view-dyklog')
-      : document.getElementById('view-combined');
-    if (!active) return;
-    const clone = active.cloneNode(true);
-    copyFieldValues(active, clone);
-    clone.setAttribute('data-duplex', '1');
-    clone.removeAttribute('id');                      // avoid being hidden by #view-* rules
-    clone.style.display = getComputedStyle(active).display;
-    document.body.appendChild(clone);
-    return;
-  }
-
-  if (printMode === 'logs-plan') {
-    document.body.classList.add('print-custom');       // hide the normal active view in print
-    // Page 1: two Dyklogg (the Dyklog two-blade view)
-    const dv = document.getElementById('view-dyklog');
-    if (dv) {
-      const c1 = dv.cloneNode(true);
-      copyFieldValues(dv, c1);
-      c1.removeAttribute('id');
-      c1.setAttribute('data-duplex', '1');
-      c1.style.display = 'flex';
-      document.body.appendChild(c1);
-    }
-    // Page 2: a whole Dykplan, full landscape width (planen kan vara flyttad av en layout)
-    const plan = document.querySelector('#view-combined .cr') || _planEl;
-    if (plan) {
-      const planClone = plan.cloneNode(true);
-      copyFieldValues(plan, planClone);
-      planClone.classList.remove('cr', 'col');         // drop the half-width flex-column behaviour
-      planClone.style.cssText = 'display:flex;flex-direction:column;gap:6px;width:100%';
-      const page = document.createElement('div');
-      page.className = 'page ppage';                    // ppage => printed in A4 portrait (stående)
-      page.setAttribute('data-duplex', '1');
-      page.style.display = 'block';
-      page.appendChild(planClone);
-      document.body.appendChild(page);
-    }
-  }
-}
-window.addEventListener('beforeprint', buildPrintExtras);
-window.addEventListener('afterprint', removePrintExtras);
-
 // --- Arbetstyp instances for dyklog tab ---
 // Tre oberoende upps\u00e4ttningar (huvudvyn + de tv\u00e5 dyklogg-bladen). Alla utg\u00e5r
 // fr\u00e5n samma standardlista (CONFIG.arbetstyper) men kan redigeras var f\u00f6r sig.
@@ -2017,10 +2967,10 @@ function renderGrid(inst) {
   const obj = atInstances[inst];
   const grid = document.getElementById(gridId);
   if (!grid) return;
-  // Fånga ev. direkta klick i rutnätet – men bara om det är i synk med listan
-  // (annars skulle en borttagning i modalen skrivas över med gamla positioner).
-  const gridCbs = grid.querySelectorAll('input[type=checkbox]');
-  if (gridCbs.length === obj.typer.length) gridCbs.forEach((cb, i) => { obj.checked[i] = cb.checked; });
+  // obj.checked är sanningen (hålls i synk av change-lyssnaren nedan). Läs
+  // INTE tillbaka från de gamla rutorna här – då skulle ett nyss laddat dyks
+  // kryss skrivas över av det föregående dykets.
+  if (!obj.checked || typeof obj.checked !== 'object') obj.checked = {};
   grid.innerHTML = '';
   obj.typer.forEach((text, i) => {
     const label = document.createElement('label');
@@ -2038,33 +2988,43 @@ function renderGrid(inst) {
 }
 
 let activeModalInst = 'main';
+/** Öppnar modalen för att redigera arbetstypslistan i ett av bladen. */
 function openAtModal(inst) {
   inst = inst || 'main';
   activeModalInst = inst;
   renderAtModalListFor(inst);
   document.getElementById('at-overlay').classList.add('open');
+  const first = document.querySelector('#at-modal-list input');
+  if (first) setTimeout(() => { if (!document.getElementById('at-overlay').contains(document.activeElement)) first.focus(); }, 30);
 }
+/** Stänger modalen, tar med alla ändringar och sparar. */
 function closeAtModal() {
+  const ov = document.getElementById('at-overlay');
+  if (!ov.classList.contains('open')) return;
   const inst = activeModalInst;
   const obj = atInstances[inst];
   document.getElementById('at-modal-list').querySelectorAll('input[type=text]').forEach((inp, i) => {
-    if (inp.value.trim()) obj.typer[i] = inp.value.trim();
+    if (inp.value.trim() && i < obj.typer.length) obj.typer[i] = inp.value.trim();
   });
-  document.getElementById('at-overlay').classList.remove('open');
+  ov.classList.remove('open');
   renderGrid(inst);
+  if (dupOn && inst === 'b1') mirrorB1toB2();
+  syncCopyBack(); persist(); updatePrintFit();
 }
 function renderAtModalListFor(inst) {
   const obj = atInstances[inst];
   const list = document.getElementById('at-modal-list');
   list.innerHTML = '';
+  if (!obj.typer.length) list.innerHTML = '<div class="tpl-empty">Listan är tom – lägg till en arbetstyp nedan.</div>';
   obj.typer.forEach((text, i) => {
     const row = document.createElement('div'); row.className = 'at-row';
-    const inp = document.createElement('input'); inp.type='text'; inp.value=text;
-    inp.addEventListener('blur', () => { obj.typer[i]=inp.value.trim()||text; });
-    const del = document.createElement('button'); del.className = 'at-del'; del.textContent='\u00d7'; del.title='Ta bort';
+    const inp = document.createElement('input'); inp.type = 'text'; inp.value = text; inp.setAttribute('aria-label', 'Arbetstyp ' + (i + 1));
+    inp.addEventListener('blur', () => { obj.typer[i] = inp.value.trim() || text; });
+    inp.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); closeAtModal(); } });
+    const del = document.createElement('button'); del.className = 'at-del'; del.textContent = '×'; del.title = 'Ta bort "' + text + '"';
     del.addEventListener('click', () => {
       obj.typer.splice(i, 1);
-      // Index-baserade kryss m\u00e5ste skifta ner s\u00e5 r\u00e4tt rutor f\u00f6rblir ikryssade
+      // Index-baserade kryss måste skifta ner så rätt rutor förblir ikryssade
       const nc = {};
       Object.keys(obj.checked).forEach(k => { const idx = +k; if (idx < i) nc[idx] = obj.checked[k]; else if (idx > i) nc[idx - 1] = obj.checked[k]; });
       obj.checked = nc;
@@ -2079,7 +3039,8 @@ function addAtItem() {
   const inputs = document.getElementById('at-modal-list').querySelectorAll('input[type=text]');
   const last = inputs[inputs.length-1]; last.focus(); last.select();
 }
-document.getElementById('at-overlay').addEventListener('click', function(e){ if(e.target===this) closeAtModal(); });
+document.getElementById('at-overlay').addEventListener('mousedown', function(e){ if(e.target===this) closeAtModal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeAtModal(); });
 
 
 // --- Clickable gruppbeteckning letters (A–Z) ---
@@ -2087,14 +3048,16 @@ document.getElementById('at-overlay').addEventListener('click', function(e){ if(
 function glSpans() { return Array.from(document.querySelectorAll('.groupletters span')).filter(sp => !sp.closest('.layout-copy-page')); }
 glSpans().forEach(sp => {
   sp.addEventListener('click', () => {
+    if (moveMode) return;                            // i flytta-läget väljer klicket element i stället
     sp.classList.toggle('gsel');
     if (dupOn) mirrorB1toB2();
-    try { localStorage.setItem(K('autosave'), JSON.stringify(gatherAll())); } catch(e) {}
+    syncCopyBack(); persist();
   });
 });
 
 // --- Edit mode toggle ---
 function toggleEdit() {
+  if (!editMode && moveMode) toggleMove();          // lägena utesluter varandra
   editMode = !editMode;
   document.querySelectorAll('.et').forEach(el => { el.contentEditable = editMode ? 'true' : 'false'; });
   const btn = document.getElementById('edit-btn');
@@ -2103,7 +3066,22 @@ function toggleEdit() {
   btn.title = editMode ? 'Klar med redigering' : 'Redigera text';
   btn.setAttribute('aria-pressed', editMode ? 'true' : 'false');
   document.body.classList.toggle('editing', editMode);
+  if (!editMode && document.activeElement && document.activeElement.classList.contains('et')) document.activeElement.blur();
 }
+// Redigerbara etiketter tar bara emot ren text: klistra in utan formatering,
+// och Enter avslutar redigeringen i stället för att lägga in radbrytningar.
+document.addEventListener('paste', e => {
+  const el = e.target.closest && e.target.closest('.et');
+  if (!el || !editMode) return;
+  e.preventDefault();
+  const text = (e.clipboardData || window.clipboardData).getData('text/plain').replace(/\s+/g, ' ');
+  document.execCommand('insertText', false, text);
+});
+document.addEventListener('keydown', e => {
+  if (!editMode || e.key !== 'Enter') return;
+  const el = e.target.closest && e.target.closest('.et');
+  if (el) { e.preventDefault(); el.blur(); }
+});
 
 // =====================================================================
 //  MOVE / SCALE MODE  — drag to move and scale any text / block / box
@@ -2127,10 +3105,110 @@ document.body.appendChild(lbox);
 function lid(el) { return el && el.getAttribute && el.getAttribute('data-lid'); }
 
 // Assign stable layout ids to every element inside the two page views.
+// Egna fält (#cf-host och de dynamiska .cf-dyn-rutorna) hoppas över: de
+// kommer och går, och får inte flytta om numreringen för resten av blanketten.
 (function assignLids() {
   let i = 0;
-  document.querySelectorAll('#view-combined *, #view-dyklog *').forEach(el => el.setAttribute('data-lid', 'L' + (i++)));
+  document.querySelectorAll('#view-combined *, #view-dyklog *').forEach(el => {
+    if (el.closest('[data-nolid]') || el.closest('#cf-host > *')) return;
+    el.setAttribute('data-lid', 'L' + (i++));
+  });
 })();
+
+// =====================================================================
+//  UNDERSKRIFT MED FINGRET — signera Underskrift-fälten direkt på skärmen
+// =====================================================================
+// Underskriften sparas som en vektorbana (SVG-path, viewBox 0 0 600 180) per
+// fält-id – liten i lagringen och skarp i utskrift. Den visas ovanpå fältets
+// linje och följer med i arkiv, filer och utskrift. Knappen ✍ skapas här efter
+// assignLids, så den påverkar inte flytta/skala-positionerna.
+const SIG_W = 600, SIG_H = 180, SVG_NS = 'http://www.w3.org/2000/svg';
+let sigs = {};                                    // fält-id -> path-data
+function isSigPath(p) { return typeof p === 'string' && p.length > 0 && p.length < 40000 && /^[ML0-9 ]+$/.test(p); }
+function sigInputs() { return formInputs('input[id$="-sign"]'); }
+(function initSignatures() {
+  sigInputs().forEach(inp => {
+    if (inp.parentElement.classList.contains('sig-field')) return;
+    const wrap = document.createElement('span'); wrap.className = 'sig-field';
+    inp.parentNode.insertBefore(wrap, inp); wrap.appendChild(inp);
+    const btn = document.createElement('button');
+    btn.type = 'button'; btn.className = 'sig-btn'; btn.textContent = '\u270D\uFE0E';
+    btn.title = 'Signera med fingret, pennan eller musen'; btn.setAttribute('aria-label', 'Signera');
+    btn.addEventListener('click', () => { if (!moveMode) openSignature(inp.id); });
+    wrap.appendChild(btn);
+  });
+})();
+/** Ritar (eller tar bort) den sparade underskriften för ett fält. */
+function renderSig(id) {
+  const inp = document.getElementById(id); if (!inp) return;
+  const wrap = inp.closest('.sig-field'); if (!wrap) return;
+  let svg = wrap.querySelector('svg.sig-img');
+  const d = sigs[id];
+  wrap.classList.toggle('has-sig', !!d);
+  if (!d) { if (svg) svg.remove(); return; }
+  if (!svg) {
+    svg = document.createElementNS(SVG_NS, 'svg');
+    svg.setAttribute('class', 'sig-img'); svg.setAttribute('viewBox', '0 0 ' + SIG_W + ' ' + SIG_H);
+    svg.setAttribute('preserveAspectRatio', 'xMinYMax meet'); svg.setAttribute('aria-hidden', 'true');
+    wrap.insertBefore(svg, inp.nextSibling);
+  }
+  svg.innerHTML = '';
+  const path = document.createElementNS(SVG_NS, 'path');
+  path.setAttribute('d', d); path.setAttribute('fill', 'none'); path.setAttribute('stroke', '#0b2a6b');
+  path.setAttribute('stroke-width', '6'); path.setAttribute('stroke-linecap', 'round'); path.setAttribute('stroke-linejoin', 'round');
+  svg.appendChild(path);
+}
+function renderAllSigs() { sigInputs().forEach(i => renderSig(i.id)); }
+/** Öppnar signeringsytan för ett Underskrift-fält. */
+function openSignature(id) {
+  const inp = document.getElementById(id); if (!inp) return;
+  const box = inp.closest('.sbox');
+  const who = box ? _txt(box.querySelector('.st')) : 'Underskrift';
+  const name = box ? (box.querySelector('input[id$="-namn"]') || {}).value || '' : '';
+  const overlay = document.createElement('div'); overlay.className = 'modal-overlay open';
+  overlay.innerHTML = '<div class="modal-card sig-card"><div class="modal-head"></div><div class="modal-body">'
+    + '<canvas class="sig-pad" width="' + SIG_W * 2 + '" height="' + SIG_H * 2 + '" aria-label="Signeringsyta"></canvas>'
+    + '<div class="modal-msg" style="font-size:12px;color:#8a8a93">Skriv med fingret, pennan eller musen. Underskriften sparas med dyket och syns i utskriften.</div></div>'
+    + '<div class="modal-foot" style="justify-content:space-between"><div style="display:flex;gap:9px">'
+    + '<button class="modal-btn ghost" data-act="clear">Rensa</button></div><div style="display:flex;gap:9px">'
+    + '<button class="modal-btn ghost" data-act="cancel">Avbryt</button><button class="modal-btn primary" data-act="ok">Spara underskrift</button></div></div></div>';
+  overlay.querySelector('.modal-head').textContent = 'Underskrift – ' + who + (name.trim() ? ' (' + name.trim() + ')' : '');
+  document.body.appendChild(overlay);
+  const cv = overlay.querySelector('canvas'), ctx = cv.getContext('2d');
+  ctx.scale(2, 2); ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.lineWidth = 6; ctx.strokeStyle = '#0b2a6b';
+  let base = sigs[id] || '', strokes = [], cur = null;
+  const redraw = () => {
+    ctx.clearRect(0, 0, SIG_W, SIG_H);
+    ctx.save(); ctx.strokeStyle = '#e4e4ea'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(20, SIG_H - 30); ctx.lineTo(SIG_W - 20, SIG_H - 30); ctx.stroke(); ctx.restore();
+    const d = base + strokesPath();
+    if (d) ctx.stroke(new Path2D(d));
+  };
+  const strokesPath = () => strokes.map(st => 'M' + st[0][0] + ' ' + st[0][1] + (st.length === 1 ? 'L' + (st[0][0] + 1) + ' ' + st[0][1] : st.slice(1).map(p => 'L' + p[0] + ' ' + p[1]).join(''))).join('');
+  const pt = e => { const r = cv.getBoundingClientRect(); return [Math.round(Math.max(0, Math.min(SIG_W, (e.clientX - r.left) / r.width * SIG_W))), Math.round(Math.max(0, Math.min(SIG_H, (e.clientY - r.top) / r.height * SIG_H)))]; };
+  cv.addEventListener('pointerdown', e => { e.preventDefault(); cv.setPointerCapture(e.pointerId); cur = [pt(e)]; strokes.push(cur); redraw(); });
+  cv.addEventListener('pointermove', e => {
+    if (!cur) return;
+    const p = pt(e), q = cur[cur.length - 1];
+    if (Math.abs(p[0] - q[0]) + Math.abs(p[1] - q[1]) >= 3) { cur.push(p); redraw(); }
+  });
+  const end = () => { cur = null; };
+  cv.addEventListener('pointerup', end); cv.addEventListener('pointercancel', end);
+  redraw();
+  const close = () => { overlay.remove(); document.removeEventListener('keydown', onKey, true); };
+  const onKey = e => { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); close(); } };
+  document.addEventListener('keydown', onKey, true);
+  overlay.addEventListener('mousedown', e => { if (e.target === overlay) close(); });
+  overlay.querySelector('[data-act=clear]').onclick = () => { base = ''; strokes = []; redraw(); };
+  overlay.querySelector('[data-act=cancel]').onclick = close;
+  overlay.querySelector('[data-act=ok]').onclick = () => {
+    const d = base + strokesPath();
+    if (d && isSigPath(d)) sigs[id] = d; else delete sigs[id];
+    renderSig(id);
+    if (dupOn && id.indexOf('b1-') === 0) mirrorB1toB2();
+    close(); syncCopyBack(); persist();
+    toast(d ? '✓ Underskrift sparad' : 'Underskrift borttagen');
+  };
+}
 
 function applyTf(el) {
   const t = layoutTf[lid(el)];
@@ -2147,7 +3225,7 @@ const SVG_SHAPES = new Set(['svg','line','polyline','polygon','rect','circle','e
 function pickTarget(t) {
   if (!t || t === document.body) return null;
   if (lbox.contains(t)) return null;                       // ignore the overlay itself
-  if (t.closest('.toolbar')) return null;
+  if (t.closest('.appbar, .modal-overlay')) return null;
   // Raw SVG shapes aren't individually movable — grab the whole profile box instead
   if (t.namespaceURI === 'http://www.w3.org/2000/svg' && SVG_SHAPES.has(t.tagName.toLowerCase())) {
     return t.closest('.profsvg') || t.closest('svg');
@@ -2172,7 +3250,7 @@ function positionBox() {
 
 let _layoutSavedTimer = null;
 function saveLayoutSoon() {
-  try { localStorage.setItem(K('autosave'), JSON.stringify(gatherAll())); } catch (e) {}
+  persist();
   // Debounced confirmation so rapid drags don't spam the toast
   clearTimeout(_layoutSavedTimer);
   _layoutSavedTimer = setTimeout(() => toast('✓ Position sparad'), 500);
@@ -2278,10 +3356,20 @@ function resetEl(el) {
   el.style.transform = '';
   positionBox();
 }
+/** Återställer ALLA flyttade/skalade element till standardläget. */
+async function resetAllPositions() {
+  if (!Object.keys(layoutTf).some(k => { const t = layoutTf[k]; return t && (t.x || t.y || t.s !== 1); })) { toast('Inget är flyttat'); return; }
+  if (!await uiConfirm('Återställa alla flyttade och skalade element till standardläget?', { title: 'Återställ positioner', okText: 'Återställ alla', danger: true })) return;
+  layoutTf = {};
+  document.querySelectorAll('[data-lid]').forEach(el => { el.style.transform = ''; });
+  selectEl(null); syncCopyBack(); persist(); updatePrintFit();
+  toast('Alla positioner återställda');
+}
 
 // --- Keyboard: nudge + scale + deselect ---
 document.addEventListener('keydown', function (e) {
   if (!moveMode || !selEl) return;
+  if (e.target.closest && e.target.closest('input, select, textarea, .modal-overlay')) return;
   const t = layoutTf[lid(selEl)];
   const step = e.shiftKey ? 10 : 1;
   let used = true;
@@ -2302,6 +3390,7 @@ window.addEventListener('scroll', positionBox, true);
 window.addEventListener('resize', positionBox);
 
 function toggleMove() {
+  if (!moveMode && editMode) toggleEdit();          // lägena utesluter varandra
   moveMode = !moveMode;
   const btn = document.getElementById('move-btn');
   // Ikon-knapp: behåll ikonen, byt bara läge + tooltip.
@@ -2350,7 +3439,26 @@ function getEditableTexts() {
   return d;
 }
 function setEditableTexts(d) {
-  document.querySelectorAll('.et').forEach(el => { const v = d['et.' + el.dataset.k]; if (v !== undefined) el.innerHTML = v; });
+  document.querySelectorAll('.et').forEach(el => { const v = d['et.' + el.dataset.k]; if (typeof v === 'string') el.innerHTML = cleanLabelHtml(v); });
+}
+/** Etikett-HTML från sparfiler/mallar/profiler (som kan komma från andra) får
+ *  bara innehålla text och enkel formatering – aldrig skript, länkar eller
+ *  attribut. */
+function cleanLabelHtml(html) {
+  const tpl = document.createElement('template');
+  tpl.innerHTML = String(html);
+  const OK = { B: 1, STRONG: 1, I: 1, EM: 1, U: 1, BR: 1, SMALL: 1, SUB: 1, SUP: 1 };
+  (function walk(node) {
+    Array.from(node.childNodes).forEach(ch => {
+      if (ch.nodeType === 1) {
+        if (OK[ch.tagName]) { Array.from(ch.attributes).forEach(a => ch.removeAttribute(a.name)); walk(ch); }
+        else if (/^(SCRIPT|STYLE|IFRAME|OBJECT|EMBED|TEMPLATE|SVG|MATH)$/i.test(ch.tagName)) ch.remove();
+        else { walk(ch); while (ch.firstChild) node.insertBefore(ch.firstChild, ch); ch.remove(); }
+      } else if (ch.nodeType !== 3) ch.remove();
+    });
+  })(tpl.content);
+  const div = document.createElement('div'); div.appendChild(tpl.content);
+  return div.innerHTML;
 }
 
 // Kryssrutor utan id (utrustning, åtgärder m.m.) — atgrid hanteras separat.
@@ -2389,7 +3497,7 @@ function migrateLegacy(d) {
 /** Samlar hela formulärets tillstånd till ett objekt (för spara/autospar/export). */
 function gatherAll() {
   const d = {};
-  document.querySelectorAll('input[type=text][id], input[type=date][id], input[type=checkbox][id]').forEach(el => {
+  formInputs('input[type=text][id], input[type=date][id], input[type=checkbox][id]').forEach(el => {
     d[el.id] = el.type === 'checkbox' ? el.checked : el.value;
   });
   getNonIdCheckboxes().forEach(cb => { d['cb.' + cb.dataset.k] = cb.checked; });
@@ -2405,6 +3513,7 @@ function gatherAll() {
     b2:   { typer: atInstances.b2.typer,   checked: atInstances.b2.checked }
   });
   glSpans().forEach(sp => { d[sp.dataset.k] = sp.classList.contains('gsel'); });
+  Object.keys(sigs).sort().forEach(id => { if (document.getElementById(id)) d['sig.' + id] = sigs[id]; });
   Object.assign(d, getEditableTexts());
   d._layout = JSON.stringify(layoutTf);
   d._lsig = layoutSig();   // strukturfingeravtryck för flytta/skala-positionerna
@@ -2412,23 +3521,40 @@ function gatherAll() {
 }
 
 /** Återställer formuläret från ett insamlat tillstånd, med migrering av äldre sparformat. */
+// Ett laddat dyk ERSÄTTER formulärets data: fält, kryss och gruppbokstäver som
+// saknas i datan töms (annars skulle värden från föregående dyk ligga kvar).
+// Blankettens utseende – egna etiketter och arbetstypslistor – behålls om
+// datan saknar dem.
 function applyAll(d) {
+  if (!d || typeof d !== 'object' || Array.isArray(d)) throw new Error('Filen innehåller inget dyk.');
   migrateLegacy(d);   // översätt ev. gammalt positionsformat till namngivna nycklar
-  document.querySelectorAll('input[type=text][id], input[type=date][id], input[type=checkbox][id]').forEach(el => {
-    if (d[el.id] !== undefined) el.type === 'checkbox' ? el.checked = d[el.id] : el.value = d[el.id];
+  formInputs('input[type=text][id], input[type=date][id], input[type=checkbox][id]').forEach(el => {
+    const v = d[el.id];
+    if (el.type === 'checkbox') el.checked = v === true || v === 'true';
+    else el.value = (v == null || typeof v === 'object') ? '' : String(v);
   });
-  getNonIdCheckboxes().forEach(cb => { const v = d['cb.' + cb.dataset.k]; if (v !== undefined) cb.checked = v; });
+  getNonIdCheckboxes().forEach(cb => { const v = d['cb.' + cb.dataset.k]; cb.checked = v === true || v === 'true'; });
+  const list = a => Array.isArray(a) ? a.map(x => String(x == null ? '' : x)) : null;
+  const checks = c => (c && typeof c === 'object' && !Array.isArray(c)) ? Object.assign({}, c) : {};
+  ['main','b1','b2'].forEach(inst => { atInstances[inst].checked = {}; });
   if (d._atInstances) {
-    const saved = JSON.parse(d._atInstances);
+    let saved = {};
+    try { saved = typeof d._atInstances === 'string' ? JSON.parse(d._atInstances) : d._atInstances; } catch (e) {}
     ['main','b1','b2'].forEach(inst => {
-      if (saved[inst]) { atInstances[inst].typer=saved[inst].typer; atInstances[inst].checked=saved[inst].checked; }
+      const si = saved && saved[inst]; if (!si) return;
+      const typer = list(si.typer); if (typer) atInstances[inst].typer = typer;
+      atInstances[inst].checked = checks(si.checked);
     });
+  } else {
+    // äldsta sparformatet: bara huvudvyns lista
+    try { if (d._arbetstyper) atInstances.main.typer = list(JSON.parse(d._arbetstyper)) || atInstances.main.typer; } catch (e) {}
+    try { if (d._atChecked) atInstances.main.checked = checks(JSON.parse(d._atChecked)); } catch (e) {}
   }
-  // legacy support
-  if (d._arbetstyper && !d._atInstances) atInstances.main.typer = JSON.parse(d._arbetstyper);
-  if (d._atChecked   && !d._atInstances) atInstances.main.checked = JSON.parse(d._atChecked);
   ['main','b1','b2'].forEach(inst => renderGrid(inst));
-  glSpans().forEach(sp => { const v = d[sp.dataset.k]; if (v !== undefined) sp.classList.toggle('gsel', !!v); });
+  glSpans().forEach(sp => { const v = d[sp.dataset.k]; sp.classList.toggle('gsel', v === true || v === 'true'); });
+  sigs = {};
+  Object.keys(d).forEach(k => { if (k.indexOf('sig.') === 0 && isSigPath(d[k])) sigs[k.slice(4)] = d[k]; });
+  renderAllSigs();
   setEditableTexts(d);
   // Återställ flytta/skala-positioner bara om strukturen är densamma som när
   // de sparades (jämför fingeravtrycket). Annars börjar de om från standard.
@@ -2439,28 +3565,41 @@ function applyAll(d) {
 }
 
 /** Visar en kort bekräftelse-notis längst ner på skärmen. */
+let _toastEl = null, _toastTimer = null;
 function toast(msg) {
-  const t = document.createElement('div');
-  t.textContent = msg;
-  t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#222;color:#fff;padding:9px 20px;border-radius:4px;font-size:12px;font-weight:700;z-index:999;pointer-events:none;opacity:1;transition:opacity .4s';
-  document.body.appendChild(t);
-  setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 400); }, 1800);
+  if (!_toastEl) {
+    _toastEl = document.createElement('div');
+    _toastEl.className = 'toast';
+    _toastEl.setAttribute('role', 'status');
+    _toastEl.setAttribute('aria-live', 'polite');
+    document.body.appendChild(_toastEl);
+  }
+  _toastEl.textContent = msg;
+  void _toastEl.offsetWidth;                        // starta om övergången
+  _toastEl.classList.add('show');
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => _toastEl.classList.remove('show'), 2200);
 }
 
-// Autosave to localStorage on any input change
-document.addEventListener('input', () => {
-  try { localStorage.setItem(K('autosave'), JSON.stringify(gatherAll())); } catch(e) {}
-});
-document.addEventListener('change', () => {
-  try { localStorage.setItem(K('autosave'), JSON.stringify(gatherAll())); } catch(e) {}
+// Autospara vid varje ändring i blanketten (inte vid ändringar i menyer/modaler)
+document.addEventListener('input', e => { if (isFormField(e.target)) persist(); });
+document.addEventListener('change', e => { if (isFormField(e.target)) persist(); });
+
+// Kortkommando: Ctrl/Cmd+S sparar dyket i arkivet (i stället för att spara webbsidan)
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && !e.shiftKey && !e.altKey && e.key.toLowerCase() === 's') {
+    e.preventDefault();
+    if (document.querySelector('.modal-overlay.open')) return;
+    archiveSave();
+  }
 });
 
 // Build a filename from the dive's date + dive number, e.g. dyklogg_2026-06-02_nr3.json
 function buildFileName() {
   const val = id => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
-  const datum = val('datum') || val('b1-datum') || val('plan-datum');
-  const dyknr = val('dyknr') || val('b1-dyknr');
-  const clean = s => s.replace(/[^\w\u00e5\u00e4\u00f6\u00c5\u00c4\u00d6-]+/g, '-').replace(/^-+|-+$/g, '');
+  const datum = logVal('datum') || val('plan-datum');
+  const dyknr = logVal('dyknr');
+  const clean = s => s.replace(/[^\wåäöÅÄÖ-]+/g, '-').replace(/^-+|-+$/g, '');
   let name = 'dyklogg';
   if (datum) name += '_' + clean(datum);
   if (dyknr) name += '_nr' + clean(dyknr);
@@ -2468,53 +3607,57 @@ function buildFileName() {
 }
 /** Sparar hela dyket till en JSON-fil. */
 function saveJSON() {
-  const d = gatherAll();
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([JSON.stringify(d, null, 2)], { type: 'application/json' }));
-  a.download = buildFileName();
-  a.click();
-  toast('\u2713 Sparad!');
+  closeMenus();
+  download(buildFileName(), JSON.stringify(gatherAll(), null, 2), 'application/json');
+  toast('✓ Dyket sparat som fil');
 }
 
-/** Laddar ett dyk från en vald JSON-fil. */
+/** Öppnar ett dyk från en vald JSON-fil. Filen blir ett nytt, osparat dyk
+ *  (den skriver alltså inte över det dyk som var öppet i arkivet). */
 function loadJSON() {
-  const inp = document.createElement('input'); inp.type = 'file'; inp.accept = '.json';
-  inp.onchange = e => {
-    const fr = new FileReader();
-    fr.onload = ev => {
-      try {
-        applyAll(JSON.parse(ev.target.result));
-        toast('\u2713 Laddad!');
-      } catch(err) { uiAlert('Fel vid laddning: ' + err, 'Kunde inte ladda'); }
-    };
-    fr.readAsText(e.target.files[0]);
-  };
-  inp.click();
+  closeMenus();
+  pickTextFile('.json,application/json', async text => {
+    let d;
+    try { d = JSON.parse(text); } catch (err) { uiAlert('Filen är inte en giltig JSON-fil.', 'Kunde inte öppna'); return; }
+    if (d && d._type === 'dyklogg-arkiv') {
+      uiAlert('Det här är en säkerhetskopia av hela arkivet.\nLäs in den via Fil → Återställ från säkerhetskopia.', 'Fel sorts fil'); return;
+    }
+    if (d && d._type === 'dyklogg-foretagsprofil') {
+      uiAlert('Det här är en företagsprofil, inte ett dyk.\nLadda den via Anpassa → Ladda företagsprofil.', 'Fel sorts fil'); return;
+    }
+    if (hasUnsavedData() && !await uiConfirm('Det nuvarande dyket har ändringar som inte är sparade i arkivet. De försvinner om du öppnar filen.', { title: 'Öppna fil?', okText: 'Öppna ändå', danger: true })) return;
+    try { applyAll(d); }
+    catch (err) { uiAlert('Filen kunde inte läsas in: ' + (err && err.message || err), 'Kunde inte öppna'); return; }
+    currentDiveId = null; _savedSnap = null;
+    try { localStorage.removeItem(K('current')); } catch (e) {}
+    afterDataLoaded(); renderDiveList();
+    toast('✓ Dyket öppnat – spara det i arkivet om du vill behålla det där');
+  });
 }
 
 /** Rensar hela formuläret efter bekräftelse. */
 async function clearAll() {
-  if (!await uiConfirm('Rensa hela formul\u00e4ret? Detta t\u00f6mmer alla f\u00e4lt i det aktuella dyket.', { title: 'Rensa formul\u00e4ret', okText: 'Rensa', danger: true })) return;
-  document.querySelectorAll('input[type=text]').forEach(el => el.value = '');
-  document.querySelectorAll('input[type=checkbox]').forEach(el => el.checked = false);
-  ['main','b1','b2'].forEach(inst=>{ atInstances[inst].checked = {}; renderGrid(inst); });
-  glSpans().forEach(sp => sp.classList.remove('gsel'));
-  layoutTf = {};
-  document.querySelectorAll('[data-lid]').forEach(el => { el.style.transform = ''; });
+  closeMenus();
+  if (!await uiConfirm('Rensa hela formuläret? Alla ifyllda fält, kryss och gruppbokstäver töms. Dyk som redan är sparade i arkivet påverkas inte.', { title: 'Rensa formuläret', okText: 'Rensa', danger: true })) return;
+  resetFormData();
   selectEl(null);
-  currentDiveId = null;
-  try { localStorage.removeItem(K('autosave')); localStorage.removeItem(K('current')); } catch(e) {}
-  if (typeof renderDiveList === 'function') renderDiveList();
-  toast('Rensat');
+  currentDiveId = null; _savedSnap = null;
+  try { localStorage.removeItem(K('current')); } catch(e) {}
+  afterDataLoaded(); renderDiveList();
+  toast('Formuläret rensat');
 }
 
-// Restore autosave on page load
+// Återställ autosparat formulär vid sidladdning
 (function() {
   try {
     const saved = localStorage.getItem(K('autosave'));
     if (saved) applyAll(JSON.parse(saved));
     else ['main','b1','b2'].forEach(inst=>renderGrid(inst));
   } catch(e) { ['main','b1','b2'].forEach(inst=>renderGrid(inst)); }
+  // Motsvarar formuläret ett dyk i arkivet? (för statusen "sparat / osparade ändringar")
+  const cur = currentDiveId && getDives()[currentDiveId];
+  if (cur) _savedSnap = diveSnap(cur.data);
+  else { currentDiveId = null; try { localStorage.removeItem(K('current')); } catch (e) {} }
 })();
 
 // Restore duplicate mode after data + grids are in place
@@ -2522,15 +3665,6 @@ async function clearAll() {
   let on = '0';
   try { on = localStorage.getItem(K('dup')) || '0'; } catch(e) {}
   if (on === '1') setDuplicate(true);
-})();
-// Restore double-sided print mode (with migration from the old boolean toggle)
-(function() {
-  let v = 'off';
-  try {
-    v = localStorage.getItem(K('printmode'))
-        || (localStorage.getItem(K('duplex')) === '1' ? 'copy' : 'off');
-  } catch(e) {}
-  setPrintMode(v);
 })();
 // Render the dive archive + project lists once everything is initialised
 renderProjectList();
@@ -2542,6 +3676,17 @@ renderDiveList();
   try { v = localStorage.getItem(K('layout')) || '2x-plan'; } catch (e) {}
   setLayout(v);
 })();
+// Namnförslag ur personalregistret i alla namnfält + märken/varningar
+nameFieldIds().forEach(id => { const el = document.getElementById(id); if (el) { el.setAttribute('list', 'dl-personal'); el.setAttribute('autocomplete', 'off'); } });
+refreshRegisterUI();
+updateDiveStatus();
+
+// Installera som app / fungera utan täckning (surfplatta ute på plats).
+// Kräver att sidan körs från en webbserver (http/https) – inte som lokal fil.
+if (/^https?:$/.test(location.protocol)) {
+  const ml = document.createElement('link'); ml.rel = 'manifest'; ml.href = 'manifest.webmanifest'; document.head.appendChild(ml);
+  if ('serviceWorker' in navigator) window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); });
+}
 </script>
 </body>
 </html>
