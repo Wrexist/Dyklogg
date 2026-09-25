@@ -143,6 +143,19 @@ Skicka filen till en kollega så får hens app exakt samma uppsättning.
 Den enskilda dyk-datan ingår **inte** i profilen (den hanteras separat under
 **Arkiv** och **Fil**), så du kan dela en profil utan att dela dyk.
 
+### Säkerhetskopia av dyk-arkivet
+
+Dyken finns bara i webbläsaren där de sparades. Ta därför en säkerhetskopia ibland:
+
+- **Spara:** **Fil** → **Säkerhetskopiera hela arkivet** → en `.json`-fil med alla
+  dyk, projekt, mallar och egna fält laddas ner.
+- **Återställ / flytta till ny dator:** **Fil** → **Återställ från säkerhetskopia**.
+  Filen slås ihop med det som redan finns (nyaste versionen av varje dyk vinner) –
+  ingenting raderas.
+
+Appen påminner i **Arkiv**-menyn om det gått mer än 14 dagar sedan senaste
+kopian (`BACKUP_NUDGE_DAYS` i `index.html`).
+
 ---
 
 ## 9. Lägga till en knapp i verktygsfältet

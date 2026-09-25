@@ -78,6 +78,10 @@ body{font-family:Arial,Helvetica,sans-serif;font-size:11px;background:#d8d8d8;co
 .tpl-item .tpl-name:hover{background:#ffe9c7}
 .tpl-item .tpl-del{background:#f4f4f7;border:none;border-radius:7px;width:30px;height:32px;font-size:14px;color:#c0392b;cursor:pointer;flex-shrink:0}
 .tpl-item .tpl-del:hover{background:#fde2dd}
+.menu-search{font-size:12.5px;padding:8px 10px;border:1px solid #d5d5dd;border-radius:7px;background:#fafafa;color:#26262b;width:100%;outline:none;font-family:inherit}
+.menu-search:focus{border-color:var(--accent);background:#fff}
+.backup-nudge{font-size:11px;line-height:1.4;color:#8a5a00;background:#fff4e0;border-radius:7px;padding:7px 9px;margin:0;cursor:pointer}
+.backup-nudge:hover{background:#ffeccb}
 .dive-stats{font-size:10px;font-weight:600;color:var(--accent);text-transform:none;letter-spacing:0;float:right}
 .dive-item{display:flex;align-items:center;gap:6px}
 .dive-item .dive-load{flex:1;min-width:0;text-align:left;background:#f4f4f7;border:none;border-radius:7px;padding:7px 10px;cursor:pointer}
@@ -367,10 +371,12 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
     <button class="btn" onclick="toggleMenu('menu-archive')"><svg class="ic"><use href="#i-archive"/></svg> Arkiv <svg class="chev"><use href="#i-chev"/></svg></button>
     <div class="menu-panel" style="min-width:300px">
       <h4>Dyk-arkiv <span id="dive-stats" class="dive-stats"></span></h4>
+      <input type="search" id="dive-search" class="menu-search" placeholder="S&#246;k dyk (nr, plats, datum, projekt &#8230;)" aria-label="S&#246;k bland sparade dyk" oninput="renderDiveList()" hidden>
       <div id="dive-list" class="tpl-list"><div class="tpl-empty">Inga sparade dyk &#228;nnu</div></div>
       <button class="btn primary" style="justify-content:center" id="archive-save-btn" title="Ctrl+S" onclick="archiveSave()">Spara dyk i arkivet</button>
       <button class="btn" style="justify-content:center" onclick="newDive()">+ Nytt dyk</button>
-      <p class="menu-note">Dyken sparas lokalt i webbl&#228;saren. Anv&#228;nd Fil &#8594; Spara dyk som fil f&#246;r s&#228;kerhetskopia eller &#246;verf&#246;ring mellan enheter.</p>
+      <p class="backup-nudge" id="backup-nudge" hidden onclick="backupArchive()"></p>
+      <p class="menu-note">Dyken sparas lokalt i den h&#228;r webbl&#228;saren. Ta en s&#228;kerhetskopia av hela arkivet under <b>Fil</b> ibland &#8211; och f&#246;r att flytta arkivet till en annan dator.</p>
       <div class="menu-divider"></div>
       <h4>Projekt &amp; kund</h4>
       <div class="mrow">
@@ -471,6 +477,11 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
       <h4>Spara &amp; ladda</h4>
       <button class="btn" style="justify-content:flex-start" onclick="saveJSON()">Spara dyk som fil (.json)</button>
       <button class="btn" style="justify-content:flex-start" onclick="loadJSON()">&#214;ppna dyk fr&#229;n fil</button>
+      <div class="menu-divider"></div>
+      <h4>S&#228;kerhetskopia av arkivet</h4>
+      <button class="btn" style="justify-content:flex-start" onclick="backupArchive()">S&#228;kerhetskopiera hela arkivet</button>
+      <button class="btn" style="justify-content:flex-start" onclick="restoreArchive()">&#197;terst&#228;ll fr&#229;n s&#228;kerhetskopia</button>
+      <p class="menu-note" id="backup-info">Alla dyk, projekt, mallar och egna f&#228;lt i en fil.</p>
       <div class="menu-divider"></div>
       <h4>Export &amp; delning</h4>
       <button class="btn" style="justify-content:flex-start" onclick="exportCSV()">CSV (Excel)</button>
@@ -1325,6 +1336,7 @@ function importProfile() {
   pickTextFile('.json,application/json', text => {
     let p;
     try { p = JSON.parse(text); } catch (err) { uiAlert('Filen är inte en giltig JSON-fil.', 'Kunde inte läsa profilen'); return; }
+    if (p && p._type === 'dyklogg-arkiv') { uiAlert('Det här är en säkerhetskopia av arkivet.\nLäs in den via Fil → Återställ från säkerhetskopia.', 'Fel sorts fil'); return; }
     if (p && p._type !== 'dyklogg-foretagsprofil' && (p._atInstances || p._layout)) {
       uiAlert('Det här är en sparad dykfil, inte en företagsprofil.\nÖppna den via Fil → Öppna dyk från fil.', 'Fel sorts fil'); return;
     }
@@ -1593,10 +1605,20 @@ async function deleteDive(id) {
 }
 function renderDiveList() {
   const list = document.getElementById('dive-list'); if (!list) return;
-  const arr = Object.values(getDives()).sort((a, b) => (b.savedAt || 0) - (a.savedAt || 0));
+  const all = Object.values(getDives()).sort((a, b) => (b.savedAt || 0) - (a.savedAt || 0));
+  const projects = getProjects();
   const stats = document.getElementById('dive-stats');
-  if (stats) stats.textContent = arr.length ? arr.length + ' dyk' : '';
-  if (!arr.length) { list.innerHTML = '<div class="tpl-empty">Inga sparade dyk ännu</div>'; return; }
+  if (stats) stats.textContent = all.length ? all.length + ' dyk' : '';
+  updateBackupInfo(all.length);
+  // Sökfältet visas först när arkivet börjar bli långt
+  const search = document.getElementById('dive-search');
+  if (search) search.hidden = all.length <= 4 && !search.value;
+  const q = search && !search.hidden ? search.value.trim().toLowerCase() : '';
+  const hay = d => [diveTitle(d), d.datum, d.projectId && projects[d.projectId] ? projects[d.projectId].name : '',
+    d.data && (d.data.arbetsmoment || d.data['b1-arbetsmoment'])].filter(Boolean).join(' ').toLowerCase();
+  const arr = q ? all.filter(d => q.split(/\s+/).every(w => hay(d).includes(w))) : all;
+  if (!all.length) { list.innerHTML = '<div class="tpl-empty">Inga sparade dyk ännu</div>'; return; }
+  if (!arr.length) { list.innerHTML = '<div class="tpl-empty">Inga dyk matchar sökningen</div>'; return; }
   list.innerHTML = '';
   arr.forEach(d => {
     const row = document.createElement('div'); row.className = 'dive-item' + (d.id === currentDiveId ? ' current' : '');
@@ -1604,12 +1626,79 @@ function renderDiveList() {
     b.title = d.id === currentDiveId ? 'Det här dyket är öppet' : 'Öppna dyket';
     const t = document.createElement('span'); t.className = 'dive-title'; t.textContent = diveTitle(d);
     const meta = document.createElement('span'); meta.className = 'dive-meta';
-    const proj = d.projectId ? (getProjects()[d.projectId] || {}).name : '';
+    const proj = d.projectId ? (projects[d.projectId] || {}).name : '';
     meta.textContent = [d.datum, proj, 'sparad ' + fmtWhen(d.savedAt)].filter(Boolean).join(' · ');
     b.appendChild(t); b.appendChild(meta);
     const del = document.createElement('button'); del.className = 'tpl-del'; del.textContent = '×'; del.title = 'Ta bort dyk';
     del.onclick = e => { e.stopPropagation(); deleteDive(d.id); };
     row.appendChild(b); row.appendChild(del); list.appendChild(row);
+  });
+}
+
+// ====================== Säkerhetskopia av hela arkivet ======================
+// Allt som annars bara finns i webbläsarens lagring – dyk, projekt, mallar och
+// egna fält – i EN fil. Återställning SLÅR IHOP med det som redan finns (den
+// nyaste versionen av varje dyk vinner), så inget raderas.
+const BACKUP_NUDGE_DAYS = 14;
+/** Visar när senaste säkerhetskopian togs, och påminner om det var länge sedan. */
+function updateBackupInfo(nDives) {
+  let last = 0;
+  try { last = +localStorage.getItem(K('lastbackup')) || 0; } catch (e) {}
+  const info = document.getElementById('backup-info');
+  if (info) info.textContent = last ? 'Senaste säkerhetskopia: ' + fmtWhen(last) + '.' : 'Alla dyk, projekt, mallar och egna fält i en fil. Ingen säkerhetskopia tagen ännu.';
+  const nudge = document.getElementById('backup-nudge');
+  if (nudge) {
+    const old = !last || Date.now() - last > BACKUP_NUDGE_DAYS * 864e5;
+    nudge.hidden = !(nDives > 0 && old);
+    nudge.textContent = last ? '⚠ Det var över ' + BACKUP_NUDGE_DAYS + ' dagar sedan senaste säkerhetskopian. Klicka här för att ta en nu.'
+      : '⚠ Arkivet finns bara i den här webbläsaren. Klicka här för att spara en säkerhetskopia.';
+  }
+}
+/** Laddar ner hela arkivet (dyk, projekt, mallar, egna fält) som en fil. */
+function backupArchive() {
+  closeMenus();
+  const dives = getDives(), projects = getProjects();
+  const n = Object.keys(dives).length;
+  if (!n && !Object.keys(projects).length) { toast('Arkivet är tomt – spara ett dyk först'); return; }
+  const backup = { _type: 'dyklogg-arkiv', _v: 1, savedAt: Date.now(), dives: dives, projects: projects, templates: getTemplates(), customfields: getCustomFields() };
+  download('dyklogg-arkiv_' + new Date().toISOString().slice(0, 10) + '.json', JSON.stringify(backup), 'application/json');
+  try { localStorage.setItem(K('lastbackup'), String(Date.now())); } catch (e) {}
+  renderDiveList();
+  toast('✓ Säkerhetskopia med ' + n + ' dyk sparad');
+}
+/** Läser in en säkerhetskopia och slår ihop den med arkivet. */
+function restoreArchive() {
+  closeMenus();
+  pickTextFile('.json,application/json', async text => {
+    let b;
+    try { b = JSON.parse(text); } catch (e) { uiAlert('Filen är inte en giltig JSON-fil.', 'Kunde inte återställa'); return; }
+    if (!b || b._type !== 'dyklogg-arkiv' || typeof b.dives !== 'object') {
+      uiAlert('Det här är ingen säkerhetskopia av arkivet.\nEtt enskilt dyk öppnar du via Fil → Öppna dyk från fil.', 'Fel sorts fil'); return;
+    }
+    const dives = getDives(), projects = getProjects();
+    const inD = Object.values(b.dives || {}).filter(d => d && typeof d.id === 'string' && d.data && typeof d.data === 'object');
+    const inP = Object.values(b.projects || {}).filter(p => p && typeof p.id === 'string' && typeof p.name === 'string');
+    const newD = inD.filter(d => !dives[d.id]).length;
+    const updD = inD.filter(d => dives[d.id] && (d.savedAt || 0) > (dives[d.id].savedAt || 0)).length;
+    const newP = inP.filter(p => !projects[p.id]).length;
+    if (!newD && !updD && !newP) { uiAlert('Allt i säkerhetskopian finns redan i arkivet.', 'Inget att återställa'); return; }
+    const msg = 'Säkerhetskopian från ' + fmtWhen(b.savedAt) + ' innehåller ' + inD.length + ' dyk.\n\n'
+      + newD + ' nya dyk läggs till' + (updD ? ', ' + updD + ' uppdateras till en nyare version' : '') + (newP ? ' och ' + newP + ' nya projekt' : '') + '.\n'
+      + 'Inget i ditt nuvarande arkiv raderas.';
+    if (!await uiConfirm(msg, { title: 'Återställ från säkerhetskopia', okText: 'Återställ' })) return;
+    inD.forEach(d => { if (!dives[d.id] || (d.savedAt || 0) > (dives[d.id].savedAt || 0)) dives[d.id] = d; });
+    inP.forEach(p => { if (!projects[p.id]) projects[p.id] = p; });
+    if (!setDives(dives) || !setProjects(projects)) return;
+    if (b.templates && typeof b.templates === 'object') { const t = getTemplates(); Object.keys(b.templates).forEach(k => { if (!t[k]) t[k] = b.templates[k]; }); setTemplates(t); renderTemplateList(); }
+    if (Array.isArray(b.customfields)) {
+      const cf = getCustomFields(), have = new Set(cf.map(f => f.key));
+      b.customfields.forEach(f => { if (f && typeof f.label === 'string' && /^[\w-]+$/.test(String(f.key || '')) && !have.has(f.key)) cf.push({ key: String(f.key), label: f.label.slice(0, 80) }); });
+      setCustomFields(cf); renderCustomFields();
+    }
+    // Uppdaterades det öppna dyket? Då stämmer inte längre "sparat"-jämförelsen.
+    if (currentDiveId && dives[currentDiveId]) _savedSnap = diveSnap(dives[currentDiveId].data);
+    renderProjectList(); renderDiveList(); updateDiveStatus();
+    toast('✓ Arkivet återställt');
   });
 }
 
@@ -2733,6 +2822,9 @@ function loadJSON() {
   pickTextFile('.json,application/json', async text => {
     let d;
     try { d = JSON.parse(text); } catch (err) { uiAlert('Filen är inte en giltig JSON-fil.', 'Kunde inte öppna'); return; }
+    if (d && d._type === 'dyklogg-arkiv') {
+      uiAlert('Det här är en säkerhetskopia av hela arkivet.\nLäs in den via Fil → Återställ från säkerhetskopia.', 'Fel sorts fil'); return;
+    }
     if (d && d._type === 'dyklogg-foretagsprofil') {
       uiAlert('Det här är en företagsprofil, inte ett dyk.\nLadda den via Anpassa → Ladda företagsprofil.', 'Fel sorts fil'); return;
     }
