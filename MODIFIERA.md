@@ -186,7 +186,7 @@ node persistens.test.js
 
 (Se även `test/README.md` för samma instruktioner.)
 
-Du ska se `39 OK, 0 FAIL`. Får du `FAIL` har något i sparlogiken gått sönder –
+Du ska se `41 OK, 0 FAIL`. Får du `FAIL` har något i sparlogiken gått sönder –
 ångra din senaste ändring och prova igen.
 
 **Snabbtest för hand:** öppna `index.html` i en webbläsare, fyll i några fält,

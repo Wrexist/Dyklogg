@@ -185,6 +185,12 @@ console.log('\n[6] Regressioner (buggar som fixats)');
 
   // g) Datum/tid-tolkning för UDDF
   ok('normDate tolkar svenska format', w.normDate('2/6 2026') === '2026-06-02' && w.normDate('20260602') === '2026-06-02' && w.normDate('31/2 2026') === '');
+  // h) Export/metadata läser den dyklogg som SYNS, inte den dolda (t.ex. projektuppgifter)
+  w.setLayout('2x-plan');
+  d.getElementById('arbetsplats').value = 'Dolt projekt'; d.getElementById('b1-arbetsplats').value = 'Synlig plats';
+  ok('synlig dyklogg går före den dolda', w.logVal('arbetsplats') === 'Synlig plats' && w.diveMeta().plats === 'Synlig plats');
+  w.setLayout('logg-plan');
+  ok('i Logg + Plan går huvudvyn först', w.logVal('arbetsplats') === 'Dolt projekt');
   ok('normTime tolkar klockslag', w.normTime('8.30') === '08:30' && w.normTime('0915') === '09:15' && w.normTime('25:00') === '');
 }
 

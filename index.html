@@ -1537,9 +1537,20 @@ function resetFormData() {
   glSpans().forEach(sp => sp.classList.remove('gsel'));
 }
 
+/** Sant om Logg + Plan-arkets dyklogg är den som syns (annars 2× Dyklogg-bladen). */
+function mainLogVisible() { return typeof activeLayout !== 'undefined' && activeLayout === 'logg-plan'; }
+/** Ett dyklogg-fälts värde från den dyklogg som SYNS i aktiv layout (Logg + Plan:
+ *  huvudvyn, annars första bladet i 2× Dyklogg), med den andra som reserv. Den
+ *  dolda loggen kan innehålla gamla värden eller projektuppgifter och får aldrig
+ *  gå före det användaren faktiskt ser och fyller i. */
+function logVal(id) {
+  const raw = x => { const el = document.getElementById(x); return el ? el.value.trim() : ''; };
+  const main = raw(id), b1 = raw('b1-' + id);
+  return mainLogVisible() ? (main || b1) : (b1 || main);
+}
 function diveMeta() {
-  const v = id => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
-  return { datum: v('datum') || v('b1-datum') || v('plan-datum'), dyknr: v('dyknr') || v('b1-dyknr'), plats: v('arbetsplats') || v('b1-arbetsplats') };
+  const plan = document.getElementById('plan-datum');
+  return { datum: logVal('datum') || (plan ? plan.value.trim() : ''), dyknr: logVal('dyknr'), plats: logVal('arbetsplats') };
 }
 function diveTitle(d) {
   const p = [];
@@ -1657,14 +1668,14 @@ function updateBackupInfo(nDives) {
 /** Laddar ner hela arkivet (dyk, projekt, mallar, egna fält) som en fil. */
 function backupArchive() {
   closeMenus();
-  const dives = getDives(), projects = getProjects();
+  const dives = getDives(), projects = getProjects(), templates = getTemplates(), customfields = getCustomFields();
   const n = Object.keys(dives).length;
-  if (!n && !Object.keys(projects).length) { toast('Arkivet är tomt – spara ett dyk först'); return; }
-  const backup = { _type: 'dyklogg-arkiv', _v: 1, savedAt: Date.now(), dives: dives, projects: projects, templates: getTemplates(), customfields: getCustomFields() };
+  if (!n && !Object.keys(projects).length && !Object.keys(templates).length && !customfields.length) { toast('Det finns inget att säkerhetskopiera ännu'); return; }
+  const backup = { _type: 'dyklogg-arkiv', _v: 1, savedAt: Date.now(), dives: dives, projects: projects, templates: templates, customfields: customfields };
   download('dyklogg-arkiv_' + new Date().toISOString().slice(0, 10) + '.json', JSON.stringify(backup), 'application/json');
   try { localStorage.setItem(K('lastbackup'), String(Date.now())); } catch (e) {}
   renderDiveList();
-  toast('✓ Säkerhetskopia med ' + n + ' dyk sparad');
+  toast('✓ Säkerhetskopia sparad (' + n + ' dyk)');
 }
 /** Läser in en säkerhetskopia och slår ihop den med arkivet. */
 function restoreArchive() {
@@ -1681,18 +1692,29 @@ function restoreArchive() {
     const newD = inD.filter(d => !dives[d.id]).length;
     const updD = inD.filter(d => dives[d.id] && (d.savedAt || 0) > (dives[d.id].savedAt || 0)).length;
     const newP = inP.filter(p => !projects[p.id]).length;
-    if (!newD && !updD && !newP) { uiAlert('Allt i säkerhetskopian finns redan i arkivet.', 'Inget att återställa'); return; }
+    const curT = getTemplates(), haveCf = new Set(getCustomFields().map(f => f.key));
+    const inT = (b.templates && typeof b.templates === 'object' && !Array.isArray(b.templates)) ? b.templates : {};
+    const inCf = Array.isArray(b.customfields) ? b.customfields.filter(f => f && typeof f.label === 'string' && /^[\w-]+$/.test(String(f.key || ''))) : [];
+    const newT = Object.keys(inT).filter(k => !curT[k] && inT[k] && typeof inT[k] === 'object').length;
+    const newCf = inCf.filter(f => !haveCf.has(String(f.key))).length;
+    if (!newD && !updD && !newP && !newT && !newCf) { uiAlert('Allt i säkerhetskopian finns redan i arkivet.', 'Inget att återställa'); return; }
+    const parts = [];
+    if (newD) parts.push(newD + ' nya dyk');
+    if (updD) parts.push(updD + ' dyk i nyare version');
+    if (newP) parts.push(newP + ' nya projekt');
+    if (newT) parts.push(newT + ' nya mallar');
+    if (newCf) parts.push(newCf + ' nya egna fält');
     const msg = 'Säkerhetskopian från ' + fmtWhen(b.savedAt) + ' innehåller ' + inD.length + ' dyk.\n\n'
-      + newD + ' nya dyk läggs till' + (updD ? ', ' + updD + ' uppdateras till en nyare version' : '') + (newP ? ' och ' + newP + ' nya projekt' : '') + '.\n'
+      + 'Läggs till: ' + parts.join(', ') + '.\n'
       + 'Inget i ditt nuvarande arkiv raderas.';
     if (!await uiConfirm(msg, { title: 'Återställ från säkerhetskopia', okText: 'Återställ' })) return;
     inD.forEach(d => { if (!dives[d.id] || (d.savedAt || 0) > (dives[d.id].savedAt || 0)) dives[d.id] = d; });
     inP.forEach(p => { if (!projects[p.id]) projects[p.id] = p; });
     if (!setDives(dives) || !setProjects(projects)) return;
-    if (b.templates && typeof b.templates === 'object') { const t = getTemplates(); Object.keys(b.templates).forEach(k => { if (!t[k]) t[k] = b.templates[k]; }); setTemplates(t); renderTemplateList(); }
-    if (Array.isArray(b.customfields)) {
-      const cf = getCustomFields(), have = new Set(cf.map(f => f.key));
-      b.customfields.forEach(f => { if (f && typeof f.label === 'string' && /^[\w-]+$/.test(String(f.key || '')) && !have.has(f.key)) cf.push({ key: String(f.key), label: f.label.slice(0, 80) }); });
+    if (newT) { Object.keys(inT).forEach(k => { if (!curT[k] && inT[k] && typeof inT[k] === 'object') curT[k] = inT[k]; }); setTemplates(curT); renderTemplateList(); }
+    if (newCf) {
+      const cf = getCustomFields();
+      inCf.forEach(f => { const k = String(f.key); if (!haveCf.has(k)) { cf.push({ key: k, label: f.label.slice(0, 80) }); haveCf.add(k); } });
       setCustomFields(cf); renderCustomFields();
     }
     // Uppdaterades det öppna dyket? Då stämmer inte längre "sparat"-jämförelsen.
@@ -1864,9 +1886,9 @@ function num(s) { const m = String(s || '').replace(',', '.').match(/-?\d+(\.\d+
 function exportUDDF() {
   closeMenus();
   const raw = id => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
-  // Fältet kan finnas dubbelt: huvudvyns id ("maxdjup") eller b1-bladets ("b1-maxdjup"),
-  // beroende på aktiv layout (t.ex. standardläget 2× Dyklogg + Dykplan använder b1-/b2-).
-  const v = id => raw(id) || raw('b1-' + id);
+  // Fältet finns dubbelt: huvudvyns id ("maxdjup") och b1-bladets ("b1-maxdjup").
+  // Den dyklogg som syns i aktiv layout går först (se logVal).
+  const v = logVal;
   const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const datum = normDate(v('datum') || raw('plan-datum'));
   const tin = normTime(v('time-in')), tout = normTime(v('time-out'));
@@ -1915,9 +1937,9 @@ function exportUDDF() {
 function emailLog() {
   closeMenus();
   const raw = id => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
-  // Fältet kan finnas dubbelt: huvudvyns id ("maxdjup") eller b1-bladets ("b1-maxdjup"),
-  // beroende på aktiv layout (t.ex. standardläget 2× Dyklogg + Dykplan använder b1-/b2-).
-  const v = id => raw(id) || raw('b1-' + id);
+  // Fältet finns dubbelt: huvudvyns id ("maxdjup") och b1-bladets ("b1-maxdjup").
+  // Den dyklogg som syns i aktiv layout går först (se logVal).
+  const v = logVal;
   const L = [];
   const add = (label, val) => { if (val) L.push(label + ': ' + val); };
   add('Datum', v('datum'));
@@ -1962,9 +1984,12 @@ function exportCSV() {
   // Dyklogg-kolumnen: huvudvyns fält om ifyllda, annars b1-bladet (2× Dyklogg-layouten,
   // standardläget vid första besök) – + dykplanen, oavsett vilken layout som är aktiv
   // (planen kan vara flyttad).
+  // Den dyklogg som syns i aktiv layout exporteras; den andra bara om den synliga är tom.
   const mainCl = document.querySelector('#view-combined .cl');
-  const hasMainData = mainCl && [...mainCl.querySelectorAll('input[type=text], input[type=date]')].some(i => i.value.trim());
-  const clRoot = hasMainData ? mainCl : document.querySelector('#view-dyklog .cl');
+  const b1Cl = document.querySelector('#view-dyklog .cl');
+  const hasData = root => !!root && [...root.querySelectorAll('input[type=text], input[type=date]')].some(i => i.value.trim());
+  const [first, second] = mainLogVisible() ? [mainCl, b1Cl] : [b1Cl, mainCl];
+  const clRoot = hasData(first) || !hasData(second) ? first : second;
   const roots = [clRoot, document.querySelector('#view-combined .cr') || _planEl];
   roots.forEach(root => {
     if (!root) return;
@@ -2800,8 +2825,8 @@ document.addEventListener('keydown', e => {
 // Build a filename from the dive's date + dive number, e.g. dyklogg_2026-06-02_nr3.json
 function buildFileName() {
   const val = id => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
-  const datum = val('datum') || val('b1-datum') || val('plan-datum');
-  const dyknr = val('dyknr') || val('b1-dyknr');
+  const datum = logVal('datum') || val('plan-datum');
+  const dyknr = logVal('dyknr');
   const clean = s => s.replace(/[^\wåäöÅÄÖ-]+/g, '-').replace(/^-+|-+$/g, '');
   let name = 'dyklogg';
   if (datum) name += '_' + clean(datum);
