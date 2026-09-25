@@ -3,6 +3,9 @@ const { JSDOM } = require('jsdom');
 
 const html = fs.readFileSync(require('path').join(__dirname, '..', 'index.html'), 'utf8');
 let pass = 0, fail = 0;
+// Skydd: tar testet slut utan att nå finish() (t.ex. en modal som aldrig besvaras) är det ett fel
+let _finished = false;
+process.on('beforeExit', () => { if (!_finished) { console.log('  ✗ FAIL: testet avslutades aldrig (väntar det på en modal?)'); process.exit(1); } });
 function ok(name, cond) { if (cond) { pass++; console.log('  ✓ ' + name); } else { fail++; console.log('  ✗ FAIL: ' + name); } }
 
 function makeDom() {
@@ -254,5 +257,60 @@ console.log('\n[7] Register, loggbok, månadsrapport, nytt dyk och underskrift')
   ok('underskrift påverkar inte layout-fingeravtrycket', (() => { const a = w.layoutSig(); w.applyAll(blob); return w.layoutSig() === a; })());
 }
 
+// ---------------------------------------------------------------------------
+console.log('\n[8] Dykmapp: checklista, riskbedömning, foton, tillbud, kundrapport');
+{
+  const dom = makeDom(); const w = dom.window, d = w.document;
+  ok('standardchecklista finns', w.getChecklistItems().length === 12);
+  // Riskbedömning
+  ok('risknivå S×K', w.riskLevel({ s: 1, k: 2 }).text === 'Låg' && w.riskLevel({ s: 2, k: 2 }).text === 'Medel' && w.riskLevel({ s: 2, k: 3 }).text === 'Hög');
+  // Fyll dykmappen och gör en rundtur via gatherAll/applyAll
+  const x = w.eval('diveExtras');
+  x.check.done[w.getChecklistItems()[0]] = true; x.check.sig = 'M1 1L20 20'; x.check.by = 'Erik';
+  x.risk.push(w.eval('_cleanRiskRow')({ moment: 'Svetsning', risk: 'Elchock', s: 2, k: 3 }));
+  x.photos.push({ id: 'phabc', text: 'Före' });
+  x.tillbud.push({ id: 'tb1', typ: 'Tillbud', beskrivning: 'Slang fastnade', status: 'Öppen', createdAt: 1 });
+  x.rapport.summary = 'Allt ok';
+  const blob = w.gatherAll();
+  ok('dykmappen sparas med dyket', !!blob._check && !!blob._risk && !!blob._photos && !!blob._tillbud && !!blob._rapport);
+  ok('checklistans framsteg', w.checkProgress().done === 1 && !w.checkProgress().complete);
+  w.resetFormData();
+  ok('Rensa tömmer dykmappen', !w.gatherAll()._risk && w.eval('diveExtras').photos.length === 0);
+  w.applyAll(JSON.parse(JSON.stringify(blob)));
+  ok('dykmappen laddas tillbaka', w.eval('diveExtras').risk[0].moment === 'Svetsning' && w.eval('diveExtras').photos[0].text === 'Före' && w.eval('diveExtras').check.sig === 'M1 1L20 20' && w.eval('diveExtras').tillbud[0].beskrivning === 'Slang fastnade');
+  ok('ifylld dykmapp räknas som osparad data', w.hasFormData(w.gatherAll()));
+  // Ogiltig data från fil filtreras
+  const bad = w.gatherAll();
+  bad._photos = JSON.stringify([{ id: '../x', text: 'a' }, { id: 'phok', text: 1 }]);
+  bad._risk = JSON.stringify([{ moment: 'A', s: 9, k: -1 }]);
+  bad._check = JSON.stringify({ done: { A: 'ja' }, sig: 'M1<script>' });
+  w.applyAll(bad);
+  ok('ogiltiga foto-id, risknivåer och signaturer rensas', w.eval('diveExtras').photos.length === 1 && w.eval('diveExtras').photos[0].text === '' &&
+    w.eval('diveExtras').risk[0].s === 1 && w.eval('diveExtras').risk[0].k === 1 && w.eval('diveExtras').check.sig === '' && !w.eval('diveExtras').check.done.A);
+  // Mallar tar med riskbedömningen men aldrig foton, checklista, tillbud eller underskrifter
+  w.applyAll(JSON.parse(JSON.stringify(blob)));
+  w.uiPrompt = async () => 'Jobbmall';
+  w.saveTemplate().then(() => {
+    const t = w.getTemplates().Jobbmall;
+    ok('mall: riskbedömning med, dykets checklista/foton/tillbud utan', !!t._risk && !t._photos && !t._check && !t._tillbud && !t._rapport);
+    // Tillbud i hela arkivet
+    w.setDives({ a1: { id: 'a1', dyknr: '3', savedAt: 5, data: { _tillbud: JSON.stringify([{ id: 't', typ: 'Olycka', beskrivning: 'X', status: 'Öppen', createdAt: 9 }]) } } });
+    const inc = w.allIncidents();
+    ok('tillbud samlas ur arkiv + öppet osparat dyk', inc.length === 2 && inc.some(i => i.diveId === 'a1') && inc.some(i => i.diveId === null));
+    w.refreshRegisterUI();
+    ok('öppna tillbud syns på Register-knappen', d.getElementById('reg-badge-tillbud').textContent === '2');
+    // Nytt dyk: riskbedömningen följer med, resten töms
+    w.eval('currentDiveId = null');
+    w.uiConfirm = async () => true;          // svara "ja" på frågan om osparade ändringar
+    return w.newDive();
+  }).then(() => {
+    ok('Nytt dyk: riskbedömningen följer med, checklista/foton/tillbud töms', w.eval('diveExtras').risk.length === 1 && !w.eval('diveExtras').photos.length && !w.eval('diveExtras').tillbud.length && !w.eval('diveExtras').check.sig);
+    finish();
+  });
+}
+
+function finish() {
+_finished = true;
 console.log('\n================  ' + pass + ' OK, ' + fail + ' FAIL  ================');
 process.exit(fail ? 1 : 0);
+}

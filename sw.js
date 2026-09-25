@@ -7,7 +7,7 @@
  * - Dykdata ligger i webbläsarens lagring (localStorage) och påverkas inte.
  *
  * Byt CACHE-namnet om filistan ändras, så rensas gamla cacher automatiskt. */
-const CACHE = 'dyklogg-v1';
+const CACHE = 'dyklogg-v2';
 const ASSETS = ['./', './index.html', './manifest.webmanifest', './dawab_logo.png', './blackfisk.png',
   './dawab_yellow_logo.svg', './icon-192.png', './icon-512.png'];
 

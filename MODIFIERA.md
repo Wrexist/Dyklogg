@@ -23,7 +23,7 @@ snabbt rör du där. Du behöver aldrig längre "höja versionsnummer" – det �
 
 Två sätt:
 
-- **Utan att koda:** öppna appen → menyn **Anpassa** → välj färg under "Temafärg".
+- **Utan att koda:** öppna appen → **Inställningar** (kugghjulet uppe till höger) → välj färg under "Temafärg".
   Det sparas i webbläsaren.
 - **Permanent standard för alla:** i `index.html`, hitta `CONFIG` och ändra raden:
   ```js
@@ -48,7 +48,7 @@ och de ändringarna sparas i just det dyket.)
 
 ## 3. Lägga till ett eget fält (utan att koda)
 
-Öppna appen → **Anpassa** → **+ Lägg till eget fält** → skriv namnet.
+Öppna appen → **Inställningar** → **+ Lägg till eget fält** → skriv namnet.
 Fältet dyker upp i en "Egna fält"-ruta i varje dyklogg (både i *Logg + Plan*
 och i båda bladen i *2× Dyklogg*) och kommer med i utskrift och CSV-export.
 Detta är det rekommenderade sättet och kräver ingen redigering av filen.
@@ -99,7 +99,7 @@ ny etikett ska bli redigerbar.
 
 ## 6. Byta logga
 
-- **Utan att koda:** **Anpassa** → "Egen logga" → välj bildfil.
+- **Utan att koda:** **Inställningar** → "Egen logga" → välj bildfil.
 - **Permanent:** byt bildfilerna `dawab_logo.png` / `blackfisk.png` i mappen,
   eller ändra `src="..."` på `<img class="logo" ...>` i HTML:en.
 
@@ -136,8 +136,8 @@ Alla nycklar byggs via hjälpfunktionen `K('namn')` och delar prefixet i
 All anpassning (logga, färg, egna fält, mallar, arbetstyper, marginaler,
 pappersval) kan sparas till **en fil** och laddas på en annan enhet.
 
-- **Spara:** **Anpassa** → **Spara företagsprofil** → en `.json`-fil laddas ner.
-- **Ladda:** **Anpassa** → **Ladda företagsprofil** → välj filen.
+- **Spara:** **Inställningar** → **Spara företagsprofil** → en `.json`-fil laddas ner.
+- **Ladda:** **Inställningar** → **Ladda företagsprofil** → välj filen.
 
 Skicka filen till en kollega så får hens app exakt samma uppsättning.
 Den enskilda dyk-datan ingår **inte** i profilen (den hanteras separat under
@@ -161,7 +161,7 @@ kopian (`BACKUP_NUDGE_DAYS` i `index.html`).
 ## 8b. Register: personal, utrustning, loggbok och månadsrapport
 
 Knappen **Register** i verktygsfältet öppnar fyra flikar. Allt sparas lokalt och
-följer med i säkerhetskopian (**Fil**) och företagsprofilen (**Anpassa**).
+följer med i säkerhetskopian (**Fil**) och företagsprofilen (**Inställningar**).
 
 - **Personal:** lägg in dykarna en gång (namn, roll, certifikat, giltighetsdatum
   för certifikat och läkarintyg). Namnen föreslås sedan i alla namnfält i dyklogg
@@ -176,11 +176,36 @@ följer med i säkerhetskopian (**Fil**) och företagsprofilen (**Anpassa**).
 
 Antal dagars förvarning styrs av `REG_WARN_DAYS` i `index.html`.
 
+## 8c. Dykmapp: checklista, riskbedömning, foton, tillbud och kundrapport
+
+Knappen **Dykmapp** samlar allt runt det öppna dyket som inte står på blanketten.
+Allt sparas med dyket (arkiv, fil och säkerhetskopia).
+
+- **Checklista före dyk:** bocka av punkterna och signera med fingret. Punkten om
+  certifikat/läkarintyg visar direkt vad personalregistret säger om bemanningen.
+  Märket på knappen visar framstegen (t.ex. 5/12, ✓ när allt är klart och signerat).
+  Punkterna ändras under **Inställningar → Redigera checklistans punkter**
+  (standardlistan står i `DEFAULT_CHECKLIST` i `index.html`).
+- **Riskbedömning:** risk, sannolikhet och konsekvens (1–3), åtgärd och ansvarig.
+  Risknivån räknas ut (S × K). Spara som mall och hämta till nästa jobb. Följer
+  med till nästa dyk (samma jobb).
+- **Foton:** lägg till bilder med bildtext. De förminskas automatiskt (högst
+  `PHOTO_MAX_PX` = 1600 px) och sparas i webbläsarens bilddatabas (IndexedDB).
+- **Tillbud:** rapportera tillbud, olyckor och avvikelser per dyk. Alla samlas
+  under **Register → Tillbud**, där de kan markeras som åtgärdade.
+- **Kundrapport:** en arbetsrapport med logga, uppgifter, utfört arbete,
+  sammanfattning, rekommendation, dykdata och bilder. Öppnas i ett nytt fönster –
+  välj **Skriv ut → Spara som PDF** och mejla till kunden.
+
+Mallar tar med riskbedömningen men aldrig dykets checklista, foton, tillbud eller
+underskrifter.
+
 ### Nytt dyk
 
 **Arkiv → + Nytt dyk** fyller i nästa dyknummer (inom aktivt projekt), dagens datum,
-och tar med bemanning, arbetsplats samt dykplanens uppdrag och larminformation
-från föregående dyk. Underskrifter följer aldrig med.
+och tar med bemanning, arbetsplats, riskbedömningen samt dykplanens uppdrag och
+larminformation från föregående dyk. Underskrifter, checklista, foton och tillbud
+följer aldrig med.
 
 ### Underskrift med fingret
 
@@ -226,7 +251,7 @@ node persistens.test.js
 
 (Se även `test/README.md` för samma instruktioner.)
 
-Du ska se `60 OK, 0 FAIL`. Får du `FAIL` har något i sparlogiken gått sönder –
+Du ska se `72 OK, 0 FAIL`. Får du `FAIL` har något i sparlogiken gått sönder –
 ångra din senaste ändring och prova igen.
 
 **Snabbtest för hand:** öppna `index.html` i en webbläsare, fyll i några fält,
@@ -242,7 +267,7 @@ allt ska komma tillbaka.
 |---------|--------------|---------|
 | Ett nytt fält sparas inte | `<input>` saknar `id`, eller `id` krockar med ett annat | Ge fältet ett unikt `id` (avsnitt 4) |
 | Appen blir tom/vit efter ändring | Ett kodfel i `<script>` (t.ex. saknad `}`) | Ångra ändringen; kontrollera med testet i avsnitt 10 |
-| Färgen ändras inte | Sparad färg i webbläsaren tar över | **Anpassa → Återställ logga & färg** |
+| Färgen ändras inte | Sparad färg i webbläsaren tar över | **Inställningar → Återställ logga & färg** |
 | Två fält visar samma sak | Två `<input>` har samma `id` | Gör `id` unikt |
 
 Lycka till! Behöver du större ändringar – fråga gärna, men för det mesta räcker
