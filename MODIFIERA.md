@@ -23,7 +23,7 @@ snabbt rör du där. Du behöver aldrig längre "höja versionsnummer" – det �
 
 Två sätt:
 
-- **Utan att koda:** öppna appen → menyn **🎨 Anpassa** → välj färg under "Temafärg".
+- **Utan att koda:** öppna appen → menyn **Anpassa** → välj färg under "Temafärg".
   Det sparas i webbläsaren.
 - **Permanent standard för alla:** i `index.html`, hitta `CONFIG` och ändra raden:
   ```js
@@ -48,8 +48,9 @@ och de ändringarna sparas i just det dyket.)
 
 ## 3. Lägga till ett eget fält (utan att koda)
 
-Öppna appen → **🎨 Anpassa** → **➕ Lägg till eget fält** → skriv namnet.
-Fältet dyker upp i en "Egna fält"-ruta i dykloggen och kommer med i utskrift.
+Öppna appen → **Anpassa** → **+ Lägg till eget fält** → skriv namnet.
+Fältet dyker upp i en "Egna fält"-ruta i varje dyklogg (både i *Logg + Plan*
+och i båda bladen i *2× Dyklogg*) och kommer med i utskrift och CSV-export.
 Detta är det rekommenderade sättet och kräver ingen redigering av filen.
 
 ---
@@ -83,8 +84,10 @@ sparas, laddas och exporteras automatiskt eftersom appen plockar upp alla
 
 Två sätt:
 
-- **Tillfälligt/per användare:** knappen **✎ Redigera text** i appen, klicka på
-  texten och skriv om. Sparas i webbläsaren.
+- **Tillfälligt/per användare:** penn-knappen (**Redigera text**) i verktygsfältet,
+  klicka på texten och skriv om. Enter eller **Klar** avslutar. Sparas i
+  webbläsaren. (Inklistrad text blir alltid ren text – formatering och kod
+  tas bort, även från sparfiler och mallar som kommer från andra.)
 - **Permanent för alla:** ändra texten direkt i HTML:en. Sök efter den nuvarande
   texten (t.ex. `Bottentid:`) och skriv om den.
 
@@ -96,7 +99,7 @@ ny etikett ska bli redigerbar.
 
 ## 6. Byta logga
 
-- **Utan att koda:** **🎨 Anpassa** → "Egen logga" → välj bildfil.
+- **Utan att koda:** **Anpassa** → "Egen logga" → välj bildfil.
 - **Permanent:** byt bildfilerna `dawab_logo.png` / `blackfisk.png` i mappen,
   eller ändra `src="..."` på `<img class="logo" ...>` i HTML:en.
 
@@ -115,7 +118,9 @@ inte kom ihåg att höja ett "versionsnummer".
 - Etiketter, kryssrutor, gruppbokstäver → en automatisk nyckel byggd på texten
   (`el.dataset.k`), satt av funktionen `assignDataKeys()`.
 
-Därför kan du flytta, lägga till och ta bort rader fritt. Gamla sparfiler från
+Därför kan du flytta, lägga till och ta bort rader fritt. När ett dyk laddas
+**ersätter** det formulärets data helt: fält som saknas i det sparade dyket töms,
+så inget följer med från föregående dyk. Gamla sparfiler från
 före ändringen läses in automatiskt av `migrateLegacy()` (du behöver inte göra
 något). De enda som kan "nollas" vid en strukturändring är **flytta/skala-
 positionerna** i en vy – aldrig text- eller kryssdata.
@@ -131,12 +136,12 @@ Alla nycklar byggs via hjälpfunktionen `K('namn')` och delar prefixet i
 All anpassning (logga, färg, egna fält, mallar, arbetstyper, marginaler,
 pappersval) kan sparas till **en fil** och laddas på en annan enhet.
 
-- **Spara:** **🎨 Anpassa** → **💾 Spara företagsprofil** → en `.json`-fil laddas ner.
-- **Ladda:** **🎨 Anpassa** → **📂 Ladda företagsprofil** → välj filen.
+- **Spara:** **Anpassa** → **Spara företagsprofil** → en `.json`-fil laddas ner.
+- **Ladda:** **Anpassa** → **Ladda företagsprofil** → välj filen.
 
 Skicka filen till en kollega så får hens app exakt samma uppsättning.
 Den enskilda dyk-datan ingår **inte** i profilen (den hanteras separat under
-**📁 Arkiv** och **💾 Spara/📂 Ladda**), så du kan dela en profil utan att dela dyk.
+**Arkiv** och **Fil**), så du kan dela en profil utan att dela dyk.
 
 ---
 
@@ -168,12 +173,13 @@ node persistens.test.js
 
 (Se även `test/README.md` för samma instruktioner.)
 
-Du ska se `28 OK, 0 FAIL`. Får du `FAIL` har något i sparlogiken gått sönder –
+Du ska se `39 OK, 0 FAIL`. Får du `FAIL` har något i sparlogiken gått sönder –
 ångra din senaste ändring och prova igen.
 
 **Snabbtest för hand:** öppna `index.html` i en webbläsare, fyll i några fält,
-ladda om sidan (F5). Allt du skrev ska finnas kvar. Klicka **💾 Spara**, **🗑 Rensa**,
-sen **📂 Ladda** och välj filen – allt ska komma tillbaka.
+ladda om sidan (F5). Allt du skrev ska finnas kvar. Välj **Fil → Spara dyk som fil**,
+**Fil → Rensa hela formuläret**, sen **Fil → Öppna dyk från fil** och välj filen –
+allt ska komma tillbaka.
 
 ---
 
@@ -183,7 +189,7 @@ sen **📂 Ladda** och välj filen – allt ska komma tillbaka.
 |---------|--------------|---------|
 | Ett nytt fält sparas inte | `<input>` saknar `id`, eller `id` krockar med ett annat | Ge fältet ett unikt `id` (avsnitt 4) |
 | Appen blir tom/vit efter ändring | Ett kodfel i `<script>` (t.ex. saknad `}`) | Ångra ändringen; kontrollera med testet i avsnitt 10 |
-| Färgen ändras inte | Sparad färg i webbläsaren tar över | **🎨 Anpassa → ⟲ Återställ logga & färg** |
+| Färgen ändras inte | Sparad färg i webbläsaren tar över | **Anpassa → Återställ logga & färg** |
 | Två fält visar samma sak | Två `<input>` har samma `id` | Gör `id` unikt |
 
 Lycka till! Behöver du större ändringar – fråga gärna, men för det mesta räcker

@@ -142,5 +142,51 @@ console.log('\n[5] Företagsprofil export/import');
   ok('import satte pappersval', w2.document.getElementById('papersize').value === 'A3');
 }
 
+// ---------------------------------------------------------------------------
+console.log('\n[6] Regressioner (buggar som fixats)');
+{
+  const dom = makeDom(); const w = dom.window, d = w.document;
+  const cbs = () => d.querySelectorAll('#atgrid-b1 input[type=checkbox]');
+  // a) Arbetstyp-kryss i ett laddat dyk får inte skrivas över av de nuvarande
+  cbs()[0].checked = true; cbs()[0].dispatchEvent(new w.Event('change', { bubbles: true }));
+  const blob = w.gatherAll();
+  cbs()[0].checked = false; cbs()[0].dispatchEvent(new w.Event('change', { bubbles: true }));
+  cbs()[2].checked = true;  cbs()[2].dispatchEvent(new w.Event('change', { bubbles: true }));
+  w.applyAll(JSON.parse(JSON.stringify(blob)));
+  ok('laddade arbetstyp-kryss återställs (ruta 1 ikryssad)', cbs()[0].checked === true);
+  ok('laddade arbetstyp-kryss återställs (ruta 3 okryssad)', cbs()[2].checked === false);
+
+  // b) Inställningar i verktygsfältet är inte dyk-data
+  const keys = Object.keys(w.gatherAll());
+  ok('Dubblett/Bläckfisk-kryssen sparas inte som dyk-data', !keys.includes('dupchk') && !keys.includes('octopus-chk'));
+
+  // c) Fält som saknas i ett laddat dyk töms (ingen data läcker mellan dyk)
+  d.getElementById('b1-sikt').value = 'från förra dyket';
+  w.applyAll({ 'b1-dyknr': '9' });
+  ok('saknat fält töms vid laddning', d.getElementById('b1-sikt').value === '');
+  ok('befintligt fält laddas', d.getElementById('b1-dyknr').value === '9');
+
+  // d) Etikett-HTML från filer rensas från skript och attribut
+  const et = d.querySelector('.et');
+  const b2 = w.gatherAll(); b2['et.' + et.dataset.k] = 'A<img src=x onerror="x()"><b onclick="y()">B</b><script>z()</script>';
+  w.applyAll(b2);
+  ok('etikett rensad från farlig HTML', et.innerHTML === 'A<b>B</b>');
+
+  // e) Flytta/skala-fingeravtrycket beror inte på vilken layout som är aktiv
+  w.setLayout('logg-plan'); const sigHome = w.layoutSig();
+  w.setLayout('2x-plan');   const sigMoved = w.layoutSig();
+  w.setLayout('hel-plan');  const sigPlan = w.layoutSig();
+  ok('layout-fingeravtryck lika i alla layouter', sigHome === sigMoved && sigHome === sigPlan);
+
+  // f) Egna fält finns även i 2× Dyklogg-bladen, och påverkar inte fingeravtrycket
+  w.setCustomFields([{ key: 'gas', label: 'Gasblandning' }]); w.renderCustomFields();
+  ok('eget fält i dyklogg-blad 1 och 2', !!d.getElementById('b1-cf-gas') && !!d.getElementById('b2-cf-gas'));
+  ok('egna fält ändrar inte layout-fingeravtrycket', w.layoutSig() === sigHome);
+
+  // g) Datum/tid-tolkning för UDDF
+  ok('normDate tolkar svenska format', w.normDate('2/6 2026') === '2026-06-02' && w.normDate('20260602') === '2026-06-02' && w.normDate('31/2 2026') === '');
+  ok('normTime tolkar klockslag', w.normTime('8.30') === '08:30' && w.normTime('0915') === '09:15' && w.normTime('25:00') === '');
+}
+
 console.log('\n================  ' + pass + ' OK, ' + fail + ' FAIL  ================');
 process.exit(fail ? 1 : 0);
