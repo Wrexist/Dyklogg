@@ -219,6 +219,8 @@ console.log('\n[7] Register, loggbok, månadsrapport, nytt dyk och underskrift')
   // Sammanslagning (säkerhetskopia/profil): nytt läggs till, nyare ersätter, skräp ignoreras
   const m = w.mergeRegister([{ id: 'a', namn: 'Anna', updatedAt: 5 }],
     [{ id: 'a', namn: 'Anna B', updatedAt: 9 }, { id: 'c', namn: 'Ny', certUtgar: 'igår' }, { id: 7, namn: 'x' }, { id: 'd' }], w.eval('PERSON_FIELDS'));
+  const me = w.mergeRegister([], [{ id: 'e1', namn: 'Kompressor', intervall: 'abc' }, { id: 'e2', namn: 'Hjälm', intervall: '12' }], w.eval('EQUIP_FIELDS'));
+  ok('mergeRegister rensar ogiltigt kontrollintervall', me.list[0].intervall === '' && me.list[1].intervall === '12');
   ok('mergeRegister', m.added === 1 && m.updated === 1 && m.list.length === 2 && m.list[0].namn === 'Anna B' && m.list[1].certUtgar === '');
   // Arkiv → loggbok + månadsrapport
   const today = w.todayISO();

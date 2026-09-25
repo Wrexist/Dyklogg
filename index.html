@@ -210,6 +210,9 @@ body.editing .et{
   padding:0 2px;
 }
 body.editing .et:hover{background:rgba(42,106,173,.14);outline-color:#1a5a9d}
+/* Flikar och rubrikband behåller sin färg och form i redigeringsläget */
+body.editing .tab.et{display:flex;background:var(--accent);padding:4px 0;outline-offset:-2px}
+body.editing .ddhead.et{display:block;background:var(--accent);padding:3px 7px;outline-offset:-2px}
 body.editing .et:focus{outline:2px solid #2a6aad;background:rgba(42,106,173,.12)}
 /* Context hint bar (shows below toolbar in edit / move mode) */
 .tb-hint{display:none;font-size:11.5px;padding:6px 16px;font-weight:600;align-items:center;gap:6px}
@@ -1290,7 +1293,12 @@ function uiModal(opts) {
     overlay.appendChild(card);
     document.body.appendChild(overlay);
     const inputs = card.querySelectorAll('[data-k]');
-    if (inputs[0]) setTimeout(() => { inputs[0].focus(); if (inputs[0].select) inputs[0].select(); }, 30);
+    // Fokusera första fältet – men aldrig om användaren redan hunnit till ett
+    // annat fält i modalen (då skulle texten hamna i fel fält).
+    if (inputs[0]) setTimeout(() => {
+      if (card.contains(document.activeElement)) return;
+      inputs[0].focus(); if (inputs[0].select) inputs[0].select();
+    }, 30);
     const done = res => { overlay.remove(); document.removeEventListener('keydown', onKey, true); resolve(res); };
     const values = () => { const v = {}; inputs.forEach(i => v[i.getAttribute('data-k')] = i.value.trim()); return v; };
     const ok = () => done(fields.length ? values() : true);
@@ -1937,7 +1945,7 @@ function equipStatus(e) {
   return { level: 'ok', text: 'Nästa kontroll ' + e.nastaKontroll };
 }
 const normName = s => String(s || '').replace(/\s+/g, ' ').trim().toLowerCase();
-function findPerson(name) { const n = normName(name); return n ? getPersonal().find(p => normName(p.namn) === n) || null : null; }
+function findPerson(name, people) { const n = normName(name); return n ? (people || getPersonal()).find(p => normName(p.namn) === n) || null : null; }
 /** Id:n för alla namnfält som ska få förslag ur personalregistret. */
 function nameFieldIds() {
   const ids = [];
@@ -1950,10 +1958,11 @@ function crewIssues() {
   const prefixes = mainLogVisible() ? [''] : ['b1-', 'b2-'];
   const ids = PLAN_CREW_IDS.slice();
   prefixes.forEach(pre => SIGN_NAME_KEYS.forEach(k => ids.push(pre + k)));
-  const seen = new Set(), out = [];
+  const seen = new Set(), out = [], people = getPersonal();
+  if (!people.length) return out;
   ids.forEach(id => {
     const el = document.getElementById(id); if (!el || !el.value.trim()) return;
-    const p = findPerson(el.value); if (!p || seen.has(p.id)) return;
+    const p = findPerson(el.value, people); if (!p || seen.has(p.id)) return;
     seen.add(p.id);
     const st = personStatus(p);
     if (st.issues.length) out.push({ name: p.namn, level: st.level, issues: st.issues, short: st.short });
@@ -2010,6 +2019,7 @@ function mergeRegister(current, incoming, fields) {
     const rec = { id: x.id.slice(0, 40), updatedAt: +x.updatedAt || 0 };
     fields.forEach(f => { rec[f] = typeof x[f] === 'string' ? x[f].slice(0, 200) : ''; });
     ['certUtgar', 'lakareUtgar', 'senasteKontroll', 'nastaKontroll'].forEach(f => { if (f in rec && !_isIso(rec[f])) rec[f] = ''; });
+    if ('intervall' in rec && !(/^\d{1,3}$/.test(rec.intervall) && +rec.intervall > 0)) rec.intervall = '';
     if (!byId.has(rec.id)) { byId.set(rec.id, list.length); list.push(rec); added++; }
     else if (rec.updatedAt > (+list[byId.get(rec.id)].updatedAt || 0)) { list[byId.get(rec.id)] = rec; updated++; }
   });
@@ -2170,7 +2180,7 @@ async function editEquip(id, prev) {
 /** Bockar av en kontroll i dag och räknar fram nästa datum (intervall eller fråga). */
 async function equipChecked(id) {
   const list = getUtrustning(); const e = list.find(x => x.id === id); if (!e) return;
-  let next = e.intervall ? addMonths(todayISO(), +e.intervall) : '';
+  let next = +e.intervall > 0 ? addMonths(todayISO(), +e.intervall) : '';
   if (!next) {
     const r = await uiModal({ title: 'Kontrollerad i dag', message: e.namn + ' har inget kontrollintervall. När ska nästa kontroll göras?', okText: 'Spara',
       fields: [{ key: 'd', label: 'Nästa kontroll', type: 'date', value: addMonths(todayISO(), 12) }] });
@@ -2984,7 +2994,8 @@ function openAtModal(inst) {
   activeModalInst = inst;
   renderAtModalListFor(inst);
   document.getElementById('at-overlay').classList.add('open');
-  const first = document.querySelector('#at-modal-list input'); if (first) setTimeout(() => first.focus(), 30);
+  const first = document.querySelector('#at-modal-list input');
+  if (first) setTimeout(() => { if (!document.getElementById('at-overlay').contains(document.activeElement)) first.focus(); }, 30);
 }
 /** Stänger modalen, tar med alla ändringar och sparar. */
 function closeAtModal() {
