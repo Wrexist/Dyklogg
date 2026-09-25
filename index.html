@@ -1966,7 +1966,11 @@ function restoreArchive() {
     const curRT = getRiskTemplates(), inRT = (b.riskmallar && typeof b.riskmallar === 'object' && !Array.isArray(b.riskmallar)) ? b.riskmallar : {};
     const newRT = Object.keys(inRT).filter(k => !curRT[k] && Array.isArray(inRT[k])).length;
     const regN = mP.added + mP.updated + mE.added + mE.updated + newRT;
-    if (!newD && !updD && !newP && !newT && !newCf && !regN) { uiAlert('Allt i säkerhetskopian finns redan i arkivet.', 'Inget att återställa'); return; }
+    // Bilder som saknas i den här webbläsaren (t.ex. rensad bilddatabas) räknas
+    // för sig – de ska kunna återställas även om alla dyk redan finns.
+    let missingPh = 0;
+    if (b.photos && typeof b.photos === 'object') for (const id of Object.keys(b.photos)) { try { if (!(await PhotoDB.get(id))) missingPh++; } catch (e) { break; } }
+    if (!newD && !updD && !newP && !newT && !newCf && !regN && !missingPh) { uiAlert('Allt i säkerhetskopian finns redan i arkivet.', 'Inget att återställa'); return; }
     const parts = [];
     if (newD) parts.push(newD + ' nya dyk');
     if (updD) parts.push(updD + ' dyk i nyare version');
@@ -1974,15 +1978,17 @@ function restoreArchive() {
     if (mP.added || mP.updated) parts.push((mP.added + mP.updated) + ' personer i personalregistret');
     if (mE.added || mE.updated) parts.push((mE.added + mE.updated) + ' utrustningar');
     if (newRT) parts.push(newRT + ' riskmallar');
+    if (missingPh) parts.push(missingPh + (missingPh === 1 ? ' bild' : ' bilder'));
     if (newT) parts.push(newT + ' nya mallar');
     if (newCf) parts.push(newCf + ' nya egna fält');
     const msg = 'Säkerhetskopian från ' + fmtWhen(b.savedAt) + ' innehåller ' + inD.length + ' dyk.\n\n'
-      + 'Läggs till: ' + parts.join(', ') + (b.photos && Object.keys(b.photos).length ? ' (med bilder)' : '') + '.\n'
+      + 'Läggs till: ' + parts.join(', ') + '.\n'
       + 'Inget i ditt nuvarande arkiv raderas.';
     if (!await uiConfirm(msg, { title: 'Återställ från säkerhetskopia', okText: 'Återställ' })) return;
     inD.forEach(d => { if (!dives[d.id] || (d.savedAt || 0) > (dives[d.id].savedAt || 0)) dives[d.id] = d; });
     inP.forEach(p => { if (!projects[p.id]) projects[p.id] = p; });
-    if (!setDives(dives) || !setProjects(projects)) return;
+    if ((newD || updD) && !setDives(dives)) return;
+    if (newP && !setProjects(projects)) return;
     if (mP.added || mP.updated) setPersonal(mP.list);
     if (mE.added || mE.updated) setUtrustning(mE.list);
     if (newRT) { Object.keys(inRT).forEach(k => { if (!curRT[k] && Array.isArray(inRT[k])) curRT[k] = inRT[k].slice(0, 60).map(_cleanRiskRow); }); setRiskTemplates(curRT); }
@@ -2157,7 +2163,7 @@ const _regState = { pq: '', eq: '', lbPerson: '', lbFrom: '', lbTo: '', rpProj: 
 function regOpen() { const o = document.getElementById('reg-overlay'); return !!(o && o.classList.contains('open')); }
 /** Öppnar registret (valfri flik: personal | utrustning | loggbok | rapport). */
 function openRegister(tab) {
-  closeMenus();
+  closeMenus(); closeMapp();                        // bara ett fönster åt gången
   if (tab) _regTab = tab;
   document.getElementById('reg-overlay').classList.add('open');
   showRegTab(_regTab);
@@ -2709,7 +2715,7 @@ async function importPhotoData(map) {
 let _mappTab = 'check';
 function mappOpen() { const o = document.getElementById('mapp-overlay'); return !!(o && o.classList.contains('open')); }
 function openMapp(tab) {
-  closeMenus();
+  closeMenus(); closeRegister();                    // bara ett fönster åt gången
   if (tab) _mappTab = tab;
   document.getElementById('mapp-overlay').classList.add('open');
   showMappTab(_mappTab);
@@ -3038,14 +3044,18 @@ async function customerReport() {
 }
 
 // ---------- Tillbud i hela arkivet (Register → Tillbud) ----------
-/** Alla tillbud: arkiverade dyk + det öppna dyket om det inte är sparat. */
+/** Alla tillbud: arkiverade dyk + det öppna dyket. För det öppna dyket visas
+ *  alltid det aktuella läget (även osparade ändringar) i stället för arkivets
+ *  kopia, så att ett nyss rapporterat tillbud syns direkt. */
 function allIncidents() {
-  const out = [];
-  Object.values(getDives()).forEach(dv => {
+  const out = [], dives = getDives(), open = currentDiveId && dives[currentDiveId] ? currentDiveId : null;
+  Object.values(dives).forEach(dv => {
+    if (dv.id === open) return;
     const t = _parseJSON(dv.data && dv.data._tillbud, []);
-    if (Array.isArray(t)) t.forEach((i, n) => { if (i && typeof i === 'object') out.push(Object.assign({}, i, { diveId: dv.id, n: n, ref: diveTitle(dv) + (dv.datum ? ' · ' + dv.datum : '') })); });
+    if (Array.isArray(t)) t.forEach((i, n) => { if (i && typeof i === 'object') out.push(Object.assign({}, i, { diveId: dv.id, live: false, n: n, ref: diveTitle(dv) + (dv.datum ? ' · ' + dv.datum : '') })); });
   });
-  if (!currentDiveId || !getDives()[currentDiveId]) diveExtras.tillbud.forEach((i, n) => out.push(Object.assign({}, i, { diveId: null, n: n, ref: 'Öppet dyk (inte sparat i arkivet)' })));
+  const liveRef = open ? diveTitle(dives[open]) + (dives[open].datum ? ' · ' + dives[open].datum : '') + ' (öppet)' : 'Öppet dyk (inte sparat i arkivet)';
+  diveExtras.tillbud.forEach((i, n) => out.push(Object.assign({}, i, { diveId: open, live: true, n: n, ref: liveRef })));
   return out.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
 }
 function renderIncidentsRegTab(body) {
@@ -3055,26 +3065,34 @@ function renderIncidentsRegTab(body) {
     + '<div class="grow"></div><button class="modal-btn ghost" onclick="openMapp(\'tillbud\')">+ Rapportera för öppet dyk</button><button class="modal-btn ghost" id="tb-print"' + (list.length ? '' : ' disabled') + '>Skriv ut</button></div>';
   if (!all.length) h += '<div class="reg-empty"><b>Inga tillbud rapporterade.</b><br>Tillbud och avvikelser rapporteras per dyk under Dykmapp → Tillbud.</div>';
   else if (!list.length) h += '<div class="reg-empty">Inga öppna tillbud – allt är åtgärdat. 👍</div>';
-  else list.forEach(i => { h += _incidentHtml(i, i.status !== 'Åtgärdad' ? '<span class="reg-actions"><button data-done="' + _esc(i.diveId || '') + '|' + i.n + '">✓ Markera åtgärdad</button></span>' : ''); });
+  else list.forEach(i => { h += _incidentHtml(i, i.status !== 'Åtgärdad' ? '<span class="reg-actions"><button data-done="' + (i.live ? 'live' : 'arkiv') + '|' + _esc(i.diveId || '') + '|' + i.n + '">✓ Markera åtgärdad</button></span>' : ''); });
   body.innerHTML = h;
   body.querySelector('#tb-filter').onchange = e => { _regState.tbOpen = e.target.value === 'open'; renderRegTab(); };
   const pr = body.querySelector('#tb-print');
   if (pr) pr.onclick = () => openPrintPage('Tillbud och avvikelser', onlyOpen ? 'Öppna' : 'Alla', '<table><thead><tr><th>När</th><th>Dyk</th><th>Typ</th><th>Vad hände</th><th>Åtgärd</th><th>Status</th></tr></thead><tbody>'
     + list.map(i => '<tr><td>' + _esc(i.tid) + '</td><td>' + _esc(i.ref) + '</td><td>' + _esc(i.typ) + '</td><td>' + _esc(i.beskrivning) + '</td><td>' + _esc(i.atgard) + '</td><td>' + _esc(i.status) + '</td></tr>').join('') + '</tbody></table>');
   body.querySelectorAll('[data-done]').forEach(b => b.onclick = () => {
-    const [diveId, n] = b.dataset.done.split('|');
-    if (diveId) {
-      const dives = getDives(), dv = dives[diveId]; if (!dv) return;
-      const t = _parseJSON(dv.data._tillbud, []); if (!t[+n]) return;
-      t[+n].status = 'Åtgärdad'; dv.data._tillbud = JSON.stringify(t);
-      if (!setDives(dives)) return;
-      if (diveId === currentDiveId) {
-        const wasClean = !hasUnsavedData();
-        if (diveExtras.tillbud[+n] && diveExtras.tillbud[+n].id === t[+n].id) diveExtras.tillbud[+n].status = 'Åtgärdad';
-        if (wasClean) _savedSnap = diveSnap(gatherAll());
-        persist();
-      }
-    } else if (diveExtras.tillbud[+n]) { diveExtras.tillbud[+n].status = 'Åtgärdad'; persist(); }
+    const [kind, diveId, n] = b.dataset.done.split('|');
+    const dives = getDives();
+    // Arkivets kopia av tillbudet (om det finns) uppdateras alltid, så att det
+    // stämmer även för ett dyk som inte är öppet.
+    const markArchived = (dv, id, idx) => {
+      if (!dv) return false;
+      const t = _parseJSON(dv.data && dv.data._tillbud, []);
+      const k = id ? t.findIndex(x => x && x.id === id) : idx;
+      if (!t[k]) return false;
+      t[k].status = 'Åtgärdad'; dv.data._tillbud = JSON.stringify(t); return true;
+    };
+    if (kind === 'live') {
+      const it = diveExtras.tillbud[+n]; if (!it) return;
+      const wasClean = !hasUnsavedData();
+      it.status = 'Åtgärdad';
+      if (diveId && markArchived(dives[diveId], it.id) && !setDives(dives)) return;
+      if (wasClean) _savedSnap = diveSnap(gatherAll());       // var dyket sparat förblir det sparat
+      persist();
+    } else {
+      if (!markArchived(dives[diveId], null, +n) || !setDives(dives)) return;
+    }
     refreshRegisterUI(); updateMappBadge(); toast('✓ Markerad som åtgärdad');
   });
 }

@@ -299,6 +299,11 @@ console.log('\n[8] Dykmapp: checklista, riskbedömning, foton, tillbud, kundrapp
     ok('tillbud samlas ur arkiv + öppet osparat dyk', inc.length === 2 && inc.some(i => i.diveId === 'a1') && inc.some(i => i.diveId === null));
     w.refreshRegisterUI();
     ok('öppna tillbud syns på Register-knappen', d.getElementById('reg-badge-tillbud').textContent === '2');
+    // Är det arkiverade dyket öppet visas dess aktuella (osparade) tillbud i stället för arkivets kopia
+    w.eval("currentDiveId = 'a1'");
+    w.eval('diveExtras').tillbud = [{ id: 't', typ: 'Olycka', beskrivning: 'X', status: 'Öppen', createdAt: 9 }, { id: 'n', typ: 'Tillbud', beskrivning: 'Nytt', status: 'Öppen', createdAt: 10 }];
+    const inc2 = w.allIncidents();
+    ok('öppet arkiverat dyk: aktuella tillbud ersätter arkivets kopia', inc2.length === 2 && inc2.every(i => i.live) && inc2.some(i => i.beskrivning === 'Nytt'));
     // Nytt dyk: riskbedömningen följer med, resten töms
     w.eval('currentDiveId = null');
     w.uiConfirm = async () => true;          // svara "ja" på frågan om osparade ändringar
