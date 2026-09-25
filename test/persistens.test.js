@@ -194,5 +194,63 @@ console.log('\n[6] Regressioner (buggar som fixats)');
   ok('normTime tolkar klockslag', w.normTime('8.30') === '08:30' && w.normTime('0915') === '09:15' && w.normTime('25:00') === '');
 }
 
+// ---------------------------------------------------------------------------
+console.log('\n[7] Register, loggbok, månadsrapport, nytt dyk och underskrift');
+{
+  const dom = makeDom(); const w = dom.window, d = w.document;
+  const iso = off => { const x = new w.Date(); x.setDate(x.getDate() + off); return w.isoOf(x); };
+  // Datum
+  ok('addMonths hanterar månadsslut', w.addMonths('2026-01-31', 1) === '2026-02-28' && w.addMonths('2026-11-15', 3) === '2027-02-15');
+  ok('expiryStatus: utgånget / snart / ok / saknas',
+    w.expiryStatus(iso(-1), 'X').level === 'bad' && w.expiryStatus(iso(10), 'X').level === 'warn' &&
+    w.expiryStatus(iso(90), 'X').level === 'ok' && w.expiryStatus('', 'X').level === 'none');
+  // Personal + varning för bemanningen i öppet dyk
+  w.setPersonal([
+    { id: 'a', namn: 'Anna Berg', certUtgar: iso(300), lakareUtgar: iso(-5) },
+    { id: 'b', namn: 'Erik Holm', certUtgar: iso(300), lakareUtgar: iso(300) }]);
+  ok('namnförslag i namnfälten', d.getElementById('b1-d1-namn').getAttribute('list') === 'dl-personal' && d.querySelectorAll('#dl-personal option').length === 2);
+  w.setLayout('2x-plan');
+  d.getElementById('b1-d1-namn').value = '  anna  berg '; d.getElementById('b1-led-namn').value = 'Erik Holm';
+  const ci = w.crewIssues();
+  ok('varning för utgånget läkarintyg (namn matchas skiftlägesokänsligt)', ci.length === 1 && ci[0].name === 'Anna Berg' && ci[0].level === 'bad');
+  w.updateCrewAlert();
+  ok('varningschip i verktygsfältet', !d.getElementById('crew-alert').hidden && d.getElementById('crew-alert').textContent.includes('Anna Berg'));
+  ok('märke på Register-knappen', d.getElementById('reg-badge').textContent === '1' && d.getElementById('reg-badge').classList.contains('bad'));
+  // Sammanslagning (säkerhetskopia/profil): nytt läggs till, nyare ersätter, skräp ignoreras
+  const m = w.mergeRegister([{ id: 'a', namn: 'Anna', updatedAt: 5 }],
+    [{ id: 'a', namn: 'Anna B', updatedAt: 9 }, { id: 'c', namn: 'Ny', certUtgar: 'igår' }, { id: 7, namn: 'x' }, { id: 'd' }], w.eval('PERSON_FIELDS'));
+  ok('mergeRegister', m.added === 1 && m.updated === 1 && m.list.length === 2 && m.list[0].namn === 'Anna B' && m.list[1].certUtgar === '');
+  // Arkiv → loggbok + månadsrapport
+  const today = w.todayISO();
+  w.setDives({
+    x1: { id: 'x1', savedAt: 1, projectId: 'p1', data: { 'b1-datum': today, 'b1-dyknr': '4', 'b1-d1-namn': 'Anna Berg', 'b1-led-namn': 'Erik Holm', 'b1-time-in': '8.00', 'b1-time-out': '8:45', 'b1-maxdjup': '12,5',
+      // Dubblett-läget: höger blad identiskt → räknas en gång
+      'b2-datum': today, 'b2-dyknr': '4', 'b2-d1-namn': 'Anna Berg', 'b2-led-namn': 'Erik Holm', 'b2-time-in': '8.00', 'b2-time-out': '8:45', 'b2-maxdjup': '12,5',
+      // Dold huvudlogg med bara förifyllt datum/namn → inget dyk
+      'datum': today, 'd1-namn': 'Anna Berg' } },
+    x2: { id: 'x2', savedAt: 2, projectId: 'p2', data: { 'datum': today, 'dyknr': '9', 'd2-namn': 'Anna Berg', 'bottentid': '30 min', 'maxdjup': '8' } }
+  });
+  ok('diveLogs: dubblett och tom logg räknas inte', w.diveLogs(w.getDives().x1).length === 1);
+  const lb = w.logbookFor('Anna Berg');
+  ok('loggbok: antal dyk, dyktid, största djup', lb.dives === 2 && lb.minutes === 75 && lb.maxDepth === 12.5 && lb.last === today);
+  ok('loggbok: dykledarens roll', w.logbookFor('Erik Holm').rows[0].role === 'Dykledare' && w.logbookFor('Erik Holm').dives === 0);
+  const mr = w.monthReport('p1', today.slice(0, 7));
+  ok('månadsrapport per projekt', mr.rows.length === 1 && mr.minutes === 45 && mr.divers[0].name === 'Anna Berg');
+  ok('månadsrapport alla projekt', w.monthReport('', today.slice(0, 7)).rows.length === 2);
+  // Nästa dyknummer (inom aktivt projekt / hela arkivet)
+  w.setActiveProject('');
+  ok('nästa dyknummer, hela arkivet', w.nextDiveNo() === 10);
+  const pr = w.getProjects(); pr.p1 = { id: 'p1', name: 'Kaj' }; w.setProjects(pr); w.setActiveProject('p1');
+  ok('nästa dyknummer, inom projektet', w.nextDiveNo() === 5);
+  // Underskrift: sparas, laddas, rensas och filtreras
+  const blob = w.gatherAll(); blob['sig.b1-led-sign'] = 'M10 20L30 40'; blob['sig.b1-d1-sign'] = 'M1 1<script>';
+  w.applyAll(blob);
+  ok('underskrift laddas och ritas', !!d.querySelector('#b1-led-sign').closest('.sig-field').querySelector('svg.sig-img path'));
+  ok('ogiltig underskrift ignoreras', w.gatherAll()['sig.b1-d1-sign'] === undefined && w.gatherAll()['sig.b1-led-sign'] === 'M10 20L30 40');
+  w.resetFormData();
+  ok('underskrift töms med formuläret', w.gatherAll()['sig.b1-led-sign'] === undefined && !d.querySelector('svg.sig-img'));
+  ok('underskrift påverkar inte layout-fingeravtrycket', (() => { const a = w.layoutSig(); w.applyAll(blob); return w.layoutSig() === a; })());
+}
+
 console.log('\n================  ' + pass + ' OK, ' + fail + ' FAIL  ================');
 process.exit(fail ? 1 : 0);

@@ -61,9 +61,13 @@ function ok(name, got, want) {
       { key: 'c', label: 'Anteckning' },   { key: 'd', label: 'Extra rad' }
     ]);
     renderCustomFields();
+    // + underskrift i alla Underskrift-fält
+    const d = gatherAll();
+    sigInputs().forEach(i => { d['sig.' + i.id] = 'M20 150L120 40L220 140L320 30L420 150L560 60'; });
+    applyAll(d);
   });
   await p.waitForTimeout(150);
-  await run('[2] Värsta fall: 4 egna fält tillagda');
+  await run('[2] Värsta fall: 4 egna fält + underskrifter');
 
   await b.close();
   console.log('\n================  ' + pass + ' OK, ' + fail + ' FAIL  ================');

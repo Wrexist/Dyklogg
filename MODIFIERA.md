@@ -158,6 +158,46 @@ kopian (`BACKUP_NUDGE_DAYS` i `index.html`).
 
 ---
 
+## 8b. Register: personal, utrustning, loggbok och månadsrapport
+
+Knappen **Register** i verktygsfältet öppnar fyra flikar. Allt sparas lokalt och
+följer med i säkerhetskopian (**Fil**) och företagsprofilen (**Anpassa**).
+
+- **Personal:** lägg in dykarna en gång (namn, roll, certifikat, giltighetsdatum
+  för certifikat och läkarintyg). Namnen föreslås sedan i alla namnfält i dyklogg
+  och dykplan. Står någon i det öppna dyket med ett intyg som gått ut – eller går
+  ut inom 30 dagar – visas en varning i verktygsfältet.
+- **Utrustning:** kompressorer, hjälmar, flaskor m.m. med datum för nästa kontroll.
+  Med ett kontrollintervall räknas nästa datum ut när du klickar **✓ Kontrollerad**.
+- **Loggbok per dykare:** räknas fram ur arkiverade dyk utifrån namnen i
+  signeringen. Kan skrivas ut (med rader för underskrift) eller exporteras som CSV.
+- **Månadsrapport:** alla dyk en viss månad, per projekt eller totalt, med dyktid
+  per dykare – underlag för fakturering. Utskrift eller CSV.
+
+Antal dagars förvarning styrs av `REG_WARN_DAYS` i `index.html`.
+
+### Nytt dyk
+
+**Arkiv → + Nytt dyk** fyller i nästa dyknummer (inom aktivt projekt), dagens datum,
+och tar med bemanning, arbetsplats samt dykplanens uppdrag och larminformation
+från föregående dyk. Underskrifter följer aldrig med.
+
+### Underskrift med fingret
+
+Klicka på **✍** vid ett Underskrift-fält och skriv med fingret, pennan eller musen.
+Underskriften sparas med dyket och syns i utskrift/PDF. Knappen syns inte på utskriften.
+
+### Surfplatta och offline
+
+Läggs appen på en webbserver (https, t.ex. GitHub Pages) kan den installeras
+som en app ("Lägg till på hemskärmen" / "Installera") och fungerar sedan även
+utan täckning. Det sköts av `sw.js` och `manifest.webmanifest`. Byter du eller
+lägger till filer som appen använder: uppdatera listan `ASSETS` och byt
+`CACHE`-namnet i `sw.js`. Öppnas `index.html` direkt som fil fungerar allt som
+vanligt, men utan offline-installation.
+
+---
+
 ## 9. Lägga till en knapp i verktygsfältet
 
 1. I HTML:en, hitta `<div class="toolbar">`.
@@ -186,7 +226,7 @@ node persistens.test.js
 
 (Se även `test/README.md` för samma instruktioner.)
 
-Du ska se `41 OK, 0 FAIL`. Får du `FAIL` har något i sparlogiken gått sönder –
+Du ska se `59 OK, 0 FAIL`. Får du `FAIL` har något i sparlogiken gått sönder –
 ångra din senaste ändring och prova igen.
 
 **Snabbtest för hand:** öppna `index.html` i en webbläsare, fyll i några fält,

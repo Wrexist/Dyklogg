@@ -13,7 +13,7 @@ npm install jsdom      # första gången
 node persistens.test.js
 ```
 
-Förväntat resultat: `41 OK, 0 FAIL`.
+Förväntat resultat: `59 OK, 0 FAIL`.
 
 Får du `FAIL` har något i sparlogiken (`gatherAll` / `applyAll` / `migrateLegacy`
 i `index.html`) gått sönder – ångra din senaste ändring och kör om.

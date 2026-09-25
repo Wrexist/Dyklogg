@@ -8,6 +8,11 @@
 <head>
 <meta charset="UTF-8">
 <title>Dyklogg &amp; Dykplan</title>
+<meta name="theme-color" content="#141418">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Dyklogg">
+<link rel="apple-touch-icon" href="icon-192.png">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%90%99%3C/text%3E%3C/svg%3E">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -215,13 +220,66 @@ body.moving .move-hint{display:flex}
 .tb-hint .hint-btn{margin-left:auto;background:rgba(255,255,255,.14);color:inherit;border:none;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit}
 .tb-hint .hint-btn:hover{background:rgba(255,255,255,.24)}
 /* Status för aktuellt dyk (i verktygsfältet) */
-.tb-status{display:inline-flex;align-items:center;gap:7px;max-width:300px;background:transparent;border:1px solid rgba(255,255,255,.12);color:#c9c9d2;border-radius:8px;padding:6px 11px;font-size:11.5px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:background .14s,border-color .14s}
+.tb-status{display:inline-flex;align-items:center;gap:7px;max-width:250px;background:transparent;border:1px solid rgba(255,255,255,.12);color:#c9c9d2;border-radius:8px;padding:6px 11px;font-size:11.5px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:background .14s,border-color .14s}
 .tb-status:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.22);color:#fff}
 .tb-status .sdot{width:8px;height:8px;border-radius:50%;background:#8a8a93;flex-shrink:0}
 .tb-status.saved .sdot{background:#3cc46e}
 .tb-status.dirty .sdot{background:var(--accent)}
 .tb-status .stitle{overflow:hidden;text-overflow:ellipsis}
 .tb-status .sstate{opacity:.65;font-weight:500}
+/* Register-knappens märke + varning om bemanningens intyg */
+.reg-badge{min-width:17px;height:17px;border-radius:9px;background:#e6a100;color:#1a1a1a;font-size:10.5px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;padding:0 5px;margin-left:1px}
+.reg-badge.bad{background:#e0463a;color:#fff}
+.tb-alert{display:inline-flex;align-items:center;gap:6px;max-width:250px;border:none;border-radius:8px;padding:7px 11px;font-size:11.5px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:rgba(230,161,0,.18);color:#ffd27a}
+.tb-alert.bad{background:rgba(224,70,58,.22);color:#ffb3ab}
+.tb-alert:hover{filter:brightness(1.2)}
+/* Register-fönstret */
+.modal-card.reg-card{width:980px;max-width:100%;max-height:90vh;display:flex;flex-direction:column;overflow:hidden}
+.reg-top{display:flex;align-items:center;gap:16px;padding:16px 22px 12px;border-bottom:1px solid #ededf1;flex-wrap:wrap}
+.reg-tabs{display:flex;background:#f1f1f5;border-radius:9px;padding:3px;gap:2px;flex-wrap:wrap}
+.reg-tabs button{border:none;background:transparent;color:#5a5a64;font-size:12.5px;font-weight:700;padding:7px 13px;border-radius:7px;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:6px}
+.reg-tabs button:hover{color:#1d1d22}
+.reg-tabs button.active{background:#fff;color:#1d1d22;box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.reg-tabs .reg-badge{height:15px;min-width:15px;font-size:9.5px}
+.reg-body{padding:16px 22px 22px;overflow-y:auto;display:flex;flex-direction:column;gap:14px;font-size:12.5px;color:#26262b}
+.reg-bar{display:flex;align-items:flex-end;gap:10px;flex-wrap:wrap}
+.reg-bar .grow{flex:1}
+.reg-bar label{display:flex;flex-direction:column;gap:4px;font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:#9a9aa5}
+.reg-bar input,.reg-bar select{font-size:13px;padding:8px 10px;border:1px solid #dcdce3;border-radius:8px;background:#fafafb;color:#26262b;font-family:inherit;outline:none;text-transform:none;letter-spacing:0;font-weight:500}
+.reg-bar input:focus,.reg-bar select:focus{border-color:var(--accent);background:#fff}
+.reg-table{width:100%;border-collapse:collapse}
+.reg-table th{text-align:left;font-size:10.5px;text-transform:uppercase;letter-spacing:.5px;color:#9a9aa5;font-weight:800;padding:6px 8px;border-bottom:1px solid #e6e6ec;white-space:nowrap}
+.reg-table td{padding:8px;border-bottom:1px solid #f0f0f4;vertical-align:middle}
+.reg-table tr.click{cursor:pointer}
+.reg-table tr.click:hover td{background:#fafaf6}
+.reg-table td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.reg-table .sub{display:block;color:#9a9aa5;font-size:11px;margin-top:1px}
+.reg-actions{white-space:nowrap;text-align:right}
+.reg-actions button{border:none;background:#f1f1f5;border-radius:7px;padding:5px 9px;font-size:12px;font-weight:700;cursor:pointer;color:#44444c;margin-left:4px;font-family:inherit}
+.reg-actions button:hover{background:#e6e6ee}
+.reg-actions button.del{color:#c0392b}
+.reg-actions button.del:hover{background:#c0392b;color:#fff}
+.chip{display:inline-block;border-radius:6px;padding:3px 8px;font-size:11px;font-weight:700;white-space:nowrap}
+.chip.ok{background:#e3f6ea;color:#1c7a42}
+.chip.warn{background:#fff1d6;color:#8a5a00}
+.chip.bad{background:#fde3e0;color:#b3261e}
+.chip.none{background:#f1f1f5;color:#8a8a93}
+.reg-empty{padding:26px 10px;text-align:center;color:#8a8a93;line-height:1.6;font-size:13px}
+.reg-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.reg-stat{background:#f6f6f9;border-radius:10px;padding:11px 13px}
+.reg-stat b{display:block;font-size:20px;font-weight:800;color:#1d1d22;font-variant-numeric:tabular-nums}
+.reg-stat span{font-size:11px;color:#8a8a93;font-weight:700;text-transform:uppercase;letter-spacing:.4px}
+.reg-note{font-size:11.5px;color:#8a8a93;line-height:1.5;margin:0}
+.reg-h{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:#9a9aa5;margin:4px 0 -4px}
+/* Underskrift med fingret */
+.sig-field{flex:1;min-width:0;display:flex;align-items:flex-end;position:relative}
+.sig-field input{flex:1;min-width:0}
+.sig-field.has-sig input{color:transparent}
+.sig-img{position:absolute;left:0;bottom:1px;height:22px;width:100%;pointer-events:none;overflow:visible}
+.sig-btn{border:none;background:transparent;color:#2a6aad;cursor:pointer;font-size:12px;line-height:1;padding:0 1px 1px 3px;opacity:.5;flex-shrink:0}
+.sig-btn:hover{opacity:1}
+.modal-card.sig-card{width:600px}
+.sig-pad{display:block;width:100%;aspect-ratio:10/3;border:1.5px dashed #c9c9d3;border-radius:10px;background:#fcfcfd;touch-action:none;cursor:crosshair}
 /* Notis längst ner */
 .toast{position:fixed;bottom:26px;left:50%;transform:translate(-50%,8px);background:#1d1d22;color:#fff;padding:10px 20px;border-radius:10px;font-size:12.5px;font-weight:700;z-index:999;pointer-events:none;opacity:0;box-shadow:0 10px 30px rgba(0,0,0,.28);transition:opacity .22s,transform .22s}
 .toast.show{opacity:1;transform:translate(-50%,0)}
@@ -247,6 +305,10 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
 .modal-msg{font-size:13px;line-height:1.55;color:#4a4a53;white-space:pre-line}
 .modal-field{display:flex;flex-direction:column;gap:6px}
 .modal-field label{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:#9a9aa5}
+.modal-row{display:flex;gap:12px}
+.modal-row>.modal-field{flex:1;min-width:0}
+.modal-field select{font-size:13.5px;padding:9px 10px;border:1px solid #dcdce3;border-radius:9px;outline:none;font-family:inherit;color:#26262b;background:#fafafb}
+.modal-field select:focus{border-color:var(--accent);background:#fff}
 .modal-field input{font-size:13.5px;padding:10px 12px;border:1px solid #dcdce3;border-radius:9px;outline:none;font-family:inherit;color:#26262b;background:#fafafb;transition:border-color .14s,box-shadow .14s,background .14s}
 .modal-field input:focus{border-color:var(--accent);background:#fff;box-shadow:0 0 0 3px rgba(255,153,0,.16)}
 .modal-foot{padding:16px 22px 20px;display:flex;gap:9px;justify-content:flex-end}
@@ -280,7 +342,7 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
 @media print{
   .lbox,.lhover{display:none!important;outline:none!important}
   body{background:#fff}
-  .appbar,.toolbar,.tb-hint,.toast{display:none!important}
+  .appbar,.toolbar,.tb-hint,.toast,.sig-btn{display:none!important}
   .foldline{display:none!important}
   .athead button{display:none!important}
   .sec,.profrow,.utrow{break-inside:avoid}
@@ -344,6 +406,7 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
 <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 13a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></symbol>
 <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="14 3 14 9 20 9"/></symbol>
 <symbol id="i-chev" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></symbol>
+<symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
 <symbol id="i-layout" viewBox="0 0 24 24"><polygon points="12 3 21 8 12 13 3 8 12 3"/><polyline points="3 13 12 18 21 13"/></symbol>
 </defs></svg>
 
@@ -390,6 +453,9 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
     </div>
   </div>
 
+  <!-- REGISTER: personal, utrustning, loggbok, månadsrapport -->
+  <button class="btn" id="reg-btn" title="Personal, utrustning, loggbok och m&#229;nadsrapport" onclick="openRegister()"><svg class="ic"><use href="#i-users"/></svg> Register <span class="reg-badge" id="reg-badge" hidden></span></button>
+
   <!-- ANPASSA: mallar + branding + egna f&#228;lt + f&#246;retagsprofil -->
   <div class="menu" id="menu-brand">
     <button class="btn" onclick="toggleMenu('menu-brand')"><svg class="ic"><use href="#i-sliders"/></svg> Anpassa <svg class="chev"><use href="#i-chev"/></svg></button>
@@ -418,7 +484,7 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
       <h4>F&#246;retagsprofil</h4>
       <button class="btn primary" style="justify-content:center" onclick="exportProfile()">Spara f&#246;retagsprofil</button>
       <button class="btn" style="justify-content:center" onclick="importProfile()">Ladda f&#246;retagsprofil</button>
-      <p class="menu-note">Samlar logga, f&#228;rg, egna f&#228;lt, mallar, arbetstyper och marginaler i en fil. St&#228;ll in en g&#229;ng och dela med hela teamet.</p>
+      <p class="menu-note">Samlar logga, f&#228;rg, egna f&#228;lt, mallar, arbetstyper, marginaler samt personal- och utrustningsregistret i en fil. St&#228;ll in en g&#229;ng och dela med hela teamet.</p>
       <div class="menu-divider"></div>
       <button class="btn" style="justify-content:center" onclick="resetBranding()">&#197;terst&#228;ll logga &amp; f&#228;rg</button>
     </div>
@@ -431,6 +497,9 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
   <button class="btn icon" id="move-btn" title="Flytta / Skala" aria-label="Flytta / Skala" onclick="toggleMove()"><svg class="ic"><use href="#i-move"/></svg></button>
 
   <div class="tb-spacer"></div>
+
+  <!-- Varning: någon i bemanningen har utgånget/snart utgånget intyg -->
+  <button type="button" class="tb-alert" id="crew-alert" hidden onclick="openRegister('personal')"></button>
 
   <!-- Status för aktuellt dyk: klick öppnar arkivet -->
   <button type="button" class="tb-status" id="dive-status" title="Aktuellt dyk &#8211; klicka f&#246;r arkivet" onclick="toggleMenu('menu-archive')"><span class="sdot"></span><span class="stitle">Nytt dyk</span></button>
@@ -481,7 +550,7 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
       <h4>S&#228;kerhetskopia av arkivet</h4>
       <button class="btn" style="justify-content:flex-start" onclick="backupArchive()">S&#228;kerhetskopiera hela arkivet</button>
       <button class="btn" style="justify-content:flex-start" onclick="restoreArchive()">&#197;terst&#228;ll fr&#229;n s&#228;kerhetskopia</button>
-      <p class="menu-note" id="backup-info">Alla dyk, projekt, mallar och egna f&#228;lt i en fil.</p>
+      <p class="menu-note" id="backup-info">Alla dyk, projekt, mallar, egna f&#228;lt och register i en fil.</p>
       <div class="menu-divider"></div>
       <h4>Export &amp; delning</h4>
       <button class="btn" style="justify-content:flex-start" onclick="exportCSV()">CSV (Excel)</button>
@@ -1044,6 +1113,25 @@ body.moving #view-combined,body.moving #view-dyklog{user-select:none}
   </div>
 </div>
 
+<!-- Register: personal, utrustning, loggbok, månadsrapport -->
+<div id="reg-overlay" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="reg-title">
+  <div class="modal-card reg-card">
+    <div class="reg-top">
+      <div class="modal-head" id="reg-title" style="padding:0">Register</div>
+      <div class="reg-tabs" role="tablist">
+        <button type="button" data-tab="personal" onclick="showRegTab('personal')">Personal <span class="reg-badge" id="reg-badge-personal" hidden></span></button>
+        <button type="button" data-tab="utrustning" onclick="showRegTab('utrustning')">Utrustning <span class="reg-badge" id="reg-badge-utrustning" hidden></span></button>
+        <button type="button" data-tab="loggbok" onclick="showRegTab('loggbok')">Loggbok per dykare</button>
+        <button type="button" data-tab="rapport" onclick="showRegTab('rapport')">M&#229;nadsrapport</button>
+      </div>
+      <div style="flex:1"></div>
+      <button class="at-x" onclick="closeRegister()" aria-label="St&#228;ng">&times;</button>
+    </div>
+    <div class="reg-body" id="reg-body"></div>
+  </div>
+</div>
+<datalist id="dl-personal"></datalist>
+
 <script>
 /* ============================================================================
  *  DYKLOGG — KONFIGURATION (börja här!)
@@ -1175,10 +1263,25 @@ function uiModal(opts) {
     if (opts.title) h += '<div class="modal-head">' + _esc(opts.title) + '</div>';
     h += '<div class="modal-body">';
     if (opts.message) h += '<div class="modal-msg">' + _esc(opts.message) + '</div>';
-    fields.forEach(f => {
-      h += '<div class="modal-field"><label>' + _esc(f.label) + '</label>'
-        + '<input data-k="' + _esc(f.key) + '" type="text" value="' + _esc(f.value || '') + '" placeholder="' + _esc(f.placeholder || '') + '"></div>';
-    });
+    // Fält: { key, label, value, placeholder, type: 'text'|'date'|'number'|'select', options, half }
+    // Två fält i rad med half:true hamnar bredvid varandra.
+    const fieldHtml = f => {
+      let x = '<div class="modal-field"><label>' + _esc(f.label) + '</label>';
+      if (f.type === 'select') {
+        x += '<select data-k="' + _esc(f.key) + '">' + (f.options || []).map(o => {
+          const v = Array.isArray(o) ? o[0] : o, l = Array.isArray(o) ? o[1] : o;
+          return '<option value="' + _esc(v) + '"' + (String(v) === String(f.value == null ? '' : f.value) ? ' selected' : '') + '>' + _esc(l) + '</option>';
+        }).join('') + '</select>';
+      } else {
+        const t = f.type === 'date' || f.type === 'number' ? f.type : 'text';
+        x += '<input data-k="' + _esc(f.key) + '" type="' + t + '" value="' + _esc(f.value == null ? '' : f.value) + '" placeholder="' + _esc(f.placeholder || '') + '"' + (t === 'number' ? ' min="0" step="1"' : '') + '>';
+      }
+      return x + '</div>';
+    };
+    for (let i = 0; i < fields.length; i++) {
+      if (fields[i].half && fields[i + 1] && fields[i + 1].half) { h += '<div class="modal-row">' + fieldHtml(fields[i]) + fieldHtml(fields[i + 1]) + '</div>'; i++; }
+      else h += fieldHtml(fields[i]);
+    }
     h += '</div><div class="modal-foot">';
     if (!opts.okOnly) h += '<button class="modal-btn ghost" data-act="cancel">' + _esc(opts.cancelText || 'Avbryt') + '</button>';
     h += '<button class="modal-btn ' + (opts.danger ? 'danger' : 'primary') + '" data-act="ok">' + _esc(opts.okText || 'OK') + '</button>';
@@ -1186,8 +1289,8 @@ function uiModal(opts) {
     card.innerHTML = h;
     overlay.appendChild(card);
     document.body.appendChild(overlay);
-    const inputs = card.querySelectorAll('input[data-k]');
-    if (inputs[0]) setTimeout(() => { inputs[0].focus(); inputs[0].select(); }, 30);
+    const inputs = card.querySelectorAll('[data-k]');
+    if (inputs[0]) setTimeout(() => { inputs[0].focus(); if (inputs[0].select) inputs[0].select(); }, 30);
     const done = res => { overlay.remove(); document.removeEventListener('keydown', onKey, true); resolve(res); };
     const values = () => { const v = {}; inputs.forEach(i => v[i.getAttribute('data-k')] = i.value.trim()); return v; };
     const ok = () => done(fields.length ? values() : true);
@@ -1237,7 +1340,9 @@ function renderTemplateList() {
 async function saveTemplate() {
   const name = await uiPrompt('Namn på mallen', '', { title: 'Spara som mall', okText: 'Spara mall', placeholder: 't.ex. Standardteam eller projektnamn' });
   if (!name || !name.trim()) return;
-  const t = getTemplates(); t[name.trim()] = gatherAll(); setTemplates(t);
+  // En mall får aldrig bära med sig underskrifter – varje dyk signeras för sig
+  const data = gatherAll(); Object.keys(data).forEach(k => { if (k.indexOf('sig.') === 0) delete data[k]; });
+  const t = getTemplates(); t[name.trim()] = data; setTemplates(t);
   renderTemplateList(); toast('✓ Mall sparad');
 }
 /** Tillämpar en sparad mall på formuläret. */
@@ -1325,7 +1430,9 @@ function exportProfile() {
     arbetstyper: atInstances.main.typer.slice(),
     margins: { ml: ls('ml') || '4', mr: ls('mr') || '4', mid: ls('mid') || '4' },
     paper: ls('paper') || 'A4',
-    octopus: ls('octopus') === '1'
+    octopus: ls('octopus') === '1',
+    personal: getPersonal(),
+    utrustning: getUtrustning()
   };
   download('dyklogg-foretagsprofil.json', JSON.stringify(profile, null, 2), 'application/json');
   closeMenus(); toast('✓ Företagsprofil sparad');
@@ -1369,6 +1476,9 @@ function applyProfile(p) {
   }
   if (p.paper === 'A4' || p.paper === 'A3') { setPaper(p.paper); const el = document.getElementById('papersize'); if (el) el.value = p.paper; }
   if (p.octopus !== undefined) setOctopus(!!p.octopus);
+  const mP = mergeRegister(getPersonal(), p.personal, PERSON_FIELDS), mE = mergeRegister(getUtrustning(), p.utrustning, EQUIP_FIELDS);
+  if (mP.added || mP.updated) setPersonal(mP.list);
+  if (mE.added || mE.updated) setUtrustning(mE.list);
   persist(); syncCopyBack(); updatePrintFit();
   closeMenus(); toast('✓ Företagsprofil laddad');
 }
@@ -1520,6 +1630,7 @@ function updateDiveStatus(d) {
   el.title = title + (state ? ' – ' + state : '') + '\nKlicka för att öppna arkivet (Ctrl+S sparar)';
   const btn = document.getElementById('archive-save-btn');
   if (btn) btn.textContent = currentDiveId ? 'Uppdatera dyket i arkivet' : 'Spara dyk i arkivet';
+  updateCrewAlert();
 }
 /** Körs efter att formuläret fått nytt innehåll (dyk, mall eller fil). */
 function afterDataLoaded() {
@@ -1535,6 +1646,7 @@ function resetFormData() {
   formInputs('input[type=checkbox]').forEach(el => el.checked = false);
   ['main','b1','b2'].forEach(inst => { atInstances[inst].checked = {}; renderGrid(inst); });
   glSpans().forEach(sp => sp.classList.remove('gsel'));
+  sigs = {}; renderAllSigs();
 }
 
 /** Sant om Logg + Plan-arkets dyklogg är den som syns (annars 2× Dyklogg-bladen). */
@@ -1583,14 +1695,40 @@ function archiveSave() {
 async function newDive() {
   closeMenus();
   if (hasUnsavedData() && !await uiConfirm('Det nuvarande dyket har ändringar som inte är sparade i arkivet. De försvinner om du fortsätter.', { title: 'Starta nytt dyk?', okText: 'Starta nytt dyk', danger: true })) return;
+  // Följer med till nästa dyk: bemanningen och arbetsplatsen i den synliga
+  // dykloggen, samt dykplanens bemanning, uppdrag och larminformation (samma
+  // för hela jobbet). Underskrifter följer aldrig med – varje dyk signeras för sig.
+  const pre = mainLogVisible() ? '' : 'b1-';
+  const val = id => { const el = document.getElementById(id); return el ? el.value : ''; };
+  const keep = {};
+  const CARRY_PLAN = ['b-pchef', 'b-cert', 'upprattat', 'projektledare', 'uppdragsgivare', 'projektnummer', 'plats', 'larmnr', 'tryck', 'avstand'];
+  SIGN_NAME_KEYS.concat(['arbetsplats']).map(k => pre + k).concat(PLAN_CREW_IDS, CARRY_PLAN).forEach(id => { if (val(id).trim()) keep[id] = val(id); });
+  const no = nextDiveNo([val(pre + 'dyknr'), pre ? val('b2-dyknr') : '']);
   resetFormData();
   selectEl(null);
   currentDiveId = null; _savedSnap = null;
   try { localStorage.removeItem(K('current')); } catch (e) {}
+  const set = (id, v) => { const el = document.getElementById(id); if (el) el.value = v; };
+  Object.keys(keep).forEach(id => set(id, keep[id]));
+  set(pre + 'datum', todayISO()); set('plan-datum', todayISO()); set(pre + 'dyknr', String(no));
   if (getProjects()[activeProjectId]) fillProjectInfo(getProjects()[activeProjectId]);
   afterDataLoaded();
   renderDiveList();
-  toast('Nytt dyk påbörjat');
+  toast('Nytt dyk nr ' + no + ' – datum' + (Object.keys(keep).length ? ' och bemanning' : '') + ' ifyllt');
+}
+/** Nästa lediga dyknummer: högsta numret i arkivet (inom aktivt projekt, om
+ *  ett sådant är valt) och i formuläret just nu, plus ett. */
+function nextDiveNo(extra) {
+  const pid = activeProjectId && getProjects()[activeProjectId] ? activeProjectId : null;
+  let max = 0;
+  const see = v => { v = String(v == null ? '' : v).trim(); if (/^\d{1,6}$/.test(v)) max = Math.max(max, +v); };
+  Object.values(getDives()).forEach(dv => {
+    if (pid && dv.projectId !== pid) return;
+    const d = dv.data || {};
+    [dv.dyknr, d.dyknr, d['b1-dyknr'], d['b2-dyknr']].forEach(see);
+  });
+  (extra || []).forEach(see);
+  return max + 1;
 }
 /** Laddar ett arkiverat dyk in i formuläret. */
 async function loadDive(id) {
@@ -1627,7 +1765,10 @@ function renderDiveList() {
   const q = search && !search.hidden ? search.value.trim().toLowerCase() : '';
   const hay = d => [diveTitle(d), d.datum, d.projectId && projects[d.projectId] ? projects[d.projectId].name : '',
     d.data && (d.data.arbetsmoment || d.data['b1-arbetsmoment'])].filter(Boolean).join(' ').toLowerCase();
-  const arr = q ? all.filter(d => q.split(/\s+/).every(w => hay(d).includes(w))) : all;
+  // Varje sökord ska matcha BÖRJAN av ett ord (så "5" hittar dyk 5, inte datumet 2026-09-25)
+  const tokens = t => t.split(/[^0-9a-z\u00e5\u00e4\u00f6\u00e9\u00fc]+/).filter(Boolean);
+  const words = tokens(q);
+  const arr = words.length ? all.filter(d => { const t = tokens(hay(d)); return words.every(w => t.some(x => x.indexOf(w) === 0)); }) : all;
   if (!all.length) { list.innerHTML = '<div class="tpl-empty">Inga sparade dyk ännu</div>'; return; }
   if (!arr.length) { list.innerHTML = '<div class="tpl-empty">Inga dyk matchar sökningen</div>'; return; }
   list.innerHTML = '';
@@ -1656,7 +1797,7 @@ function updateBackupInfo(nDives) {
   let last = 0;
   try { last = +localStorage.getItem(K('lastbackup')) || 0; } catch (e) {}
   const info = document.getElementById('backup-info');
-  if (info) info.textContent = last ? 'Senaste säkerhetskopia: ' + fmtWhen(last) + '.' : 'Alla dyk, projekt, mallar och egna fält i en fil. Ingen säkerhetskopia tagen ännu.';
+  if (info) info.textContent = last ? 'Senaste säkerhetskopia: ' + fmtWhen(last) + '.' : 'Alla dyk, projekt, mallar, egna fält och register i en fil. Ingen säkerhetskopia tagen ännu.';
   const nudge = document.getElementById('backup-nudge');
   if (nudge) {
     const old = !last || Date.now() - last > BACKUP_NUDGE_DAYS * 864e5;
@@ -1669,9 +1810,10 @@ function updateBackupInfo(nDives) {
 function backupArchive() {
   closeMenus();
   const dives = getDives(), projects = getProjects(), templates = getTemplates(), customfields = getCustomFields();
+  const personal = getPersonal(), utrustning = getUtrustning();
   const n = Object.keys(dives).length;
-  if (!n && !Object.keys(projects).length && !Object.keys(templates).length && !customfields.length) { toast('Det finns inget att säkerhetskopiera ännu'); return; }
-  const backup = { _type: 'dyklogg-arkiv', _v: 1, savedAt: Date.now(), dives: dives, projects: projects, templates: templates, customfields: customfields };
+  if (!n && !Object.keys(projects).length && !Object.keys(templates).length && !customfields.length && !personal.length && !utrustning.length) { toast('Det finns inget att säkerhetskopiera ännu'); return; }
+  const backup = { _type: 'dyklogg-arkiv', _v: 1, savedAt: Date.now(), dives: dives, projects: projects, templates: templates, customfields: customfields, personal: personal, utrustning: utrustning };
   download('dyklogg-arkiv_' + new Date().toISOString().slice(0, 10) + '.json', JSON.stringify(backup), 'application/json');
   try { localStorage.setItem(K('lastbackup'), String(Date.now())); } catch (e) {}
   renderDiveList();
@@ -1697,11 +1839,15 @@ function restoreArchive() {
     const inCf = Array.isArray(b.customfields) ? b.customfields.filter(f => f && typeof f.label === 'string' && /^[\w-]+$/.test(String(f.key || ''))) : [];
     const newT = Object.keys(inT).filter(k => !curT[k] && inT[k] && typeof inT[k] === 'object').length;
     const newCf = inCf.filter(f => !haveCf.has(String(f.key))).length;
-    if (!newD && !updD && !newP && !newT && !newCf) { uiAlert('Allt i säkerhetskopian finns redan i arkivet.', 'Inget att återställa'); return; }
+    const mP = mergeRegister(getPersonal(), b.personal, PERSON_FIELDS), mE = mergeRegister(getUtrustning(), b.utrustning, EQUIP_FIELDS);
+    const regN = mP.added + mP.updated + mE.added + mE.updated;
+    if (!newD && !updD && !newP && !newT && !newCf && !regN) { uiAlert('Allt i säkerhetskopian finns redan i arkivet.', 'Inget att återställa'); return; }
     const parts = [];
     if (newD) parts.push(newD + ' nya dyk');
     if (updD) parts.push(updD + ' dyk i nyare version');
     if (newP) parts.push(newP + ' nya projekt');
+    if (mP.added || mP.updated) parts.push((mP.added + mP.updated) + ' personer i personalregistret');
+    if (mE.added || mE.updated) parts.push((mE.added + mE.updated) + ' utrustningar');
     if (newT) parts.push(newT + ' nya mallar');
     if (newCf) parts.push(newCf + ' nya egna fält');
     const msg = 'Säkerhetskopian från ' + fmtWhen(b.savedAt) + ' innehåller ' + inD.length + ' dyk.\n\n'
@@ -1711,6 +1857,8 @@ function restoreArchive() {
     inD.forEach(d => { if (!dives[d.id] || (d.savedAt || 0) > (dives[d.id].savedAt || 0)) dives[d.id] = d; });
     inP.forEach(p => { if (!projects[p.id]) projects[p.id] = p; });
     if (!setDives(dives) || !setProjects(projects)) return;
+    if (mP.added || mP.updated) setPersonal(mP.list);
+    if (mE.added || mE.updated) setUtrustning(mE.list);
     if (newT) { Object.keys(inT).forEach(k => { if (!curT[k] && inT[k] && typeof inT[k] === 'object') curT[k] = inT[k]; }); setTemplates(curT); renderTemplateList(); }
     if (newCf) {
       const cf = getCustomFields();
@@ -1722,6 +1870,515 @@ function restoreArchive() {
     renderProjectList(); renderDiveList(); updateDiveStatus();
     toast('✓ Arkivet återställt');
   });
+}
+
+// ====================== Register: personal & utrustning ======================
+// Personal och utrustning läggs in EN gång. Namnen föreslås sedan i alla
+// namnfält (dyklogg + dykplan), och appen varnar när certifikat, läkarintyg
+// eller utrustningskontroller går ut. Allt ligger lokalt i webbläsaren och
+// följer med i säkerhetskopian och företagsprofilen.
+const REG_WARN_DAYS = 30;                                  // varna så här många dagar i förväg
+// Namnfält i signeringen (per dyklogg: '' = Logg + Plan, 'b1-'/'b2-' = 2× Dyklogg)
+const SIGN_NAME_KEYS = ['led-namn', 'd1-namn', 'd2-namn', 'dsk-namn'];
+// Bemanningen i dykplanen
+const PLAN_CREW_IDS = ['b-led', 'b-d1', 'b-d2', 'b-reserv', 'b-dskotar'];
+const EQUIP_TYPES = ['Kompressor', 'Hjälm / mask', 'Flaska / bailout', 'Slangpaket / navelsträng', 'Kommunikation', 'Räddningsutrustning', 'Dykdräkt', 'Verktyg', 'Övrigt'];
+const PERSON_ROLES = ['Dykare', 'Dykledare', 'Dykskötare', 'Dykledare / dykare', 'Övrigt'];
+
+function _lsArr(k) { try { const a = JSON.parse(localStorage.getItem(K(k)) || '[]'); return Array.isArray(a) ? a : []; } catch (e) { return []; } }
+function _lsSetArr(k, a) {
+  try { localStorage.setItem(K(k), JSON.stringify(a)); return true; }
+  catch (e) { uiAlert('Kunde inte spara – webbläsarens lagring kan vara full.', 'Lagring full'); return false; }
+}
+function getPersonal() { return _lsArr('personal'); }
+function setPersonal(a) { const ok = _lsSetArr('personal', a); refreshRegisterUI(); return ok; }
+function getUtrustning() { return _lsArr('utrustning'); }
+function setUtrustning(a) { const ok = _lsSetArr('utrustning', a); refreshRegisterUI(); return ok; }
+
+const _pad2 = n => String(n).padStart(2, '0');
+/** ÅÅÅÅ-MM-DD för ett Date-objekt (lokal tid). */
+function isoOf(d) { return d.getFullYear() + '-' + _pad2(d.getMonth() + 1) + '-' + _pad2(d.getDate()); }
+function todayISO() { return isoOf(new Date()); }
+function _isIso(s) { return /^\d{4}-\d{2}-\d{2}$/.test(String(s || '')); }
+/** Antal dagar från i dag till datumet (negativt = passerat), eller null. */
+function daysUntil(iso) {
+  if (!_isIso(iso)) return null;
+  const [y, m, d] = iso.split('-').map(Number);
+  const now = new Date(); now.setHours(0, 0, 0, 0);
+  return Math.round((new Date(y, m - 1, d) - now) / 864e5);
+}
+/** Lägger till n månader till ett ÅÅÅÅ-MM-DD-datum (31 jan + 1 mån = 28/29 feb). */
+function addMonths(iso, n) {
+  const [y, m, d] = iso.split('-').map(Number);
+  const last = new Date(y, m - 1 + n + 1, 0).getDate();
+  return isoOf(new Date(y, m - 1 + n, Math.min(d, last)));
+}
+const LEVEL_RANK = { ok: 0, none: 1, warn: 2, bad: 3 };
+/** Status för ett utgångsdatum: { level: ok|warn|bad|none, text }. */
+function expiryStatus(iso, what) {
+  const d = daysUntil(iso);
+  if (d === null) return { level: 'none', text: what + ': datum saknas' };
+  if (d < 0) return { level: 'bad', text: what + ' gick ut ' + iso, short: what.toLowerCase() + ' utgånget' };
+  if (d <= REG_WARN_DAYS) return { level: 'warn', text: what + (d === 0 ? ' går ut i dag' : ' går ut om ' + d + (d === 1 ? ' dag' : ' dagar')), short: what.toLowerCase() + (d === 0 ? ' går ut i dag' : ' går ut om ' + d + ' d') };
+  return { level: 'ok', text: what + ' giltigt t.o.m. ' + iso };
+}
+/** Samlad status för en person (sämsta av certifikat och läkarintyg). */
+function personStatus(p) {
+  const parts = [expiryStatus(p.certUtgar, 'Certifikat'), expiryStatus(p.lakareUtgar, 'Läkarintyg')];
+  const level = parts.reduce((a, x) => LEVEL_RANK[x.level] > LEVEL_RANK[a] ? x.level : a, 'ok');
+  const bad = parts.filter(x => x.level === 'warn' || x.level === 'bad');
+  return { level: level, parts: parts, issues: bad.map(x => x.text), short: bad.map(x => x.short) };
+}
+function equipStatus(e) {
+  const d = daysUntil(e.nastaKontroll);
+  if (d === null) return { level: 'none', text: 'Inget kontrolldatum' };
+  if (d < 0) return { level: 'bad', text: 'Kontroll försenad sedan ' + e.nastaKontroll };
+  if (d <= REG_WARN_DAYS) return { level: 'warn', text: d === 0 ? 'Kontroll i dag' : 'Kontroll om ' + d + (d === 1 ? ' dag' : ' dagar') };
+  return { level: 'ok', text: 'Nästa kontroll ' + e.nastaKontroll };
+}
+const normName = s => String(s || '').replace(/\s+/g, ' ').trim().toLowerCase();
+function findPerson(name) { const n = normName(name); return n ? getPersonal().find(p => normName(p.namn) === n) || null : null; }
+/** Id:n för alla namnfält som ska få förslag ur personalregistret. */
+function nameFieldIds() {
+  const ids = [];
+  ['', 'b1-', 'b2-'].forEach(pre => SIGN_NAME_KEYS.forEach(k => ids.push(pre + k)));
+  return ids.concat(PLAN_CREW_IDS, ['b-pchef', 'upprattat', 'projektledare']);
+}
+/** Personer i det SYNLIGA dyket (synlig dyklogg + dykplanens bemanning) vars
+ *  intyg gått ut eller snart går ut. */
+function crewIssues() {
+  const prefixes = mainLogVisible() ? [''] : ['b1-', 'b2-'];
+  const ids = PLAN_CREW_IDS.slice();
+  prefixes.forEach(pre => SIGN_NAME_KEYS.forEach(k => ids.push(pre + k)));
+  const seen = new Set(), out = [];
+  ids.forEach(id => {
+    const el = document.getElementById(id); if (!el || !el.value.trim()) return;
+    const p = findPerson(el.value); if (!p || seen.has(p.id)) return;
+    seen.add(p.id);
+    const st = personStatus(p);
+    if (st.issues.length) out.push({ name: p.namn, level: st.level, issues: st.issues, short: st.short });
+  });
+  return out.sort((a, b) => LEVEL_RANK[b.level] - LEVEL_RANK[a.level]);
+}
+/** Varningschipet i verktygsfältet för det öppna dyket. */
+function updateCrewAlert() {
+  const el = document.getElementById('crew-alert'); if (!el) return;
+  const list = crewIssues();
+  el.hidden = !list.length;
+  if (!list.length) return;
+  const first = list[0];
+  el.className = 'tb-alert' + (first.level === 'bad' ? ' bad' : '');
+  el.textContent = '⚠ ' + first.name + ': ' + first.short[0] + (list.length > 1 ? ' (+' + (list.length - 1) + ')' : '');
+  el.title = list.map(x => x.name + ': ' + x.issues.join(', ')).join('\n') + '\nKlicka för personalregistret';
+}
+/** Uppdaterar märken, namnförslag och varningar efter en ändring i registren. */
+function refreshRegisterUI() {
+  const people = getPersonal(), equip = getUtrustning();
+  // Namnförslag i alla namnfält
+  const dl = document.getElementById('dl-personal');
+  if (dl) {
+    dl.innerHTML = '';
+    people.slice().sort((a, b) => String(a.namn).localeCompare(String(b.namn), 'sv')).forEach(p => {
+      const o = document.createElement('option'); o.value = p.namn;
+      o.label = [p.roll, p.certifikat].filter(Boolean).join(' · ');
+      dl.appendChild(o);
+    });
+  }
+  const pBad = people.filter(p => { const l = personStatus(p).level; return l === 'bad' || l === 'warn'; });
+  const eBad = equip.filter(e => { const l = equipStatus(e).level; return l === 'bad' || l === 'warn'; });
+  const anyBad = pBad.some(p => personStatus(p).level === 'bad') || eBad.some(e => equipStatus(e).level === 'bad');
+  const badge = (id, n, bad) => { const b = document.getElementById(id); if (!b) return; b.hidden = !n; b.textContent = n; b.classList.toggle('bad', !!bad); };
+  badge('reg-badge', pBad.length + eBad.length, anyBad);
+  badge('reg-badge-personal', pBad.length, pBad.some(p => personStatus(p).level === 'bad'));
+  badge('reg-badge-utrustning', eBad.length, eBad.some(e => equipStatus(e).level === 'bad'));
+  const rb = document.getElementById('reg-btn');
+  if (rb) rb.title = (pBad.length || eBad.length)
+    ? (pBad.length ? pBad.length + ' person(er) med intyg som gått ut / snart går ut. ' : '') + (eBad.length ? eBad.length + ' utrustning(ar) behöver kontroll.' : '')
+    : 'Personal, utrustning, loggbok och månadsrapport';
+  updateCrewAlert();
+  if (regOpen()) renderRegTab();
+}
+
+/** Slår ihop inlästa registerposter (från säkerhetskopia/profil) med de
+ *  befintliga: nya id:n läggs till, en nyare version (updatedAt) ersätter den
+ *  gamla. Bara textfält följer med. Returnerar { list, added, updated }. */
+function mergeRegister(current, incoming, fields) {
+  const list = current.slice(), byId = new Map(list.map((x, i) => [x.id, i]));
+  let added = 0, updated = 0;
+  (Array.isArray(incoming) ? incoming : []).forEach(x => {
+    if (!x || typeof x.id !== 'string' || typeof x.namn !== 'string' || !x.namn.trim()) return;
+    const rec = { id: x.id.slice(0, 40), updatedAt: +x.updatedAt || 0 };
+    fields.forEach(f => { rec[f] = typeof x[f] === 'string' ? x[f].slice(0, 200) : ''; });
+    ['certUtgar', 'lakareUtgar', 'senasteKontroll', 'nastaKontroll'].forEach(f => { if (f in rec && !_isIso(rec[f])) rec[f] = ''; });
+    if (!byId.has(rec.id)) { byId.set(rec.id, list.length); list.push(rec); added++; }
+    else if (rec.updatedAt > (+list[byId.get(rec.id)].updatedAt || 0)) { list[byId.get(rec.id)] = rec; updated++; }
+  });
+  return { list: list, added: added, updated: updated };
+}
+const PERSON_FIELDS = ['namn', 'roll', 'certifikat', 'certUtgar', 'lakareUtgar', 'telefon', 'anteckning'];
+const EQUIP_FIELDS = ['namn', 'typ', 'serienr', 'senasteKontroll', 'intervall', 'nastaKontroll', 'anteckning'];
+
+// ---------- Register-fönstret ----------
+let _regTab = 'personal';
+const _regState = { pq: '', eq: '', lbPerson: '', lbFrom: '', lbTo: '', rpProj: '', rpMonth: '' };
+function regOpen() { const o = document.getElementById('reg-overlay'); return !!(o && o.classList.contains('open')); }
+/** Öppnar registret (valfri flik: personal | utrustning | loggbok | rapport). */
+function openRegister(tab) {
+  closeMenus();
+  if (tab) _regTab = tab;
+  document.getElementById('reg-overlay').classList.add('open');
+  showRegTab(_regTab);
+}
+function closeRegister() { document.getElementById('reg-overlay').classList.remove('open'); }
+function showRegTab(tab) {
+  _regTab = tab;
+  document.querySelectorAll('.reg-tabs button').forEach(b => b.classList.toggle('active', b.getAttribute('data-tab') === tab));
+  renderRegTab();
+}
+function renderRegTab() {
+  const body = document.getElementById('reg-body'); if (!body) return;
+  const focused = document.activeElement && body.contains(document.activeElement) ? document.activeElement.id : null;
+  ({ personal: renderPersonalTab, utrustning: renderEquipTab, loggbok: renderLogbookTab, rapport: renderReportTab })[_regTab](body);
+  if (focused) { const f = document.getElementById(focused); if (f) { f.focus(); if (f.setSelectionRange && f.type === 'search') f.setSelectionRange(f.value.length, f.value.length); } }
+}
+document.getElementById('reg-overlay').addEventListener('mousedown', function (e) { if (e.target === this) closeRegister(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && regOpen() && !e.defaultPrevented) closeRegister(); });
+
+const _chip = (level, text) => '<span class="chip ' + level + '">' + _esc(text) + '</span>';
+const _dateChip = (iso, what) => { const st = expiryStatus(iso, what); return _isIso(iso) ? _chip(st.level, iso) : _chip('none', '—'); };
+
+function renderPersonalTab(body) {
+  const q = normName(_regState.pq);
+  const all = getPersonal().slice().sort((a, b) => LEVEL_RANK[personStatus(b).level] - LEVEL_RANK[personStatus(a).level] || String(a.namn).localeCompare(String(b.namn), 'sv'));
+  const list = q ? all.filter(p => normName([p.namn, p.roll, p.certifikat, p.telefon].join(' ')).includes(q)) : all;
+  let h = '<div class="reg-bar"><label>Sök<input type="search" id="reg-pq" placeholder="Namn, roll, certifikat …" value="' + _esc(_regState.pq) + '"></label><div class="grow"></div>'
+    + '<button class="modal-btn primary" onclick="editPerson()">+ Lägg till person</button></div>';
+  if (!all.length) {
+    h += '<div class="reg-empty"><b>Inga personer ännu.</b><br>Lägg in dykarna en gång – sedan väljer du dem i en lista när du fyller i dyklogg och dykplan,<br>och appen varnar ' + REG_WARN_DAYS + ' dagar innan ett certifikat eller läkarintyg går ut.</div>';
+  } else if (!list.length) {
+    h += '<div class="reg-empty">Ingen person matchar sökningen.</div>';
+  } else {
+    h += '<table class="reg-table"><thead><tr><th>Namn</th><th>Roll</th><th>Certifikat</th><th>Certifikat t.o.m.</th><th>Läkarintyg t.o.m.</th><th>Status</th><th></th></tr></thead><tbody>';
+    list.forEach(p => {
+      const st = personStatus(p);
+      const status = st.issues.length ? _chip(st.level, st.issues.join(', ')) : st.level === 'none' ? _chip('none', 'Datum saknas') : _chip('ok', 'Giltigt');
+      h += '<tr class="click" data-id="' + _esc(p.id) + '"><td><b>' + _esc(p.namn) + '</b>' + (p.telefon ? '<span class="sub">' + _esc(p.telefon) + '</span>' : '') + '</td>'
+        + '<td>' + _esc(p.roll || '') + '</td><td>' + _esc(p.certifikat || '') + '</td>'
+        + '<td>' + _dateChip(p.certUtgar, 'Certifikat') + '</td><td>' + _dateChip(p.lakareUtgar, 'Läkarintyg') + '</td>'
+        + '<td>' + status + '</td><td class="reg-actions"><button data-act="edit">Ändra</button><button class="del" data-act="del" title="Ta bort">×</button></td></tr>';
+    });
+    h += '</tbody></table>';
+  }
+  h += '<p class="reg-note">Namnen föreslås automatiskt i dykloggens och dykplanens namnfält. Står någon i det öppna dyket med ett intyg som gått ut (eller går ut inom ' + REG_WARN_DAYS + ' dagar) visas en varning i verktygsfältet.</p>';
+  body.innerHTML = h;
+  const s = body.querySelector('#reg-pq'); if (s) s.oninput = () => { _regState.pq = s.value; renderRegTab(); };
+  body.querySelectorAll('tr[data-id]').forEach(tr => tr.onclick = e => {
+    const id = tr.getAttribute('data-id'), act = e.target.getAttribute('data-act');
+    if (act === 'del') deletePerson(id); else editPerson(id);
+  });
+}
+/** Lägger till eller ändrar en person i personalregistret. */
+async function editPerson(id, prev) {
+  const people = getPersonal();
+  const cur = prev || people.find(p => p.id === id) || {};
+  const r = await uiModal({
+    title: id ? 'Ändra person' : 'Ny person', okText: id ? 'Spara' : 'Lägg till',
+    fields: [
+      { key: 'namn', label: 'Namn', value: cur.namn, placeholder: 'För- och efternamn' },
+      { key: 'roll', label: 'Roll', type: 'select', value: cur.roll || 'Dykare', options: PERSON_ROLES, half: true },
+      { key: 'certifikat', label: 'Certifikat / behörighet', value: cur.certifikat, placeholder: 't.ex. S30, A-cert', half: true },
+      { key: 'certUtgar', label: 'Certifikat giltigt t.o.m.', type: 'date', value: cur.certUtgar, half: true },
+      { key: 'lakareUtgar', label: 'Läkarintyg giltigt t.o.m.', type: 'date', value: cur.lakareUtgar, half: true },
+      { key: 'telefon', label: 'Telefon', value: cur.telefon, placeholder: '(valfritt)', half: true },
+      { key: 'anteckning', label: 'Anteckning', value: cur.anteckning, placeholder: '(valfritt)', half: true }
+    ]
+  });
+  if (!r) return;
+  if (!r.namn) { await uiAlert('Personen måste ha ett namn.', 'Namn saknas'); return editPerson(id, r); }
+  const dup = people.find(p => normName(p.namn) === normName(r.namn) && p.id !== id);
+  if (dup && !await uiConfirm('Det finns redan en person som heter "' + dup.namn + '". Lägga till ändå?', { title: 'Samma namn', okText: 'Ja, lägg till' })) return;
+  const rec = { id: id || ('ps' + Date.now()), namn: r.namn.slice(0, 80), roll: r.roll, certifikat: r.certifikat.slice(0, 80),
+    certUtgar: _isIso(r.certUtgar) ? r.certUtgar : '', lakareUtgar: _isIso(r.lakareUtgar) ? r.lakareUtgar : '',
+    telefon: r.telefon.slice(0, 40), anteckning: r.anteckning.slice(0, 200), updatedAt: Date.now() };
+  const i = people.findIndex(p => p.id === rec.id);
+  if (i >= 0) people[i] = rec; else people.push(rec);
+  if (setPersonal(people)) toast(id ? '✓ ' + rec.namn + ' uppdaterad' : '✓ ' + rec.namn + ' tillagd');
+}
+async function deletePerson(id) {
+  const p = getPersonal().find(x => x.id === id); if (!p) return;
+  if (!await uiConfirm('Ta bort ' + p.namn + ' ur personalregistret? Dyk där personen står med påverkas inte.', { title: 'Ta bort person', okText: 'Ta bort', danger: true })) return;
+  setPersonal(getPersonal().filter(x => x.id !== id)); toast('Person borttagen');
+}
+
+function renderEquipTab(body) {
+  const q = normName(_regState.eq);
+  const all = getUtrustning().slice().sort((a, b) => LEVEL_RANK[equipStatus(b).level] - LEVEL_RANK[equipStatus(a).level] || String(a.nastaKontroll || '9').localeCompare(String(b.nastaKontroll || '9')) || String(a.namn).localeCompare(String(b.namn), 'sv'));
+  const list = q ? all.filter(e => normName([e.namn, e.typ, e.serienr, e.anteckning].join(' ')).includes(q)) : all;
+  let h = '<div class="reg-bar"><label>Sök<input type="search" id="reg-eq" placeholder="Benämning, typ, serienummer …" value="' + _esc(_regState.eq) + '"></label><div class="grow"></div>'
+    + '<button class="modal-btn primary" onclick="editEquip()">+ Lägg till utrustning</button></div>';
+  if (!all.length) {
+    h += '<div class="reg-empty"><b>Ingen utrustning ännu.</b><br>Lägg in kompressorer, hjälmar, flaskor, slangpaket m.m. med datum för nästa service eller provtryckning<br>så påminner appen ' + REG_WARN_DAYS + ' dagar innan. Med ett kontrollintervall räknas nästa datum ut när du bockar av en kontroll.</div>';
+  } else if (!list.length) {
+    h += '<div class="reg-empty">Ingen utrustning matchar sökningen.</div>';
+  } else {
+    h += '<table class="reg-table"><thead><tr><th>Benämning</th><th>Typ</th><th>Serienr / ID</th><th>Senaste kontroll</th><th>Nästa kontroll</th><th>Status</th><th></th></tr></thead><tbody>';
+    list.forEach(e => {
+      const st = equipStatus(e);
+      h += '<tr class="click" data-id="' + _esc(e.id) + '"><td><b>' + _esc(e.namn) + '</b>' + (e.anteckning ? '<span class="sub">' + _esc(e.anteckning) + '</span>' : '') + '</td>'
+        + '<td>' + _esc(e.typ || '') + '</td><td>' + _esc(e.serienr || '') + '</td>'
+        + '<td>' + _esc(e.senasteKontroll || '—') + (e.intervall ? '<span class="sub">var ' + _esc(e.intervall) + ' mån</span>' : '') + '</td>'
+        + '<td>' + (_isIso(e.nastaKontroll) ? _chip(st.level, e.nastaKontroll) : _chip('none', '—')) + '</td>'
+        + '<td>' + _chip(st.level, st.text) + '</td>'
+        + '<td class="reg-actions"><button data-act="done" title="Markera som kontrollerad i dag">✓ Kontrollerad</button><button data-act="edit">Ändra</button><button class="del" data-act="del" title="Ta bort">×</button></td></tr>';
+    });
+    h += '</tbody></table>';
+  }
+  body.innerHTML = h;
+  const s = body.querySelector('#reg-eq'); if (s) s.oninput = () => { _regState.eq = s.value; renderRegTab(); };
+  body.querySelectorAll('tr[data-id]').forEach(tr => tr.onclick = e => {
+    const id = tr.getAttribute('data-id'), act = e.target.getAttribute('data-act');
+    if (act === 'del') deleteEquip(id); else if (act === 'done') equipChecked(id); else editEquip(id);
+  });
+}
+async function editEquip(id, prev) {
+  const list = getUtrustning();
+  const cur = prev || list.find(e => e.id === id) || {};
+  const r = await uiModal({
+    title: id ? 'Ändra utrustning' : 'Ny utrustning', okText: id ? 'Spara' : 'Lägg till',
+    fields: [
+      { key: 'namn', label: 'Benämning', value: cur.namn, placeholder: 't.ex. Kompressor Bauer, Hjälm KM37 #2' },
+      { key: 'typ', label: 'Typ', type: 'select', value: cur.typ || EQUIP_TYPES[0], options: EQUIP_TYPES, half: true },
+      { key: 'serienr', label: 'Serienummer / ID', value: cur.serienr, placeholder: '(valfritt)', half: true },
+      { key: 'senasteKontroll', label: 'Senaste kontroll', type: 'date', value: cur.senasteKontroll, half: true },
+      { key: 'intervall', label: 'Kontrollintervall (månader)', type: 'number', value: cur.intervall, placeholder: 't.ex. 12', half: true },
+      { key: 'nastaKontroll', label: 'Nästa kontroll / service', type: 'date', value: cur.nastaKontroll, half: true },
+      { key: 'anteckning', label: 'Anteckning', value: cur.anteckning, placeholder: '(valfritt)', half: true }
+    ]
+  });
+  if (!r) return;
+  if (!r.namn) { await uiAlert('Ange en benämning.', 'Benämning saknas'); return editEquip(id, r); }
+  const iv = parseInt(r.intervall, 10);
+  const rec = { id: id || ('eq' + Date.now()), namn: r.namn.slice(0, 80), typ: r.typ, serienr: r.serienr.slice(0, 60),
+    senasteKontroll: _isIso(r.senasteKontroll) ? r.senasteKontroll : '', intervall: iv > 0 && iv < 241 ? String(iv) : '',
+    nastaKontroll: _isIso(r.nastaKontroll) ? r.nastaKontroll : '', anteckning: r.anteckning.slice(0, 200), updatedAt: Date.now() };
+  // Nästa kontroll räknas ut om den saknas men senaste + intervall finns
+  if (!rec.nastaKontroll && rec.senasteKontroll && rec.intervall) rec.nastaKontroll = addMonths(rec.senasteKontroll, +rec.intervall);
+  const i = list.findIndex(e => e.id === rec.id);
+  if (i >= 0) list[i] = rec; else list.push(rec);
+  if (setUtrustning(list)) toast(id ? '✓ Utrustning uppdaterad' : '✓ Utrustning tillagd');
+}
+/** Bockar av en kontroll i dag och räknar fram nästa datum (intervall eller fråga). */
+async function equipChecked(id) {
+  const list = getUtrustning(); const e = list.find(x => x.id === id); if (!e) return;
+  let next = e.intervall ? addMonths(todayISO(), +e.intervall) : '';
+  if (!next) {
+    const r = await uiModal({ title: 'Kontrollerad i dag', message: e.namn + ' har inget kontrollintervall. När ska nästa kontroll göras?', okText: 'Spara',
+      fields: [{ key: 'd', label: 'Nästa kontroll', type: 'date', value: addMonths(todayISO(), 12) }] });
+    if (!r) return;
+    next = _isIso(r.d) ? r.d : '';
+  }
+  e.senasteKontroll = todayISO(); e.nastaKontroll = next; e.updatedAt = Date.now();
+  if (setUtrustning(list)) toast('✓ ' + e.namn + ' kontrollerad' + (next ? ' – nästa ' + next : ''));
+}
+async function deleteEquip(id) {
+  const e = getUtrustning().find(x => x.id === id); if (!e) return;
+  if (!await uiConfirm('Ta bort ' + e.namn + ' ur utrustningsregistret?', { title: 'Ta bort utrustning', okText: 'Ta bort', danger: true })) return;
+  setUtrustning(getUtrustning().filter(x => x.id !== id)); toast('Utrustning borttagen');
+}
+
+// ---------- Loggar ur arkivet (underlag för loggbok och månadsrapport) ----------
+// Ett arkiverat dyk kan innehålla upp till tre dykloggar: Logg + Plan-loggen
+// och de två bladen i 2× Dyklogg. Varje ifylld logg räknas som ett dyk.
+const LOG_KEYS = ['datum', 'dyknr', 'arbetsplats', 'arbetsmoment', 'time-in', 'time-out', 'maxdjup', 'bottentid', 'sikt', 'temp', 'deco', 'ut1', 'led-namn', 'd1-namn', 'd2-namn', 'dsk-namn'];
+// En logg räknas bara som ett dyk om den har riktiga dykuppgifter – inte om
+// bara datum, dyknummer, plats eller namn är förifyllda.
+const LOG_REAL_KEYS = ['maxdjup', 'time-in', 'time-out', 'bottentid', 'arbetsmoment', 'ut1'];
+const _toMin = t => +t.slice(0, 2) * 60 + +t.slice(3);
+/** Dyktid i minuter för en logg: start→slut, annars bottentiden. */
+function logMinutes(L) {
+  const a = normTime(L['time-in']), b = normTime(L['time-out']);
+  if (a && b) { const m = (_toMin(b) - _toMin(a) + 1440) % 1440; if (m > 0) return m; }
+  const bt = num(L.bottentid); return isNaN(bt) || bt < 0 ? 0 : bt;
+}
+function diveLogs(dive) {
+  const d = (dive && dive.data) || {}, out = [], seen = new Set();
+  ['', 'b1-', 'b2-'].forEach(pre => {
+    const L = {};
+    LOG_KEYS.forEach(k => { const v = d[pre + k]; L[k] = typeof v === 'string' ? v.trim() : ''; });
+    if (!LOG_REAL_KEYS.some(k => L[k])) return;
+    const key = JSON.stringify(L); if (seen.has(key)) return;   // Dubblett-läget: höger blad = vänster
+    seen.add(key);
+    L.iso = normDate(L.datum) || normDate(dive.datum) || (dive.savedAt ? isoOf(new Date(dive.savedAt)) : '');
+    L.minutes = logMinutes(L);
+    L.depth = num(L.maxdjup);
+    L.diveId = dive.id; L.projectId = dive.projectId || null;
+    out.push(L);
+  });
+  return out;
+}
+function allLogs() {
+  return Object.values(getDives()).reduce((a, dv) => a.concat(diveLogs(dv)), [])
+    .sort((a, b) => (a.iso || '').localeCompare(b.iso || '') || String(a.dyknr).localeCompare(String(b.dyknr), 'sv', { numeric: true }));
+}
+/** Personens roll i en logg (Dykare/Dykledare/Dykskötare) eller ''. */
+function roleInLog(L, name) {
+  const n = normName(name); if (!n) return '';
+  if (normName(L['d1-namn']) === n || normName(L['d2-namn']) === n) return 'Dykare';
+  if (normName(L['led-namn']) === n) return 'Dykledare';
+  if (normName(L['dsk-namn']) === n) return 'Dykskötare';
+  return '';
+}
+const fmtMin = m => { m = Math.round(m || 0); return Math.floor(m / 60) + ' h ' + _pad2(m % 60) + ' min'; };
+const fmtDepth = x => isNaN(x) ? '' : String(x).replace('.', ',') + ' m';
+const _csv = rows => '﻿' + rows.map(r => r.map(c => '"' + String(c == null ? '' : c).replace(/"/g, '""') + '"').join(';')).join('\r\n');
+/** Öppnar en utskriftsvänlig sida i ett nytt fönster. */
+function openPrintPage(title, subtitle, inner) {
+  const html = '<!DOCTYPE html><html lang="sv"><head><meta charset="UTF-8"><title>' + _esc(title) + '</title>' +
+    '<style>body{font-family:Arial,sans-serif;color:#111;margin:28px;font-size:12px}h1{font-size:22px;margin:0 0 2px}h2{font-size:14px;margin:18px 0 6px}' +
+    '.sub{color:#c87a00;font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:14px}' +
+    '.stats{display:flex;gap:10px;margin:0 0 16px;flex-wrap:wrap}.stats div{border:1px solid #ddd;border-radius:6px;padding:8px 12px;min-width:120px}.stats b{display:block;font-size:17px}.stats span{font-size:10px;color:#666;text-transform:uppercase}' +
+    'table{width:100%;border-collapse:collapse}th,td{border:1px solid #bbb;padding:5px 7px;text-align:left;vertical-align:top}' +
+    'th{background:#f90;font-size:10px;text-transform:uppercase;letter-spacing:.4px}tr:nth-child(even) td{background:#faf7f2}td.num{text-align:right;white-space:nowrap}' +
+    '.sign{margin-top:36px;display:flex;gap:40px}.sign div{flex:1;border-top:1px solid #333;padding-top:4px;font-size:10px;color:#555}' +
+    '.foot{margin-top:14px;color:#888;font-size:10px}@media print{.noprint{display:none}body{margin:10mm}}' +
+    'button{background:#f90;border:none;padding:8px 16px;font-weight:700;border-radius:6px;cursor:pointer;margin-bottom:14px}</style></head><body>' +
+    '<button class="noprint" onclick="window.print()">🖨 Skriv ut</button>' +
+    '<h1>' + _esc(title) + '</h1><div class="sub">' + _esc(subtitle) + '</div>' + inner +
+    '<div class="foot">Genererad ' + _esc(new Date().toLocaleString('sv-SE')) + ' ur Dyklogg</div></body></html>';
+  const w = window.open('', '_blank');
+  if (!w) { uiAlert('Tillåt popup-fönster för att visa utskriften.', 'Popup blockerad'); return; }
+  w.document.open(); w.document.write(html); w.document.close();
+}
+const _statsHtml = tiles => '<div class="stats">' + tiles.map(t => '<div><b>' + _esc(t[1]) + '</b><span>' + _esc(t[0]) + '</span></div>').join('') + '</div>';
+const _tileHtml = tiles => '<div class="reg-stats">' + tiles.map(t => '<div class="reg-stat"><b>' + _esc(t[1]) + '</b><span>' + _esc(t[0]) + '</span></div>').join('') + '</div>';
+
+// ---------- Loggbok per dykare ----------
+/** Loggboksdata för en person inom ett valfritt datumintervall. */
+function logbookFor(name, from, to) {
+  const rows = allLogs().filter(L => (!from || (L.iso && L.iso >= from)) && (!to || (L.iso && L.iso <= to)))
+    .map(L => Object.assign({ role: roleInLog(L, name) }, L)).filter(L => L.role);
+  const dives = rows.filter(L => L.role === 'Dykare');
+  const depths = dives.map(L => L.depth).filter(x => !isNaN(x));
+  return { rows: rows, dives: dives.length, minutes: dives.reduce((a, L) => a + L.minutes, 0),
+    maxDepth: depths.length ? Math.max.apply(null, depths) : NaN, last: dives.length ? dives[dives.length - 1].iso : '' };
+}
+function _logbookNames() {
+  const reg = getPersonal().map(p => p.namn).sort((a, b) => a.localeCompare(b, 'sv'));
+  const regSet = new Set(reg.map(normName)), other = new Map();
+  allLogs().forEach(L => ['led-namn', 'd1-namn', 'd2-namn', 'dsk-namn'].forEach(k => { const n = L[k]; if (n && !regSet.has(normName(n)) && !other.has(normName(n))) other.set(normName(n), n); }));
+  return { reg: reg, other: Array.from(other.values()).sort((a, b) => a.localeCompare(b, 'sv')) };
+}
+function renderLogbookTab(body) {
+  const names = _logbookNames();
+  if (names.reg.concat(names.other).indexOf(_regState.lbPerson) < 0) _regState.lbPerson = names.reg[0] || names.other[0] || '';
+  const opt = n => '<option' + (n === _regState.lbPerson ? ' selected' : '') + '>' + _esc(n) + '</option>';
+  let h = '<div class="reg-bar"><label>Dykare<select id="lb-person">'
+    + (names.reg.length ? '<optgroup label="Personalregistret">' + names.reg.map(opt).join('') + '</optgroup>' : '')
+    + (names.other.length ? '<optgroup label="Övriga namn i arkivet">' + names.other.map(opt).join('') + '</optgroup>' : '')
+    + (!names.reg.length && !names.other.length ? '<option value="">— inga namn ännu —</option>' : '')
+    + '</select></label><label>Från<input type="date" id="lb-from" value="' + _esc(_regState.lbFrom) + '"></label><label>Till<input type="date" id="lb-to" value="' + _esc(_regState.lbTo) + '"></label>'
+    + '<div class="grow"></div><button class="modal-btn ghost" onclick="exportLogbookCSV()">CSV</button><button class="modal-btn primary" onclick="printLogbook()">Skriv ut loggbok</button></div>';
+  if (!_regState.lbPerson) {
+    h += '<div class="reg-empty"><b>Inga dyk i arkivet ännu.</b><br>Loggboken räknas fram ur de dyk som sparats i arkivet, utifrån namnen i signeringen.</div>';
+    body.innerHTML = h; return;
+  }
+  const lb = logbookFor(_regState.lbPerson, _regState.lbFrom, _regState.lbTo);
+  h += _tileHtml([['Dyk som dykare', String(lb.dives)], ['Total dyktid', fmtMin(lb.minutes)], ['Största djup', isNaN(lb.maxDepth) ? '—' : fmtDepth(lb.maxDepth)], ['Senaste dyk', lb.last || '—']]);
+  if (!lb.rows.length) h += '<div class="reg-empty">Inga dyk för ' + _esc(_regState.lbPerson) + ' i valt intervall.</div>';
+  else {
+    h += '<table class="reg-table"><thead><tr><th>Datum</th><th>Dyk nr</th><th>Roll</th><th>Arbetsplats</th><th>Arbetsmoment</th><th style="text-align:right">Max djup</th><th style="text-align:right">Dyktid</th></tr></thead><tbody>';
+    lb.rows.slice().reverse().forEach(L => {
+      h += '<tr><td>' + _esc(L.iso || L.datum) + '</td><td>' + _esc(L.dyknr) + '</td><td>' + _esc(L.role) + '</td><td>' + _esc(L.arbetsplats) + '</td><td>' + _esc(L.arbetsmoment) + '</td>'
+        + '<td class="num">' + _esc(fmtDepth(L.depth)) + '</td><td class="num">' + (L.minutes ? L.minutes + ' min' : '') + '</td></tr>';
+    });
+    h += '</tbody></table>';
+  }
+  h += '<p class="reg-note">Räknas fram ur arkiverade dyk utifrån namnen i signeringen (Dykare 1/2 = dykare). Dyktid = starttid → sluttid, annars bottentid. Spara dyken i arkivet för att de ska komma med.</p>';
+  body.innerHTML = h;
+  body.querySelector('#lb-person').onchange = e => { _regState.lbPerson = e.target.value; renderRegTab(); };
+  body.querySelector('#lb-from').onchange = e => { _regState.lbFrom = e.target.value; renderRegTab(); };
+  body.querySelector('#lb-to').onchange = e => { _regState.lbTo = e.target.value; renderRegTab(); };
+}
+const _lbPeriod = () => (_regState.lbFrom || _regState.lbTo) ? (_regState.lbFrom || '…') + ' – ' + (_regState.lbTo || '…') : 'Alla dyk';
+function printLogbook() {
+  const name = _regState.lbPerson; if (!name) return;
+  const lb = logbookFor(name, _regState.lbFrom, _regState.lbTo), p = findPerson(name);
+  let inner = (p ? '<p>' + [p.roll, p.certifikat ? 'Certifikat: ' + p.certifikat + (p.certUtgar ? ' (t.o.m. ' + p.certUtgar + ')' : '') : '', p.lakareUtgar ? 'Läkarintyg t.o.m. ' + p.lakareUtgar : ''].filter(Boolean).map(_esc).join(' · ') + '</p>' : '')
+    + _statsHtml([['Dyk som dykare', String(lb.dives)], ['Total dyktid', fmtMin(lb.minutes)], ['Största djup', isNaN(lb.maxDepth) ? '—' : fmtDepth(lb.maxDepth)], ['Period', _lbPeriod()]])
+    + '<table><thead><tr><th>Datum</th><th>Dyk nr</th><th>Roll</th><th>Arbetsplats</th><th>Arbetsmoment</th><th>Max djup</th><th>Dyktid</th><th>Dykledare</th></tr></thead><tbody>'
+    + (lb.rows.map(L => '<tr><td>' + _esc(L.iso || L.datum) + '</td><td>' + _esc(L.dyknr) + '</td><td>' + _esc(L.role) + '</td><td>' + _esc(L.arbetsplats) + '</td><td>' + _esc(L.arbetsmoment) + '</td><td class="num">' + _esc(fmtDepth(L.depth)) + '</td><td class="num">' + (L.minutes ? L.minutes + ' min' : '') + '</td><td>' + _esc(L['led-namn']) + '</td></tr>').join('')
+      || '<tr><td colspan="8" style="text-align:center;color:#888">Inga dyk</td></tr>')
+    + '</tbody></table><div class="sign"><div>Underskrift dykare</div><div>Underskrift / intygas av arbetsgivare</div></div>';
+  openPrintPage('Dykloggbok – ' + name, 'Personlig loggbok · ' + _lbPeriod(), inner);
+}
+function exportLogbookCSV() {
+  const name = _regState.lbPerson; if (!name) return;
+  const lb = logbookFor(name, _regState.lbFrom, _regState.lbTo);
+  const rows = [['Datum', 'Dyk nr', 'Roll', 'Arbetsplats', 'Arbetsmoment', 'Max djup (m)', 'Dyktid (min)', 'Dykledare']]
+    .concat(lb.rows.map(L => [L.iso || L.datum, L.dyknr, L.role, L.arbetsplats, L.arbetsmoment, isNaN(L.depth) ? '' : String(L.depth).replace('.', ','), L.minutes || '', L['led-namn']]));
+  download('loggbok_' + name.replace(/[^\wåäöÅÄÖ-]+/g, '-') + '.csv', _csv(rows), 'text/csv;charset=utf-8');
+  toast('✓ Loggbok exporterad');
+}
+
+// ---------- Månadsrapport / fakturaunderlag ----------
+function monthReport(projectId, month) {
+  const rows = allLogs().filter(L => (!projectId || L.projectId === projectId) && L.iso && L.iso.slice(0, 7) === month);
+  const perDiver = new Map();
+  rows.forEach(L => ['d1-namn', 'd2-namn'].forEach(k => {
+    const n = L[k]; if (!n) return;
+    const e = perDiver.get(normName(n)) || { name: n, dives: 0, minutes: 0 };
+    e.dives++; e.minutes += L.minutes; perDiver.set(normName(n), e);
+  }));
+  const depths = rows.map(L => L.depth).filter(x => !isNaN(x));
+  return { rows: rows, minutes: rows.reduce((a, L) => a + L.minutes, 0), days: new Set(rows.map(L => L.iso)).size,
+    maxDepth: depths.length ? Math.max.apply(null, depths) : NaN, divers: Array.from(perDiver.values()).sort((a, b) => b.dives - a.dives || a.name.localeCompare(b.name, 'sv')) };
+}
+const _monthName = m => { const [y, mo] = m.split('-').map(Number); return new Date(y, mo - 1, 1).toLocaleDateString('sv-SE', { month: 'long', year: 'numeric' }); };
+function renderReportTab(body) {
+  if (!_regState.rpMonth) _regState.rpMonth = todayISO().slice(0, 7);
+  const projects = Object.values(getProjects()).sort((a, b) => String(a.name).localeCompare(String(b.name), 'sv'));
+  if (_regState.rpProj && !getProjects()[_regState.rpProj]) _regState.rpProj = '';
+  let h = '<div class="reg-bar"><label>Projekt<select id="rp-proj"><option value="">Alla projekt</option>'
+    + projects.map(p => '<option value="' + _esc(p.id) + '"' + (p.id === _regState.rpProj ? ' selected' : '') + '>' + _esc(p.name) + '</option>').join('')
+    + '</select></label><label>Månad<input type="month" id="rp-month" value="' + _esc(_regState.rpMonth) + '"></label>'
+    + '<div class="grow"></div><button class="modal-btn ghost" onclick="exportReportCSV()">CSV</button><button class="modal-btn primary" onclick="printReport()">Skriv ut rapport</button></div>';
+  const r = monthReport(_regState.rpProj, _regState.rpMonth);
+  h += _tileHtml([['Antal dyk', String(r.rows.length)], ['Total dyktid', fmtMin(r.minutes)], ['Dykdagar', String(r.days)], ['Största djup', isNaN(r.maxDepth) ? '—' : fmtDepth(r.maxDepth)]]);
+  if (!r.rows.length) h += '<div class="reg-empty">Inga arkiverade dyk ' + _esc(_monthName(_regState.rpMonth)) + (_regState.rpProj ? ' i det här projektet' : '') + '.</div>';
+  else {
+    h += '<table class="reg-table"><thead><tr><th>Datum</th><th>Dyk nr</th><th>Arbetsplats</th><th>Dykare</th><th>Dykledare</th><th>Arbetsmoment</th><th style="text-align:right">Max djup</th><th style="text-align:right">Dyktid</th></tr></thead><tbody>';
+    r.rows.forEach(L => {
+      h += '<tr><td>' + _esc(L.iso) + '</td><td>' + _esc(L.dyknr) + '</td><td>' + _esc(L.arbetsplats) + '</td><td>' + _esc([L['d1-namn'], L['d2-namn']].filter(Boolean).join(', ')) + '</td><td>' + _esc(L['led-namn']) + '</td><td>' + _esc(L.arbetsmoment) + '</td>'
+        + '<td class="num">' + _esc(fmtDepth(L.depth)) + '</td><td class="num">' + (L.minutes ? L.minutes + ' min' : '') + '</td></tr>';
+    });
+    h += '</tbody></table>';
+    if (r.divers.length) {
+      h += '<div class="reg-h">Per dykare</div><table class="reg-table"><thead><tr><th>Dykare</th><th style="text-align:right">Antal dyk</th><th style="text-align:right">Dyktid</th></tr></thead><tbody>'
+        + r.divers.map(d => '<tr><td>' + _esc(d.name) + '</td><td class="num">' + d.dives + '</td><td class="num">' + fmtMin(d.minutes) + '</td></tr>').join('') + '</tbody></table>';
+    }
+  }
+  h += '<p class="reg-note">Underlag för fakturering och uppföljning, räknat ur dyk som sparats i arkivet. Datumet tas från dykloggen.</p>';
+  body.innerHTML = h;
+  body.querySelector('#rp-proj').onchange = e => { _regState.rpProj = e.target.value; renderRegTab(); };
+  body.querySelector('#rp-month').onchange = e => { if (/^\d{4}-\d{2}$/.test(e.target.value)) { _regState.rpMonth = e.target.value; renderRegTab(); } };
+}
+function _reportTitle() { const p = getProjects()[_regState.rpProj]; return (p ? p.name : 'Alla projekt') + ' – ' + _monthName(_regState.rpMonth); }
+function printReport() {
+  const r = monthReport(_regState.rpProj, _regState.rpMonth), p = getProjects()[_regState.rpProj];
+  let inner = (p ? '<p>' + [p.kund ? 'Uppdragsgivare: ' + p.kund : '', p.projektnr ? 'Projektnummer: ' + p.projektnr : '', p.plats ? 'Plats: ' + p.plats : ''].filter(Boolean).map(_esc).join(' · ') + '</p>' : '')
+    + _statsHtml([['Antal dyk', String(r.rows.length)], ['Total dyktid', fmtMin(r.minutes)], ['Dykdagar', String(r.days)], ['Största djup', isNaN(r.maxDepth) ? '—' : fmtDepth(r.maxDepth)]])
+    + '<table><thead><tr><th>Datum</th><th>Dyk nr</th><th>Arbetsplats</th><th>Dykare</th><th>Dykledare</th><th>Arbetsmoment</th><th>Max djup</th><th>Dyktid</th></tr></thead><tbody>'
+    + (r.rows.map(L => '<tr><td>' + _esc(L.iso) + '</td><td>' + _esc(L.dyknr) + '</td><td>' + _esc(L.arbetsplats) + '</td><td>' + _esc([L['d1-namn'], L['d2-namn']].filter(Boolean).join(', ')) + '</td><td>' + _esc(L['led-namn']) + '</td><td>' + _esc(L.arbetsmoment) + '</td><td class="num">' + _esc(fmtDepth(L.depth)) + '</td><td class="num">' + (L.minutes ? L.minutes + ' min' : '') + '</td></tr>').join('')
+      || '<tr><td colspan="8" style="text-align:center;color:#888">Inga dyk</td></tr>') + '</tbody></table>'
+    + (r.divers.length ? '<h2>Per dykare</h2><table><thead><tr><th>Dykare</th><th>Antal dyk</th><th>Dyktid</th></tr></thead><tbody>' + r.divers.map(d => '<tr><td>' + _esc(d.name) + '</td><td class="num">' + d.dives + '</td><td class="num">' + fmtMin(d.minutes) + '</td></tr>').join('') + '</tbody></table>' : '');
+  openPrintPage('Månadsrapport – ' + _reportTitle(), 'Dykrapport / fakturaunderlag', inner);
+}
+function exportReportCSV() {
+  const r = monthReport(_regState.rpProj, _regState.rpMonth), projects = getProjects();
+  const rows = [['Datum', 'Dyk nr', 'Projekt', 'Arbetsplats', 'Dykare 1', 'Dykare 2', 'Dykledare', 'Arbetsmoment', 'Max djup (m)', 'Dyktid (min)']]
+    .concat(r.rows.map(L => [L.iso, L.dyknr, (projects[L.projectId] || {}).name || '', L.arbetsplats, L['d1-namn'], L['d2-namn'], L['led-namn'], L.arbetsmoment, isNaN(L.depth) ? '' : String(L.depth).replace('.', ','), L.minutes || '']));
+  download('manadsrapport_' + _regState.rpMonth + '.csv', _csv(rows), 'text/csv;charset=utf-8');
+  toast('✓ Månadsrapport exporterad');
 }
 
 // ====================== Projekt / kund ======================
@@ -1994,7 +2651,8 @@ function exportCSV() {
   roots.forEach(root => {
     if (!root) return;
     root.querySelectorAll('input[type=text], input[type=date]').forEach(inp => {
-      const v = (inp.value || '').trim(); if (!v) return;
+      const v = (inp.value || '').trim();
+      if (!v) { if (sigs[inp.id]) rows.push([fieldLabel(inp), 'Signerad digitalt']); return; }
       rows.push([fieldLabel(inp), v]);
     });
     root.querySelectorAll('input[type=checkbox]').forEach(cb => {
@@ -2265,6 +2923,10 @@ function mirrorB1toB2() {
     const s1 = b1g.querySelectorAll('span'), s2 = b2g.querySelectorAll('span');
     s1.forEach((sp,i) => { if (s2[i]) s2[i].classList.toggle('gsel', sp.classList.contains('gsel')); });
   }
+  // Underskrifter
+  Object.keys(sigs).filter(k => k.indexOf('b2-') === 0).forEach(k => delete sigs[k]);
+  Object.keys(sigs).filter(k => k.indexOf('b1-') === 0).forEach(k => { sigs['b2-' + k.slice(3)] = sigs[k]; });
+  sigInputs().forEach(i => { if (i.id.indexOf('b2-') === 0) renderSig(i.id); });
 }
 function setDuplicate(on) {
   dupOn = !!on;
@@ -2441,6 +3103,101 @@ function lid(el) { return el && el.getAttribute && el.getAttribute('data-lid'); 
     el.setAttribute('data-lid', 'L' + (i++));
   });
 })();
+
+// =====================================================================
+//  UNDERSKRIFT MED FINGRET — signera Underskrift-fälten direkt på skärmen
+// =====================================================================
+// Underskriften sparas som en vektorbana (SVG-path, viewBox 0 0 600 180) per
+// fält-id – liten i lagringen och skarp i utskrift. Den visas ovanpå fältets
+// linje och följer med i arkiv, filer och utskrift. Knappen ✍ skapas här efter
+// assignLids, så den påverkar inte flytta/skala-positionerna.
+const SIG_W = 600, SIG_H = 180, SVG_NS = 'http://www.w3.org/2000/svg';
+let sigs = {};                                    // fält-id -> path-data
+function isSigPath(p) { return typeof p === 'string' && p.length > 0 && p.length < 40000 && /^[ML0-9 ]+$/.test(p); }
+function sigInputs() { return formInputs('input[id$="-sign"]'); }
+(function initSignatures() {
+  sigInputs().forEach(inp => {
+    if (inp.parentElement.classList.contains('sig-field')) return;
+    const wrap = document.createElement('span'); wrap.className = 'sig-field';
+    inp.parentNode.insertBefore(wrap, inp); wrap.appendChild(inp);
+    const btn = document.createElement('button');
+    btn.type = 'button'; btn.className = 'sig-btn'; btn.textContent = '\u270D\uFE0E';
+    btn.title = 'Signera med fingret, pennan eller musen'; btn.setAttribute('aria-label', 'Signera');
+    btn.addEventListener('click', () => { if (!moveMode) openSignature(inp.id); });
+    wrap.appendChild(btn);
+  });
+})();
+/** Ritar (eller tar bort) den sparade underskriften för ett fält. */
+function renderSig(id) {
+  const inp = document.getElementById(id); if (!inp) return;
+  const wrap = inp.closest('.sig-field'); if (!wrap) return;
+  let svg = wrap.querySelector('svg.sig-img');
+  const d = sigs[id];
+  wrap.classList.toggle('has-sig', !!d);
+  if (!d) { if (svg) svg.remove(); return; }
+  if (!svg) {
+    svg = document.createElementNS(SVG_NS, 'svg');
+    svg.setAttribute('class', 'sig-img'); svg.setAttribute('viewBox', '0 0 ' + SIG_W + ' ' + SIG_H);
+    svg.setAttribute('preserveAspectRatio', 'xMinYMax meet'); svg.setAttribute('aria-hidden', 'true');
+    wrap.insertBefore(svg, inp.nextSibling);
+  }
+  svg.innerHTML = '';
+  const path = document.createElementNS(SVG_NS, 'path');
+  path.setAttribute('d', d); path.setAttribute('fill', 'none'); path.setAttribute('stroke', '#0b2a6b');
+  path.setAttribute('stroke-width', '6'); path.setAttribute('stroke-linecap', 'round'); path.setAttribute('stroke-linejoin', 'round');
+  svg.appendChild(path);
+}
+function renderAllSigs() { sigInputs().forEach(i => renderSig(i.id)); }
+/** Öppnar signeringsytan för ett Underskrift-fält. */
+function openSignature(id) {
+  const inp = document.getElementById(id); if (!inp) return;
+  const box = inp.closest('.sbox');
+  const who = box ? _txt(box.querySelector('.st')) : 'Underskrift';
+  const name = box ? (box.querySelector('input[id$="-namn"]') || {}).value || '' : '';
+  const overlay = document.createElement('div'); overlay.className = 'modal-overlay open';
+  overlay.innerHTML = '<div class="modal-card sig-card"><div class="modal-head"></div><div class="modal-body">'
+    + '<canvas class="sig-pad" width="' + SIG_W * 2 + '" height="' + SIG_H * 2 + '" aria-label="Signeringsyta"></canvas>'
+    + '<div class="modal-msg" style="font-size:12px;color:#8a8a93">Skriv med fingret, pennan eller musen. Underskriften sparas med dyket och syns i utskriften.</div></div>'
+    + '<div class="modal-foot" style="justify-content:space-between"><div style="display:flex;gap:9px">'
+    + '<button class="modal-btn ghost" data-act="clear">Rensa</button></div><div style="display:flex;gap:9px">'
+    + '<button class="modal-btn ghost" data-act="cancel">Avbryt</button><button class="modal-btn primary" data-act="ok">Spara underskrift</button></div></div></div>';
+  overlay.querySelector('.modal-head').textContent = 'Underskrift – ' + who + (name.trim() ? ' (' + name.trim() + ')' : '');
+  document.body.appendChild(overlay);
+  const cv = overlay.querySelector('canvas'), ctx = cv.getContext('2d');
+  ctx.scale(2, 2); ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.lineWidth = 6; ctx.strokeStyle = '#0b2a6b';
+  let base = sigs[id] || '', strokes = [], cur = null;
+  const redraw = () => {
+    ctx.clearRect(0, 0, SIG_W, SIG_H);
+    ctx.save(); ctx.strokeStyle = '#e4e4ea'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(20, SIG_H - 30); ctx.lineTo(SIG_W - 20, SIG_H - 30); ctx.stroke(); ctx.restore();
+    const d = base + strokesPath();
+    if (d) ctx.stroke(new Path2D(d));
+  };
+  const strokesPath = () => strokes.map(st => 'M' + st[0][0] + ' ' + st[0][1] + (st.length === 1 ? 'L' + (st[0][0] + 1) + ' ' + st[0][1] : st.slice(1).map(p => 'L' + p[0] + ' ' + p[1]).join(''))).join('');
+  const pt = e => { const r = cv.getBoundingClientRect(); return [Math.round(Math.max(0, Math.min(SIG_W, (e.clientX - r.left) / r.width * SIG_W))), Math.round(Math.max(0, Math.min(SIG_H, (e.clientY - r.top) / r.height * SIG_H)))]; };
+  cv.addEventListener('pointerdown', e => { e.preventDefault(); cv.setPointerCapture(e.pointerId); cur = [pt(e)]; strokes.push(cur); redraw(); });
+  cv.addEventListener('pointermove', e => {
+    if (!cur) return;
+    const p = pt(e), q = cur[cur.length - 1];
+    if (Math.abs(p[0] - q[0]) + Math.abs(p[1] - q[1]) >= 3) { cur.push(p); redraw(); }
+  });
+  const end = () => { cur = null; };
+  cv.addEventListener('pointerup', end); cv.addEventListener('pointercancel', end);
+  redraw();
+  const close = () => { overlay.remove(); document.removeEventListener('keydown', onKey, true); };
+  const onKey = e => { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); close(); } };
+  document.addEventListener('keydown', onKey, true);
+  overlay.addEventListener('mousedown', e => { if (e.target === overlay) close(); });
+  overlay.querySelector('[data-act=clear]').onclick = () => { base = ''; strokes = []; redraw(); };
+  overlay.querySelector('[data-act=cancel]').onclick = close;
+  overlay.querySelector('[data-act=ok]').onclick = () => {
+    const d = base + strokesPath();
+    if (d && isSigPath(d)) sigs[id] = d; else delete sigs[id];
+    renderSig(id);
+    if (dupOn && id.indexOf('b1-') === 0) mirrorB1toB2();
+    close(); syncCopyBack(); persist();
+    toast(d ? '✓ Underskrift sparad' : 'Underskrift borttagen');
+  };
+}
 
 function applyTf(el) {
   const t = layoutTf[lid(el)];
@@ -2745,6 +3502,7 @@ function gatherAll() {
     b2:   { typer: atInstances.b2.typer,   checked: atInstances.b2.checked }
   });
   glSpans().forEach(sp => { d[sp.dataset.k] = sp.classList.contains('gsel'); });
+  Object.keys(sigs).sort().forEach(id => { if (document.getElementById(id)) d['sig.' + id] = sigs[id]; });
   Object.assign(d, getEditableTexts());
   d._layout = JSON.stringify(layoutTf);
   d._lsig = layoutSig();   // strukturfingeravtryck för flytta/skala-positionerna
@@ -2783,6 +3541,9 @@ function applyAll(d) {
   }
   ['main','b1','b2'].forEach(inst => renderGrid(inst));
   glSpans().forEach(sp => { const v = d[sp.dataset.k]; sp.classList.toggle('gsel', v === true || v === 'true'); });
+  sigs = {};
+  Object.keys(d).forEach(k => { if (k.indexOf('sig.') === 0 && isSigPath(d[k])) sigs[k.slice(4)] = d[k]; });
+  renderAllSigs();
   setEditableTexts(d);
   // Återställ flytta/skala-positioner bara om strukturen är densamma som när
   // de sparades (jämför fingeravtrycket). Annars börjar de om från standard.
@@ -2904,7 +3665,17 @@ renderDiveList();
   try { v = localStorage.getItem(K('layout')) || '2x-plan'; } catch (e) {}
   setLayout(v);
 })();
+// Namnförslag ur personalregistret i alla namnfält + märken/varningar
+nameFieldIds().forEach(id => { const el = document.getElementById(id); if (el) { el.setAttribute('list', 'dl-personal'); el.setAttribute('autocomplete', 'off'); } });
+refreshRegisterUI();
 updateDiveStatus();
+
+// Installera som app / fungera utan täckning (surfplatta ute på plats).
+// Kräver att sidan körs från en webbserver (http/https) – inte som lokal fil.
+if (/^https?:$/.test(location.protocol)) {
+  const ml = document.createElement('link'); ml.rel = 'manifest'; ml.href = 'manifest.webmanifest'; document.head.appendChild(ml);
+  if ('serviceWorker' in navigator) window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); });
+}
 </script>
 </body>
 </html>
